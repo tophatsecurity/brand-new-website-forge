@@ -9,6 +9,7 @@ import CallToAction from '@/components/ddx/CallToAction';
 import ComprehensiveCoverage from '@/components/ddx/ComprehensiveCoverage';
 import AdvancedFeatures from '@/components/ddx/AdvancedFeatures';
 import FrameworkCompliance from '@/components/ddx/FrameworkCompliance';
+import FAQ from '@/components/ddx/FAQ';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const DDX = () => {
@@ -23,6 +24,7 @@ const DDX = () => {
           <KeyFeatures />
           <AdvancedFeatures />
           <FrameworkCompliance />
+          <FAQ />
           <CallToAction />
         </div>
       </div>
