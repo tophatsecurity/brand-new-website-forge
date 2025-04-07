@@ -10,6 +10,7 @@ import ComprehensiveCoverage from '@/components/ddx/ComprehensiveCoverage';
 import AdvancedFeatures from '@/components/ddx/AdvancedFeatures';
 import FrameworkCompliance from '@/components/ddx/FrameworkCompliance';
 import FAQ from '@/components/ddx/FAQ';
+import AnalysisTable from '@/components/ddx/AnalysisTable';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const DDX = () => {
@@ -22,6 +23,7 @@ const DDX = () => {
           <Overview />
           <ComprehensiveCoverage />
           <KeyFeatures />
+          <AnalysisTable />
           <AdvancedFeatures />
           <FrameworkCompliance />
           <FAQ />
