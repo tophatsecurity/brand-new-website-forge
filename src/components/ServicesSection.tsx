@@ -15,7 +15,7 @@ const ServicesSection = () => {
       link: "/secondlook"
     },
     {
-      title: "Security Perpetual Evaluation",
+      title: "Product Security Perpetual Evaluation",
       description: "Continuous security assessment and monitoring to protect against evolving threats and vulnerabilities.",
       icon: <Search className="h-8 w-8 text-primary" />,
       borderColor: "border-cyan-400",

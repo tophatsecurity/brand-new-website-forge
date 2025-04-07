@@ -18,9 +18,9 @@ const SecurityPerpetual = () => {
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
           <div className="text-center mb-8">
             <Badge variant="outline" className="mb-4 px-3 py-1 text-sm font-medium text-[#cc0c1a] border-[#cc0c1a]">
-              Security Services
+              Product Security Services
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Security Perpetual Evaluation</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Product Security Perpetual Evaluation</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
               Continuous security assessment and monitoring for evolving threat landscapes
             </p>
@@ -41,7 +41,7 @@ const SecurityPerpetual = () => {
                 <div className="relative bg-white rounded-xl overflow-hidden border p-8 shadow-md">
                   <img 
                     src="/lovable-uploads/5e60e263-f754-4df8-907c-e70ae724fdc6.png" 
-                    alt="Security Perpetual Evaluation Dashboard" 
+                    alt="Product Security Perpetual Evaluation Dashboard" 
                     className="w-full h-auto rounded-lg shadow-md"
                   />
                 </div>

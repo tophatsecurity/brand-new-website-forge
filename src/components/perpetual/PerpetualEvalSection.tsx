@@ -6,9 +6,9 @@ const PerpetualEvalSection = () => {
   return (
     <section className="mb-16">
       <div className="mb-10 text-center">
-        <h2 className="text-3xl font-bold mb-4">Continuous Security Assessment</h2>
+        <h2 className="text-3xl font-bold mb-4">Continuous Product Security Assessment</h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Our Security Perpetual Evaluation service provides ongoing security assessment, ensuring your systems remain
+          Our Product Security Perpetual Evaluation service provides ongoing security assessment, ensuring your systems remain
           protected against the latest threats and vulnerabilities.
         </p>
       </div>

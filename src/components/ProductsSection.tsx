@@ -69,9 +69,9 @@ const ProductsSection = () => {
       id: "security-services",
       products: [
         {
-          title: "Security Perpetual Evaluation",
+          title: "Product Security Perpetual Evaluation",
           description: "Continuous security assessment and monitoring for evolving threat landscapes.",
-          longDescription: "Our Security Perpetual Evaluation service provides ongoing assessment and monitoring to protect your organization against evolving cyber threats and vulnerabilities.",
+          longDescription: "Our Product Security Perpetual Evaluation service provides ongoing assessment and monitoring to protect your organization against evolving cyber threats and vulnerabilities.",
           icon: <Search className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/security-perpetual"
