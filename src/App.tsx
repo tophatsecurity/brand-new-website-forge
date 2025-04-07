@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Contact from "./pages/Contact";
-import SecondLook from "./pages/SecondLook";
 import SeekCap from "./pages/SeekCap";
 import DDX from "./pages/DDX";
 import DDXUseCases from "./pages/DDXUseCases";
@@ -26,7 +25,6 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/products" element={<Products />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/secondlook" element={<SecondLook />} />
           <Route path="/seekcap" element={<SeekCap />} />
           <Route path="/ddx" element={<DDX />} />
           <Route path="/ddx/use-cases" element={<DDXUseCases />} />

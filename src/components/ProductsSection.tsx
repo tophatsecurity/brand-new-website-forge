@@ -46,7 +46,7 @@ const ProductsSection = () => {
           longDescription: "The Listening Post enables real-time passive monitoring of communications and RF traffic, providing intelligence gathering capabilities without detection in sensitive environments. Works as a companion to DDX.",
           icon: <Radio className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
-          link: "/secondlook"
+          link: "/products?tab=secondlook"
         }
       ]
     },
