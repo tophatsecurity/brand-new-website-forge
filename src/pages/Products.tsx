@@ -4,7 +4,6 @@ import Navbar from '@/components/Navbar';
 import ProductsSection from '@/components/ProductsSection';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 
 const Products = () => {
