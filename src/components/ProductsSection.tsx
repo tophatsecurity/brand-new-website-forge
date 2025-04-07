@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Lock, Search, Radio, ChevronLeft, ChevronRight, Server, Database, FileCheck, Eye } from "lucide-react";
+import { Shield, Lock, Search, Radio, Server, Database, FileCheck, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,9 +19,9 @@ const ProductsSection = () => {
       id: "ai-security",
       products: [
         {
-          title: "Paraguard",
+          title: "ParaGuard",
           description: "AI security detection & response for AI Edge and Hyperscale environments.",
-          longDescription: "Paraguard offers advanced AI-powered security detection and automated response systems specifically designed for AI Edge computing and Hyperscale environments, protecting against emerging threats.",
+          longDescription: "ParaGuard offers advanced AI-powered security detection and automated response systems specifically designed for AI Edge computing and Hyperscale environments, protecting against emerging threats.",
           icon: <Lock className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/paraguard"
@@ -39,14 +39,6 @@ const ProductsSection = () => {
           icon: <Shield className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/ddx"
-        },
-        {
-          title: "LIPO",
-          description: "The Listening Post - Companion to DDX for RF and communications monitoring.",
-          longDescription: "The Listening Post enables real-time passive monitoring of communications and RF traffic, providing intelligence gathering capabilities without detection in sensitive environments. Works as a companion to DDX.",
-          icon: <Radio className="h-8 w-8 text-primary" />,
-          borderColor: "border-primary",
-          link: "/products?tab=secondlook"
         },
         {
           title: "SecondLook SBOM",
@@ -69,6 +61,20 @@ const ProductsSection = () => {
           icon: <Eye className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/seekcap"
+        }
+      ]
+    },
+    {
+      category: "Security Services",
+      id: "security-services",
+      products: [
+        {
+          title: "Security Perpetual Evaluation",
+          description: "Continuous security assessment and monitoring for evolving threat landscapes.",
+          longDescription: "Our Security Perpetual Evaluation service provides ongoing assessment and monitoring to protect your organization against evolving cyber threats and vulnerabilities.",
+          icon: <Search className="h-8 w-8 text-primary" />,
+          borderColor: "border-primary",
+          link: "/security-perpetual"
         }
       ]
     }

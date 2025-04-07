@@ -3,7 +3,6 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import ProductsSection from '@/components/ProductsSection';
 import ProductCategories from '@/components/ProductCategories';
-import SecondLookSection from '@/components/SecondLookSection';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -84,7 +83,27 @@ const Products = () => {
               </div>
             </div>
             
-            <SecondLookSection />
+            <div className="text-center mb-16">
+              <h3 className="text-2xl font-bold mb-4">Supply Chain Security Products</h3>
+              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <Link to="/secondlook" className="block">
+                  <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#cc0c1a] hover:shadow-lg transition-all">
+                    <h4 className="text-xl font-bold mb-2">SecondLook Platform</h4>
+                    <p className="text-muted-foreground">
+                      Comprehensive security monitoring and supply chain intelligence
+                    </p>
+                  </div>
+                </Link>
+                <Link to="/ddx" className="block">
+                  <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#cc0c1a] hover:shadow-lg transition-all">
+                    <h4 className="text-xl font-bold mb-2">DDX</h4>
+                    <p className="text-muted-foreground">
+                      Cyber supply chain forensic inspection platform
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            </div>
           </TabsContent>
           
           <TabsContent value="visibility">
@@ -137,6 +156,14 @@ const Products = () => {
                 </p>
               </div>
             </div>
+            
+            <div className="text-center mb-8">
+              <Link to="/seekcap" className="inline-block">
+                <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
+                  Learn More About SeekCAP
+                </Button>
+              </Link>
+            </div>
           </TabsContent>
         </Tabs>
         
@@ -145,11 +172,11 @@ const Products = () => {
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
             Our experts can help you identify the right security tools for your specific needs.
           </p>
-          <a href="/contact">
+          <Link to="/contact">
             <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8 py-2">
               Contact Our Team
             </Button>
-          </a>
+          </Link>
         </div>
       </div>
       <Footer />

@@ -102,9 +102,35 @@ const SecondLook = () => {
               </div>
             </TabsContent>
           </Tabs>
+          
+          <div className="text-center mb-8">
+            <Link to="/contact">
+              <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
+                Learn More About SecondLook
+              </Button>
+            </Link>
+          </div>
         </div>
         
         <SecondLookSection />
+        
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 mt-16">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Ready to secure your supply chain?</h2>
+            <p className="mb-8 text-lg text-muted-foreground max-w-2xl mx-auto">
+              Contact us today to learn how our SecondLook platform can help identify and mitigate risks in your software supply chain.
+            </p>
+            <Link 
+              to="/contact" 
+              className="bg-[#cc0c1a] hover:bg-[#a80916] text-white font-bold py-3 px-8 rounded-md transition-colors duration-300 inline-flex items-center"
+            >
+              Request a Demo
+            </Link>
+            <p className="mt-4 text-sm text-muted-foreground">
+              © 2025 Tophat Security Inc - SecondLook - www.tophatsecurity.com
+            </p>
+          </div>
+        </div>
       </div>
       <Footer />
     </div>
