@@ -10,7 +10,7 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
-import { Mail, Phone, MapPin } from "lucide-react";
+import ContactInfo from '@/components/ContactInfo';
 import { useToast } from "@/hooks/use-toast";
 
 const ContactSection = () => {
@@ -42,33 +42,12 @@ const ContactSection = () => {
     }, 1500);
   };
 
-  const contactInfo = [
-    {
-      icon: <Mail className="h-6 w-6 text-primary" />,
-      title: "Email Us",
-      content: "info@acmecorp.com",
-      link: "mailto:info@acmecorp.com"
-    },
-    {
-      icon: <Phone className="h-6 w-6 text-primary" />,
-      title: "Call Us",
-      content: "+1 (555) 123-4567",
-      link: "tel:+15551234567"
-    },
-    {
-      icon: <MapPin className="h-6 w-6 text-primary" />,
-      title: "Visit Us",
-      content: "123 Business Ave, Tech City, CA 90210",
-      link: "#"
-    }
-  ];
-
   return (
     <section id="contact" className="section-padding">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16 animate-slide-up opacity-0">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Get In Touch</h2>
-          <div className="w-20 h-1 bg-accent mx-auto mb-6"></div>
+          <div className="w-20 h-1 bg-primary mx-auto mb-6"></div>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Have a question or want to work with us? Send us a message and we'll get back to you as soon as possible.
           </p>
@@ -131,7 +110,7 @@ const ContactSection = () => {
                   
                   <Button 
                     type="submit" 
-                    className="w-full bg-primary hover:bg-primary/90 text-white"
+                    className="w-full bg-[#cc0c1a] hover:bg-[#a80916] text-white"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Sending..." : "Send Message"}
@@ -142,29 +121,7 @@ const ContactSection = () => {
           </div>
           
           <div className="lg:w-1/2 animate-slide-up opacity-0" style={{ animationDelay: '400ms' }}>
-            <h3 className="text-2xl font-bold mb-8">Contact Information</h3>
-            <div className="space-y-8">
-              {contactInfo.map((item, index) => (
-                <div key={index} className="flex items-start">
-                  <div className="bg-primary/10 p-3 rounded-full mr-4">{item.icon}</div>
-                  <div>
-                    <h4 className="font-medium text-lg">{item.title}</h4>
-                    <a href={item.link} className="text-muted-foreground hover:text-primary transition-colors">
-                      {item.content}
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="mt-12 bg-secondary/50 p-6 rounded-lg">
-              <h4 className="font-medium text-lg mb-4">Business Hours</h4>
-              <div className="space-y-2 text-muted-foreground">
-                <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                <p>Saturday: 10:00 AM - 4:00 PM</p>
-                <p>Sunday: Closed</p>
-              </div>
-            </div>
+            <ContactInfo />
           </div>
         </div>
       </div>
