@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Shield, Lock } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,8 +39,16 @@ const Navbar = () => {
     )}>
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <a href="#" className="text-2xl font-bold text-primary">
-            Acme<span className="text-accent">Corp</span>
+          <a href="#" className="flex items-center">
+            <img 
+              src="/public/lovable-uploads/3d8e6f15-58c0-462a-854f-0f4cacfa0fb5.png" 
+              alt="TopHat Security Logo" 
+              className="h-10 md:h-12 mr-3"
+            />
+            <div>
+              <span className="block text-2xl font-bold text-[#222]">TOPHAT</span>
+              <span className="block text-lg font-bold text-[#cc0c1a]">SECURITY</span>
+            </div>
           </a>
         </div>
 
@@ -50,13 +58,13 @@ const Navbar = () => {
             <a 
               key={link.name} 
               href={link.href} 
-              className="text-foreground hover:text-primary transition-colors duration-200"
+              className="text-foreground hover:text-[#cc0c1a] transition-colors duration-200"
             >
               {link.name}
             </a>
           ))}
-          <Button variant="default" className="bg-accent hover:bg-accent/90 text-white">
-            Get Started
+          <Button variant="default" className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
+            Free Consultation
           </Button>
         </div>
 
@@ -83,14 +91,14 @@ const Navbar = () => {
             <a 
               key={link.name} 
               href={link.href} 
-              className="text-foreground hover:text-primary py-2"
+              className="text-foreground hover:text-[#cc0c1a] py-2"
               onClick={() => setIsOpen(false)}
             >
               {link.name}
             </a>
           ))}
-          <Button variant="default" className="bg-accent hover:bg-accent/90 text-white w-full">
-            Get Started
+          <Button variant="default" className="bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full">
+            Free Consultation
           </Button>
         </div>
       </div>
