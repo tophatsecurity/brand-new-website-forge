@@ -1,8 +1,6 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import ProductsSection from '@/components/ProductsSection';
-import ProductCategories from '@/components/ProductCategories';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,12 +19,6 @@ const Products = () => {
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               Comprehensive cybersecurity platforms designed for AI Security, Cyber Supply Chain, and Asset Management solutions.
             </p>
-          </div>
-          
-          {/* Product Categories Card */}
-          <div className="mb-16 p-8 border border-gray-200 rounded-xl shadow-lg bg-white relative">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-[#cc0c1a]"></div>
-            <ProductCategories />
           </div>
         </div>
 
