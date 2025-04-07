@@ -3,9 +3,27 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Lock, Database } from "lucide-react";
 import { Link } from "react-router-dom";
-import ProductCategories from '@/components/ProductCategories';
+import { Card, CardContent } from "@/components/ui/card";
 
 const HeroSection = () => {
+  const productScreenshots = [
+    {
+      image: "/lovable-uploads/05c32b3b-c00b-4af9-acd5-cac7a7986e4a.png",
+      name: "Product Categories",
+      note: "Complete security solutions across AI, Supply Chain, and Industrial management"
+    },
+    {
+      image: "/public/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png",
+      name: "SecondLook X",
+      note: "Passive monitoring with automated alerts for enhanced cybersecurity"
+    },
+    {
+      image: "/lovable-uploads/fb12631d-976c-47f1-8ee8-5f480d9ad104.png",
+      name: "TopHat Security",
+      note: "Comprehensive protection for your entire technology ecosystem"
+    }
+  ];
+
   return (
     <section className="pt-32 pb-20 px-6 md:px-12 lg:px-24 hero-gradient circuit-bg">
       <div className="max-w-7xl mx-auto">
@@ -35,7 +53,26 @@ const HeroSection = () => {
               <div className="relative bg-white rounded-lg overflow-hidden shadow-xl">
                 <div className="p-1 bg-gradient-to-r from-[#cc0c1a] to-[#222]">
                   <div className="bg-white p-8">
-                    <ProductCategories />
+                    <h3 className="text-2xl font-semibold text-center mb-6">Product Showcase</h3>
+                    <div className="grid gap-6">
+                      {productScreenshots.map((screenshot, index) => (
+                        <Card key={index} className="overflow-hidden border-none shadow-md hover:shadow-lg transition-shadow">
+                          <div className="relative">
+                            <img 
+                              src={screenshot.image} 
+                              alt={screenshot.name}
+                              className="w-full object-cover rounded-t-lg"
+                            />
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2">
+                              <h4 className="font-semibold">{screenshot.name}</h4>
+                            </div>
+                          </div>
+                          <CardContent className="p-4 bg-gray-50">
+                            <p className="text-sm text-gray-600">{screenshot.note}</p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
