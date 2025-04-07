@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Lock, Search, Radio, ChevronLeft, ChevronRight, Server, Database } from "lucide-react";
+import { Shield, Lock, Search, Radio, ChevronLeft, ChevronRight, Server, Database, FileCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +47,14 @@ const ProductsSection = () => {
           icon: <Radio className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/products?tab=secondlook"
+        },
+        {
+          title: "SecondLook SBOM",
+          description: "Comprehensive Bill of Materials Intelligence for software, hardware, and firmware components.",
+          longDescription: "SecondLook SBOM platform provides detailed analysis and risk assessment for Software, Hardware, and Firmware Bills of Materials, ensuring complete transparency in your supply chain components.",
+          icon: <FileCheck className="h-8 w-8 text-primary" />,
+          borderColor: "border-primary",
+          link: "/secondlook"
         }
       ]
     },
@@ -114,7 +122,7 @@ const ProductsSection = () => {
           </div>
         ))}
         
-        {/* Product carousel for featured display */}
+        {/* Product carousel for featured solutions */}
         <div className="block md:mt-16">
           <h3 className="text-2xl font-semibold mb-6 text-center">Featured Solutions</h3>
           <Carousel className="w-full max-w-5xl mx-auto">

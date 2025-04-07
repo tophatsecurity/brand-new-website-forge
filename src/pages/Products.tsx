@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Shield, FileCheck } from "lucide-react";
 
 const Products = () => {
   return (
@@ -32,7 +33,14 @@ const Products = () => {
         <Tabs defaultValue="products" className="max-w-7xl mx-auto px-6">
           <TabsList className="w-full max-w-md mx-auto mb-8">
             <TabsTrigger value="products" className="flex-1">All Products</TabsTrigger>
-            <TabsTrigger value="secondlook" className="flex-1">SecondLook X</TabsTrigger>
+            <TabsTrigger value="secondlook" className="flex-1 flex items-center justify-center gap-2">
+              <Shield className="h-4 w-4" />
+              <span>SecondLook X</span>
+            </TabsTrigger>
+            <TabsTrigger value="sbom" className="flex-1 flex items-center justify-center gap-2">
+              <FileCheck className="h-4 w-4" />
+              <span>SBOM Platform</span>
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="products">
@@ -56,7 +64,7 @@ const Products = () => {
                 <div className="relative bg-white rounded-xl overflow-hidden border p-8 shadow-md flex flex-col items-center">
                   <div className="bg-white p-2 rounded-full mb-6">
                     <img 
-                      src="/public/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
+                      src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
                       alt="SecondLook Security" 
                       className="h-40 md:h-48"
                     />
@@ -64,6 +72,39 @@ const Products = () => {
                   <h3 className="text-2xl font-bold mb-2">SecondLook X</h3>
                   <p className="text-center text-muted-foreground">
                     Protection against the 65% of attacks that traditional systems miss
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <SecondLookSection />
+          </TabsContent>
+          
+          <TabsContent value="sbom">
+            <div className="text-center mb-12">
+              <Badge variant="outline" className="mb-4 px-3 py-1 text-sm font-medium text-[#cc0c1a] border-[#cc0c1a]">
+                Supply Chain Intelligence
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">SecondLook SBOM Platform</h2>
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                Comprehensive bill of materials intelligence for software, hardware, and firmware components
+              </p>
+            </div>
+            
+            <div className="flex justify-center mb-16">
+              <div className="relative w-full max-w-lg">
+                <div className="absolute inset-0 blur-lg bg-gradient-to-r from-[#cc0c1a]/20 to-[#222]/20 rounded-2xl transform -rotate-6"></div>
+                <div className="relative bg-white rounded-xl overflow-hidden border p-8 shadow-md flex flex-col items-center">
+                  <div className="bg-white p-2 rounded-full mb-6">
+                    <img 
+                      src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
+                      alt="SecondLook SBOM Platform" 
+                      className="h-40 md:h-48"
+                    />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">SecondLook SBOM Platform</h3>
+                  <p className="text-center text-muted-foreground">
+                    Complete visibility into your software, hardware, and firmware supply chain
                   </p>
                 </div>
               </div>

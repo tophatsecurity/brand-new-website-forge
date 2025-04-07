@@ -3,7 +3,7 @@ import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Clock, Search, Server, Database, Link } from "lucide-react";
+import { Shield, Clock, Search, Server, Database, Link, FileCheck, Code, Cpu, HardDrive } from "lucide-react";
 
 const SecondLookSection = () => {
   const features = [
@@ -36,6 +36,29 @@ const SecondLookSection = () => {
       title: "Supply Chain Monitoring",
       description: "Monitor your suppliers for potential vulnerabilities that could affect your security.",
       icon: <Link className="h-8 w-8 text-primary" />,
+    },
+  ];
+
+  const sbomFeatures = [
+    {
+      title: "Software Bill of Materials (SBOM)",
+      description: "Comprehensive analysis of all software components, dependencies, and vulnerabilities in your supply chain.",
+      icon: <Code className="h-8 w-8 text-primary" />,
+    },
+    {
+      title: "Hardware Bill of Materials (HBOM)",
+      description: "Detailed inventory of all hardware components with risk assessment for each element in your products.",
+      icon: <Cpu className="h-8 w-8 text-primary" />,
+    },
+    {
+      title: "Firmware Bill of Materials (FWBOM)",
+      description: "Deep inspection of firmware components to identify potential backdoors and security risks.",
+      icon: <HardDrive className="h-8 w-8 text-primary" />,
+    },
+    {
+      title: "Cross-Domain BOM (XBOM)",
+      description: "Unified view across software, hardware, and firmware for complete supply chain transparency.",
+      icon: <FileCheck className="h-8 w-8 text-primary" />,
     },
   ];
 
@@ -108,8 +131,63 @@ const SecondLookSection = () => {
           ))}
         </div>
 
+        <div className="text-center mb-16 animate-slide-up opacity-0" style={{ animationDelay: '1300ms' }}>
+          <Badge className="mb-4">BOM Intelligence</Badge>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">SecondLook SBOM Platform</h2>
+          <div className="w-20 h-1 bg-primary mx-auto mb-6"></div>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            A comprehensive bill of materials intelligence platform for software, hardware, and firmware components
+            in your supply chain.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+          <div className="prose prose-lg max-w-none animate-slide-up opacity-0" style={{ animationDelay: '1400ms' }}>
+            <h3 className="text-2xl font-bold mb-4">Supply Chain Visibility</h3>
+            <p className="text-muted-foreground">
+              In today's complex supply chains, <span className="text-primary font-semibold">more than 70%</span> of product components 
+              come from third-party suppliers. Without proper visibility, these components represent a significant security risk.
+            </p>
+            <p className="text-muted-foreground">
+              The SecondLook SBOM Platform provides comprehensive visibility across all components in your 
+              supply chain, helping you identify and mitigate risks before they impact your business.
+            </p>
+          </div>
+
+          <div className="prose prose-lg max-w-none animate-slide-up opacity-0" style={{ animationDelay: '1500ms' }}>
+            <h3 className="text-2xl font-bold mb-4">BOM Intelligence</h3>
+            <p className="text-muted-foreground">
+              Our platform analyzes bills of materials across four key domains:
+            </p>
+            <ul className="space-y-2 text-muted-foreground">
+              <li>Software components and dependencies (SBOM)</li>
+              <li>Hardware components and suppliers (HBOM)</li>
+              <li>Firmware versions and vulnerabilities (FWBOM)</li>
+              <li>Cross-domain relationships and security impacts (XBOM)</li>
+            </ul>
+            <p className="text-muted-foreground">
+              This comprehensive approach ensures no vulnerability goes undetected in your product ecosystem.
+            </p>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-16">
+          {sbomFeatures.map((feature, index) => (
+            <Card key={index} className="animate-slide-up opacity-0 border-t-4 border-primary" 
+                  style={{ animationDelay: `${index * 100 + 1600}ms` }}>
+              <CardHeader className="pb-2">
+                <div className="mb-4">{feature.icon}</div>
+                <CardTitle>{feature.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">{feature.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
         <div className="bg-secondary/50 p-8 rounded-lg text-center animate-slide-up opacity-0" 
-             style={{ animationDelay: '1400ms' }}>
+             style={{ animationDelay: '2000ms' }}>
           <h3 className="text-2xl font-bold mb-4">Ready to secure your business?</h3>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
             Please contact us for more information about subscriptions, OEM opportunities, and partnerships.
