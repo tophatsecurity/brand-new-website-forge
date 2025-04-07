@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Shield, Layers, Clock, Search, Cpu, Wifi } from "lucide-react";
+import { FileText, Shield, Layers, Clock, Search, Cpu, Wifi, FileCheck } from "lucide-react";
 
 const ServicesSection = () => {
   const services = [
@@ -39,6 +39,12 @@ const ServicesSection = () => {
       title: "Firmware Extractions",
       description: "Expert extraction and analysis of firmware to detect hidden vulnerabilities and malicious code.",
       icon: <FileText className="h-8 w-8 text-primary" />,
+      borderColor: "border-cyan-400"
+    },
+    {
+      title: "CMMC, CIP, NERC Regulation Management",
+      description: "Comprehensive compliance management for critical infrastructure and government regulations including CMMC, CIP, and NERC standards.",
+      icon: <FileCheck className="h-8 w-8 text-primary" />,
       borderColor: "border-cyan-400"
     }
   ];
