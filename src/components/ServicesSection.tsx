@@ -2,6 +2,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Shield, Layers, Clock, Search, Cpu, Wifi, FileCheck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const ServicesSection = () => {
   const services = [
@@ -9,7 +11,15 @@ const ServicesSection = () => {
       title: "SecondLook",
       description: "Comprehensive device security analysis and passive monitoring with automated alerts for enhanced cybersecurity.",
       icon: <Shield className="h-8 w-8 text-primary" />,
-      borderColor: "border-cyan-400"
+      borderColor: "border-cyan-400",
+      link: "/secondlook"
+    },
+    {
+      title: "Security Perpetual Evaluation",
+      description: "Continuous security assessment and monitoring to protect against evolving threats and vulnerabilities.",
+      icon: <Search className="h-8 w-8 text-primary" />,
+      borderColor: "border-cyan-400",
+      link: "/security-perpetual"
     },
     {
       title: "Device Assessment",
@@ -69,6 +79,15 @@ const ServicesSection = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-300">{service.description}</p>
+                {service.link && (
+                  <div className="mt-4">
+                    <Link to={service.link}>
+                      <Button variant="outline" className="border-gray-600 text-white hover:bg-gray-800">
+                        Learn More
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
