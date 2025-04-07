@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Lock, Search, Radio, ChevronLeft, ChevronRight, Server, Database } from "lucide-react";
@@ -23,7 +22,7 @@ const ProductsSection = () => {
           longDescription: "Paraguard offers advanced AI-powered security detection and automated response systems specifically designed for AI Edge computing and Hyperscale environments, protecting against emerging threats.",
           icon: <Lock className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
-          link: "#"
+          link: "/paraguard"
         }
       ]
     },
@@ -98,10 +97,10 @@ const ProductsSection = () => {
                     <p className="text-muted-foreground mb-4">{product.description}</p>
                     <Link to={product.link}>
                       <Button 
-                        variant={product.link !== "#" ? "default" : "outline"} 
-                        className={product.link !== "#" ? "bg-[#cc0c1a] hover:bg-[#a80916] text-white" : ""}
+                        variant="default"
+                        className="bg-[#cc0c1a] hover:bg-[#a80916] text-white"
                       >
-                        {product.link !== "#" ? "Learn More" : "Coming Soon"}
+                        Learn More
                       </Button>
                     </Link>
                   </CardContent>
@@ -128,10 +127,10 @@ const ProductsSection = () => {
                         <p className="text-muted-foreground mb-6 flex-grow">{product.longDescription}</p>
                         <Link to={product.link} className="mt-auto">
                           <Button 
-                            variant={product.link !== "#" ? "default" : "outline"} 
-                            className={product.link !== "#" ? "bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full" : "w-full"}
+                            variant="default"
+                            className="bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full"
                           >
-                            {product.link !== "#" ? "Learn More" : "Coming Soon"}
+                            Learn More
                           </Button>
                         </Link>
                       </CardContent>
