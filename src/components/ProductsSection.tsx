@@ -2,6 +2,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Lock, Search, Radio } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const ProductsSection = () => {
   const products = [
@@ -9,25 +11,29 @@ const ProductsSection = () => {
       title: "SeekCAP",
       description: "Industrial network visibility and packet analysis without SPAN ports.",
       icon: <Search className="h-8 w-8 text-primary" />,
-      borderColor: "border-primary"
+      borderColor: "border-primary",
+      link: "/seekcap"
     },
     {
       title: "DDX",
       description: "Cyber supply chain forensic inspection for embedded threats and exploits.",
       icon: <Shield className="h-8 w-8 text-primary" />,
-      borderColor: "border-primary"
+      borderColor: "border-primary",
+      link: "#"
     },
     {
       title: "Paraguard",
       description: "AI security detection & response for AI Edge and Hyperscale environments.",
       icon: <Lock className="h-8 w-8 text-primary" />,
-      borderColor: "border-primary"
+      borderColor: "border-primary",
+      link: "#"
     },
     {
       title: "The Listening Post",
       description: "Real-time passive monitoring of communications and RF traffic.",
       icon: <Radio className="h-8 w-8 text-primary" />,
-      borderColor: "border-primary"
+      borderColor: "border-primary",
+      link: "/secondlook"
     }
   ];
 
@@ -50,7 +56,15 @@ const ProductsSection = () => {
                 <CardTitle>{product.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">{product.description}</p>
+                <p className="text-muted-foreground mb-4">{product.description}</p>
+                <Link to={product.link}>
+                  <Button 
+                    variant={product.link !== "#" ? "default" : "outline"} 
+                    className={product.link !== "#" ? "bg-[#cc0c1a] hover:bg-[#a80916] text-white" : ""}
+                  >
+                    {product.link !== "#" ? "Learn More" : "Coming Soon"}
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}
