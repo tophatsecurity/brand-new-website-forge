@@ -1,24 +1,33 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Lock, Search, Eye } from "lucide-react";
+import { Shield, Lock, Search, Radio } from "lucide-react";
 
 const ServicesSection = () => {
   const services = [
     {
+      title: "SeekCAP",
+      description: "Industrial network visibility and packet analysis without SPAN ports.",
+      icon: <Search className="h-8 w-8 text-primary" />,
+      borderColor: "border-cyan-400"
+    },
+    {
       title: "DDX",
-      description: "Advanced data detection and exfiltration prevention system that protects your organization's sensitive information.",
-      icon: <Shield className="h-8 w-8 text-primary" />
+      description: "Cyber supply chain forensic inspection for embedded threats and exploits.",
+      icon: <Shield className="h-8 w-8 text-primary" />,
+      borderColor: "border-cyan-400"
     },
     {
-      title: "PARAGUARD",
-      description: "Complete network protection solution that identifies and neutralizes threats before they can compromise your systems.",
-      icon: <Lock className="h-8 w-8 text-primary" />
+      title: "Paraguard",
+      description: "AI security detection & response for AI Edge and Hyperscale environments.",
+      icon: <Lock className="h-8 w-8 text-primary" />,
+      borderColor: "border-cyan-400"
     },
     {
-      title: "SEEKCAP",
-      description: "Intelligent threat hunting and vulnerability assessment platform that proactively discovers security weaknesses.",
-      icon: <Search className="h-8 w-8 text-primary" />
+      title: "The Listening Post",
+      description: "Real-time passive monitoring of communications and RF traffic.",
+      icon: <Radio className="h-8 w-8 text-primary" />,
+      borderColor: "border-cyan-400"
     }
   ];
 
@@ -26,25 +35,31 @@ const ServicesSection = () => {
     <section id="services" className="section-padding">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16 animate-slide-up opacity-0">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Products</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">The Solution</h2>
           <div className="w-20 h-1 bg-accent mx-auto mb-6"></div>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Cutting-edge cybersecurity solutions designed to protect your business from evolving digital threats.
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {services.map((service, index) => (
-            <Card key={index} className="service-card border-t-4 border-t-primary transition-all duration-300 animate-slide-up opacity-0" style={{ animationDelay: `${index * 100 + 200}ms` }}>
+            <Card key={index} className={`service-card transition-all duration-300 animate-slide-up opacity-0 border-t-0 border-l-4 ${service.borderColor} bg-gray-900 text-white`} style={{ animationDelay: `${index * 100 + 200}ms` }}>
               <CardHeader className="pb-2">
                 <div className="mb-4">{service.icon}</div>
                 <CardTitle>{service.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">{service.description}</p>
+                <p className="text-gray-300">{service.description}</p>
               </CardContent>
             </Card>
           ))}
+        </div>
+        
+        <div className="text-center mt-12 animate-slide-up opacity-0" style={{ animationDelay: "600ms" }}>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            Each platform is modular, field-tested, and tailored to OT, defense, and AI environments.
+          </p>
         </div>
       </div>
     </section>
