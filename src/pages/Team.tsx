@@ -44,6 +44,13 @@ const Team = () => {
       bio: 'Nationally recognized expert in defense technology, space and sigint and AI risk.',
       initials: 'MK',
       image: '/lovable-uploads/8481a3e3-ebb5-459a-8315-279d932658d9.png'
+    },
+    {
+      name: 'David Simons',
+      position: 'Chief Technology Officer',
+      bio: 'Expert in developing innovative cybersecurity solutions for enterprise environments.',
+      initials: 'DS',
+      image: '/lovable-uploads/0fa84d22-afd7-42fb-9bf1-568130c9ee74.png'
     }
   ];
 
