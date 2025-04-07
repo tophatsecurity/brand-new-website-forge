@@ -42,8 +42,8 @@ const ServicesSection = () => {
       borderColor: "border-cyan-400"
     },
     {
-      title: "CMMC, CIP, NERC Regulation Management",
-      description: "Comprehensive compliance management for critical infrastructure and government regulations including CMMC, CIP, and NERC standards.",
+      title: "CMMC, NERC-CIP Regulation Management",
+      description: "Comprehensive compliance management for critical infrastructure and government regulations including CMMC and NERC-CIP standards.",
       icon: <FileCheck className="h-8 w-8 text-primary" />,
       borderColor: "border-cyan-400"
     }
