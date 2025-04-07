@@ -43,7 +43,7 @@ const Navbar = () => {
         <div className="flex items-center">
           <Link to="/" className="flex items-center">
             <img 
-              src="/public/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
+              src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
               alt="TopHat Security Logo" 
               className="h-14 md:h-16 mr-3"
             />
