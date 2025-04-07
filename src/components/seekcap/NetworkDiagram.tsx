@@ -7,11 +7,6 @@ const NetworkDiagram = () => {
 
   const screenshots = [
     {
-      src: "/public/lovable-uploads/1428d007-5f52-4f4a-bd6a-d65352b9db3d.png",
-      alt: "SEEKCAP Network Diagram",
-      caption: "SEEKCAP network visibility solution in action"
-    },
-    {
       src: "/public/lovable-uploads/fd6bff11-0891-4c38-b338-c5206949e416.png",
       alt: "SEEKCAP Settings Interface",
       caption: "Configure resource limits and safety settings"
