@@ -14,6 +14,7 @@ import DDXUseCases from "./pages/DDXUseCases";
 import ParaGuard from "./pages/ParaGuard";
 import SecondLook from "./pages/SecondLook";
 import Careers from "./pages/Careers";
+import Team from "./pages/Team";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/paraguard" element={<ParaGuard />} />
           <Route path="/secondlook" element={<SecondLook />} />
           <Route path="/careers" element={<Careers />} />
+          <Route path="/team" element={<Team />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
