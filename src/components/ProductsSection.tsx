@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Lock, Search, Radio, ChevronLeft, ChevronRight, Server, Database } from "lucide-react";
@@ -15,6 +16,7 @@ const ProductsSection = () => {
   const productCategories = [
     {
       category: "AI Security",
+      id: "ai-security",
       products: [
         {
           title: "Paraguard",
@@ -28,6 +30,7 @@ const ProductsSection = () => {
     },
     {
       category: "Supply Chain Security",
+      id: "supply-chain-security",
       products: [
         {
           title: "DDX",
@@ -49,6 +52,7 @@ const ProductsSection = () => {
     },
     {
       category: "OT/ICS/IT Industrial Asset Management",
+      id: "industrial-asset-management",
       products: [
         {
           title: "SeekCAP",
@@ -78,7 +82,7 @@ const ProductsSection = () => {
         
         {/* Display products by category */}
         {productCategories.map((category, categoryIndex) => (
-          <div key={categoryIndex} className="mb-16">
+          <div key={categoryIndex} className="mb-16" id={category.id}>
             <h3 className="text-2xl font-semibold mb-6 border-l-4 border-primary pl-4">
               {category.category}
             </h3>
