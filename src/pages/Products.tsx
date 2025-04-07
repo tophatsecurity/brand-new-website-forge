@@ -8,7 +8,8 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, FileCheck, Eye } from "lucide-react";
+import { Shield, Eye } from "lucide-react";
+import { Link } from 'react-router-dom';
 
 const Products = () => {
   return (
@@ -48,27 +49,33 @@ const Products = () => {
           </TabsContent>
           
           <TabsContent value="secondlook">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8">
               <Badge variant="outline" className="mb-4 px-3 py-1 text-sm font-medium text-[#cc0c1a] border-[#cc0c1a]">
                 Supply Chain Security
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">SecondLook X</h2>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
                 Comprehensive supply chain security and intelligence solutions
               </p>
+              
+              <div className="flex justify-center">
+                <Link to="/contact">
+                  <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
+                    Request a Demo
+                  </Button>
+                </Link>
+              </div>
             </div>
             
             <div className="flex justify-center mb-16">
-              <div className="relative w-full max-w-lg">
+              <div className="relative w-full max-w-4xl">
                 <div className="absolute inset-0 blur-lg bg-gradient-to-r from-[#cc0c1a]/20 to-[#222]/20 rounded-2xl transform -rotate-6"></div>
                 <div className="relative bg-white rounded-xl overflow-hidden border p-8 shadow-md flex flex-col items-center">
-                  <div className="bg-white p-2 rounded-full mb-6">
-                    <img 
-                      src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
-                      alt="SecondLook Security" 
-                      className="h-40 md:h-48"
-                    />
-                  </div>
+                  <img 
+                    src="/lovable-uploads/1428d007-5f52-4f4a-bd6a-d65352b9db3d.png" 
+                    alt="SecondLook Security Dashboard" 
+                    className="w-full h-auto rounded-lg shadow-md mb-6"
+                  />
                   <h3 className="text-2xl font-bold mb-2">SecondLook X</h3>
                   <p className="text-center text-muted-foreground">
                     Protection against the 65% of attacks that traditional systems miss
@@ -81,27 +88,33 @@ const Products = () => {
           </TabsContent>
           
           <TabsContent value="visibility">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8">
               <Badge variant="outline" className="mb-4 px-3 py-1 text-sm font-medium text-[#cc0c1a] border-[#cc0c1a]">
                 Asset Management Solutions
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">SeekCAP</h2>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
                 Industrial network visibility and complete OT/ICS monitoring solution
               </p>
+              
+              <div className="flex justify-center">
+                <Link to="/contact">
+                  <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
+                    Request a Demo
+                  </Button>
+                </Link>
+              </div>
             </div>
             
             <div className="flex justify-center mb-16">
-              <div className="relative w-full max-w-lg">
+              <div className="relative w-full max-w-4xl">
                 <div className="absolute inset-0 blur-lg bg-gradient-to-r from-[#cc0c1a]/20 to-[#222]/20 rounded-2xl transform -rotate-6"></div>
                 <div className="relative bg-white rounded-xl overflow-hidden border p-8 shadow-md flex flex-col items-center">
-                  <div className="bg-white p-2 rounded-full mb-6">
-                    <img 
-                      src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
-                      alt="SeekCAP Visibility" 
-                      className="h-40 md:h-48"
-                    />
-                  </div>
+                  <img 
+                    src="/lovable-uploads/a511ebb5-eb08-41fb-8517-00b96e1b0576.png" 
+                    alt="SeekCAP Dashboard" 
+                    className="w-full h-auto rounded-lg shadow-md mb-6"
+                  />
                   <h3 className="text-2xl font-bold mb-2">SeekCAP</h3>
                   <p className="text-center text-muted-foreground">
                     Complete network visibility without requiring SPAN ports

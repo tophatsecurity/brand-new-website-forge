@@ -35,7 +35,11 @@ const ParaGuard = () => {
               </div>
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700 flex items-center justify-center">
-                  <Shield className="h-32 w-32 text-primary" />
+                  <img 
+                    src="/lovable-uploads/627629f2-285b-4e9e-91c2-8baf0461d459.png" 
+                    alt="ParaGuard Dashboard" 
+                    className="w-full h-auto rounded-lg"
+                  />
                 </div>
               </div>
             </div>

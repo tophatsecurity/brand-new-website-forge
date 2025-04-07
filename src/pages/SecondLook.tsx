@@ -5,7 +5,9 @@ import Footer from '@/components/Footer';
 import SecondLookSection from '@/components/SecondLookSection';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { FileCheck, Shield } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const SecondLook = () => {
   return (
@@ -13,14 +15,37 @@ const SecondLook = () => {
       <Navbar />
       <div className="pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <Badge variant="outline" className="mb-4 px-3 py-1 text-sm font-medium text-[#cc0c1a] border-[#cc0c1a]">
               Advanced Security Solutions
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">SecondLook Security Platform</h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
               Comprehensive security monitoring and supply chain intelligence
             </p>
+            
+            <div className="flex justify-center">
+              <Link to="/contact">
+                <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
+                  Request a Demo
+                </Button>
+              </Link>
+            </div>
+          </div>
+          
+          <div className="mb-12">
+            <div className="flex justify-center">
+              <div className="relative w-full max-w-4xl">
+                <div className="absolute inset-0 blur-lg bg-gradient-to-r from-[#cc0c1a]/20 to-[#222]/20 rounded-2xl transform -rotate-6"></div>
+                <div className="relative bg-white rounded-xl overflow-hidden border p-8 shadow-md">
+                  <img 
+                    src="/lovable-uploads/1428d007-5f52-4f4a-bd6a-d65352b9db3d.png" 
+                    alt="SecondLook Security Dashboard" 
+                    className="w-full h-auto rounded-lg shadow-md"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           
           <Tabs defaultValue="passive" className="w-full max-w-4xl mx-auto mb-12">
