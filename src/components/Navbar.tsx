@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -29,8 +28,8 @@ const Navbar = () => {
     { name: "Home", href: "/" },
     { name: "Products", href: "/products" },
     { name: "Services", href: "/services" },
-    { name: "About", href: "/#about" },
     { name: "Team", href: "/team" },
+    { name: "About", href: "/#about" },
     { name: "Careers", href: "/careers" },
     { name: "Contact", href: "/contact" }
   ];
