@@ -19,7 +19,7 @@ const ProductsSection = () => {
       description: "Cyber supply chain forensic inspection for embedded threats and exploits.",
       icon: <Shield className="h-8 w-8 text-primary" />,
       borderColor: "border-primary",
-      link: "#"
+      link: "/ddx"
     },
     {
       title: "Paraguard",
