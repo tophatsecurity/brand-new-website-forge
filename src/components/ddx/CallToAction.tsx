@@ -15,6 +15,9 @@ const CallToAction = () => {
       >
         Request a Demo
       </Link>
+      <p className="mt-4 text-sm text-muted-foreground">
+        © 2025 Tophat Security Inc - DDX - www.tophatsecurity.com
+      </p>
     </div>
   );
 };
