@@ -7,19 +7,19 @@ const ProductCategories = () => {
   const categories = [
     {
       title: "AI Security",
-      icon: <Shield className="h-12 w-12 text-[#cc0c1a]" />,
+      icon: <Shield className="h-12 w-12 text-white" />,
       link: "/products#ai-security",
       description: "Advanced protection for AI systems"
     },
     {
       title: "Cyber Supply Chain",
-      icon: <Lock className="h-12 w-12 text-[#cc0c1a]" />,
+      icon: <Lock className="h-12 w-12 text-white" />,
       link: "/products#cyber-supply-chain",
       description: "Secure your entire digital supply chain"
     },
     {
       title: "Asset Management",
-      icon: <Eye className="h-12 w-12 text-[#cc0c1a]" />,
+      icon: <Eye className="h-12 w-12 text-white" />,
       link: "/products#visibility",
       description: "Complete visibility for OT/ICS environments"
     }
@@ -39,9 +39,11 @@ const ProductCategories = () => {
       {/* Main Categories */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         {categories.map((category, index) => (
-          <Link to={category.link} key={index}>
+          <Link to={category.link} key={index} className="block">
             <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow flex flex-col items-center text-center">
-              <div className="mb-4">{category.icon}</div>
+              <div className="mb-4 bg-[#cc0c1a] rounded-full p-4 flex items-center justify-center">
+                {category.icon}
+              </div>
               <h3 className="text-lg font-semibold mb-2">{category.title}</h3>
             </div>
           </Link>
