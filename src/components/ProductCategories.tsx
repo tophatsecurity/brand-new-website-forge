@@ -18,7 +18,7 @@ const ProductCategories = () => {
       description: "Secure your entire digital supply chain"
     },
     {
-      title: "Visibility",
+      title: "Asset Management",
       icon: <Eye className="h-12 w-12 text-[#cc0c1a]" />,
       link: "/products#visibility",
       description: "Complete visibility for OT/ICS environments"

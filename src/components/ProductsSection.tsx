@@ -59,7 +59,7 @@ const ProductsSection = () => {
       ]
     },
     {
-      category: "Visibility",
+      category: "Asset Management",
       id: "visibility",
       products: [
         {

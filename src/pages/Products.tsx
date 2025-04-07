@@ -19,7 +19,7 @@ const Products = () => {
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Security Solutions</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Comprehensive cybersecurity platforms designed for AI Security, Cyber Supply Chain, and Visibility solutions.
+              Comprehensive cybersecurity platforms designed for AI Security, Cyber Supply Chain, and Asset Management solutions.
             </p>
           </div>
           
@@ -39,7 +39,7 @@ const Products = () => {
             </TabsTrigger>
             <TabsTrigger value="visibility" className="flex-1 flex items-center justify-center gap-2">
               <Eye className="h-4 w-4" />
-              <span>Visibility</span>
+              <span>Asset Management</span>
             </TabsTrigger>
           </TabsList>
           
@@ -83,7 +83,7 @@ const Products = () => {
           <TabsContent value="visibility">
             <div className="text-center mb-12">
               <Badge variant="outline" className="mb-4 px-3 py-1 text-sm font-medium text-[#cc0c1a] border-[#cc0c1a]">
-                Visibility Solutions
+                Asset Management Solutions
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">SeekCAP</h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
