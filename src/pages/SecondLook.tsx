@@ -25,11 +25,13 @@ const SecondLook = () => {
             <div className="relative w-full max-w-lg">
               <div className="absolute inset-0 blur-lg bg-gradient-to-r from-[#cc0c1a]/20 to-[#222]/20 rounded-2xl transform -rotate-6"></div>
               <div className="relative bg-white rounded-xl overflow-hidden border p-8 shadow-md flex flex-col items-center">
-                <img 
-                  src="/public/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
-                  alt="SecondLook Security" 
-                  className="h-40 md:h-48 mb-6"
-                />
+                <div className="bg-white p-2 rounded-full mb-6">
+                  <img 
+                    src="/public/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
+                    alt="SecondLook Security" 
+                    className="h-40 md:h-48"
+                  />
+                </div>
                 <h3 className="text-2xl font-bold mb-2">SecondLook X</h3>
                 <p className="text-center text-muted-foreground">
                   Protection against the 65% of attacks that traditional systems miss
