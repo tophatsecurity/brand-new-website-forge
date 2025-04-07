@@ -1,9 +1,20 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Badge } from '@/components/ui/badge';
-import { Shield, Server, Zap, Database, Network, Lock, AlertCircle, Activity } from "lucide-react";
+import { 
+  Shield, 
+  Server, 
+  Zap, 
+  Database, 
+  Network, 
+  Lock, 
+  AlertCircle, 
+  Activity, 
+  Eye, 
+  Laptop, 
+  HardDrive 
+} from "lucide-react";
 
 const SeekCap = () => {
   const keyFeatures = [
@@ -113,6 +124,88 @@ const SeekCap = () => {
     }
   ];
 
+  const benefits = [
+    {
+      title: "Military-Grade Security",
+      description: "Proven in real-world military deployments",
+      icon: <Shield className="h-6 w-6 text-[#cc0c1a]" />
+    },
+    {
+      title: "Complete Visibility",
+      description: "Ensures full network visibility without hardware taps",
+      icon: <Eye className="h-6 w-6 text-[#cc0c1a]" />
+    },
+    {
+      title: "Industrial Protocol Support",
+      description: "Supports critical SCADA & ICS protocols for industrial cybersecurity",
+      icon: <Server className="h-6 w-6 text-[#cc0c1a]" />
+    },
+    {
+      title: "Vendor Flexibility",
+      description: "Works with multiple switch vendors (Cisco, Ubiquiti, expandable to others)",
+      icon: <Network className="h-6 w-6 text-[#cc0c1a]" />
+    }
+  ];
+
+  const useCases = [
+    {
+      title: "Military & Government",
+      description: "Actively deployed and used for classified network security operations.",
+      icon: <Shield className="h-6 w-6 text-[#cc0c1a]" />
+    },
+    {
+      title: "Enterprise IT & MSSPs",
+      description: "Gain deep network visibility without reconfiguring switches.",
+      icon: <Server className="h-6 w-6 text-[#cc0c1a]" />
+    },
+    {
+      title: "Industrial & SCADA Security",
+      description: "Monitor and protect critical infrastructure from cyber threats.",
+      icon: <Lock className="h-6 w-6 text-[#cc0c1a]" />
+    },
+    {
+      title: "ICS & IIoT Monitoring",
+      description: "Identify anomalies in industrial networks using SCADA protocol decoding.",
+      icon: <Activity className="h-6 w-6 text-[#cc0c1a]" />
+    },
+    {
+      title: "Threat Hunting & Forensics",
+      description: "Capture and correlate network packets for security investigations.",
+      icon: <AlertCircle className="h-6 w-6 text-[#cc0c1a]" />
+    }
+  ];
+
+  const deploymentOptions = [
+    {
+      title: "On-Premise Virtual Machine (VM) Deployment on VSX",
+      icon: <HardDrive className="h-6 w-6 text-[#cc0c1a]" />,
+      features: [
+        "SeekCap can be installed as a virtual machine (VM) within an on-premise VSX environment.",
+        "This setup provides full control over security, data privacy, and system configurations.",
+        "Ideal for organizations requiring a high degree of customization and integration with existing infrastructure.",
+        "Supports scalable deployment, allowing multiple instances to run within the VSX framework."
+      ]
+    },
+    {
+      title: "Client-Server Deployment Within Customer's Environment",
+      icon: <Server className="h-6 w-6 text-[#cc0c1a]" />,
+      features: [
+        "SeekCap can be set up in a client-server model where the server component is hosted within the customer's infrastructure.",
+        "Ensures compliance with internal security policies by keeping data within the customer's controlled environment.",
+        "Supports integration with enterprise authentication and network security protocols."
+      ]
+    },
+    {
+      title: "Hardened Laptop Deployment for Specialized Use Cases",
+      icon: <Laptop className="h-6 w-6 text-[#cc0c1a]" />,
+      features: [
+        "SeekCap can be pre-installed on a hardened laptop for field operations.",
+        "Designed for forensic investigations, asset inventory management, and risk assessment planning.",
+        "Allows investigators and security professionals to operate in remote or restricted environments with minimal infrastructure dependency."
+      ]
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
@@ -128,7 +221,6 @@ const SeekCap = () => {
             </p>
           </div>
 
-          {/* Hero Section with Logo */}
           <div className="flex flex-col md:flex-row gap-8 mb-16 items-center">
             <div className="md:w-1/2">
               <img 
@@ -151,7 +243,42 @@ const SeekCap = () => {
             </div>
           </div>
 
-          {/* SCADA & Industrial Protocol Support Section */}
+          <div className="mb-16">
+            <h2 className="text-2xl font-bold mb-8 text-center">SEEKCAP: Benefits</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+              {benefits.map((benefit, index) => (
+                <div key={index} className="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#cc0c1a] hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-center mb-4">
+                    {benefit.icon}
+                    <h3 className="ml-3 text-lg font-semibold">{benefit.title}</h3>
+                  </div>
+                  <p className="text-muted-foreground">{benefit.description}</p>
+                </div>
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {useCases.map((useCase, index) => (
+                <div key={index} className="bg-gray-50 p-6 rounded-lg border-l-4 border-[#cc0c1a]">
+                  <div className="flex items-center mb-4">
+                    {useCase.icon}
+                    <h3 className="ml-3 font-semibold">{useCase.title}</h3>
+                  </div>
+                  <p className="text-sm text-gray-700">{useCase.description}</p>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-8 text-center">
+              <img 
+                src="/public/lovable-uploads/1a1af815-c4d8-4494-8f82-c9fc8332de87.png" 
+                alt="SEEKCAP Benefits" 
+                className="mx-auto rounded-lg shadow-md max-w-full"
+              />
+            </div>
+          </div>
+
           <div className="mb-16 bg-white p-8 rounded-lg shadow-md">
             <h2 className="text-2xl font-bold mb-6 text-center">SEEKCAP: SCADA & Industrial Protocol Support</h2>
             <p className="mb-6 text-lg">
@@ -201,7 +328,6 @@ const SeekCap = () => {
             </div>
           </div>
 
-          {/* Key Features Section */}
           <div className="mb-16">
             <h2 className="text-2xl font-bold mb-8 text-center">Key Features</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -217,32 +343,41 @@ const SeekCap = () => {
             </div>
           </div>
 
-          {/* Deployment Options Section */}
-          <div className="bg-[#f3f3f3] p-8 rounded-xl">
-            <h2 className="text-2xl font-bold mb-6">Deployment Options for SeekCap</h2>
-            <p className="mb-6">
-              SeekCap can be deployed in multiple ways to suit different operational needs, including:
+          <div className="bg-[#f3f3f3] p-8 rounded-xl mb-16">
+            <h2 className="text-2xl font-bold mb-6 text-center">Deployment Options</h2>
+            <p className="mb-6 text-center max-w-3xl mx-auto">
+              SEEKCAP offers flexible deployment models to meet various operational requirements and security constraints.
             </p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>On-premise installations</li>
-              <li>Client-server architectures</li>
-              <li>Standalone hardened laptop deployments</li>
-            </ul>
             
-            {/* Visual - Network Diagram */}
-            <div className="mt-8">
-              <img 
-                src="/public/lovable-uploads/1428d007-5f52-4f4a-bd6a-d65352b9db3d.png" 
-                alt="Network Diagram" 
-                className="mx-auto rounded-lg shadow-md max-w-full lg:max-w-[700px]"
-              />
-              <p className="text-center text-sm text-muted-foreground mt-3">
-                SEEKCAP network visibility solution in action
-              </p>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+              {deploymentOptions.map((option, index) => (
+                <div key={index} className="bg-white p-6 rounded-lg shadow-md">
+                  <div className="flex items-center mb-4">
+                    {option.icon}
+                    <h3 className="ml-3 text-lg font-semibold">{option.title}</h3>
+                  </div>
+                  <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
+                    {option.features.map((feature, idx) => (
+                      <li key={idx}>{feature}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* CTA Section */}
+          <div className="bg-[#f3f3f3] p-8 rounded-xl">
+            <h2 className="text-2xl font-bold mb-6">Network Diagram</h2>
+            <img 
+              src="/public/lovable-uploads/1428d007-5f52-4f4a-bd6a-d65352b9db3d.png" 
+              alt="Network Diagram" 
+              className="mx-auto rounded-lg shadow-md max-w-full lg:max-w-[700px]"
+            />
+            <p className="text-center text-sm text-muted-foreground mt-3">
+              SEEKCAP network visibility solution in action
+            </p>
+          </div>
+
           <div className="mt-16 text-center">
             <h2 className="text-2xl font-bold mb-4">Ready to enhance your network visibility?</h2>
             <p className="mb-8 text-lg text-muted-foreground max-w-2xl mx-auto">
