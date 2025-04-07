@@ -30,6 +30,11 @@ const HeroSection = () => {
       description: "Organization overview with risk metrics and threat actor geo-location"
     },
     {
+      image: "/lovable-uploads/627629f2-285b-4e9e-91c2-8baf0461d459.png",
+      name: "ParaGuard Security Platform",
+      description: "Resource monitoring with security risk assessment dashboard"
+    },
+    {
       image: "/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png",
       name: "SecondLook X",
       description: "Passive monitoring with automated alerts"
