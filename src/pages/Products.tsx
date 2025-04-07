@@ -14,8 +14,7 @@ const Products = () => {
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Security Solutions</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Cutting-edge cybersecurity platforms designed to protect critical infrastructure,
-              military operations, and enterprise networks from advanced threats.
+              Comprehensive cybersecurity platforms designed for AI Security, Supply Chain Security, and Industrial Asset Management.
             </p>
           </div>
         </div>
