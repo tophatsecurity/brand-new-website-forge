@@ -1,14 +1,14 @@
 
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Shield, Lock, Eye } from "lucide-react";
 
 const AboutSection = () => {
   const keyPoints = [
-    "10+ years of industry experience",
-    "Award-winning team of experts",
-    "Tailored solutions for your business",
-    "Ongoing support and maintenance"
+    "Advanced technical capabilities for underserved areas",
+    "Extensive background in preventing and fixing security problems",
+    "Understanding of foreign actors, hidden threats, and the Dark Web",
+    "Protection against hidden threats in the Supply Chain"
   ];
 
   return (
@@ -30,10 +30,21 @@ const AboutSection = () => {
           
           <div className="lg:w-1/2">
             <div className="animate-slide-up opacity-0" style={{ animationDelay: '100ms' }}>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">About Our Company</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">TOPHAT SECURITY'S PHILOSOPHY</h2>
               <div className="w-20 h-1 bg-accent mb-6"></div>
+              <h3 className="text-lg font-semibold text-accent mb-4">Advanced technology protection</h3>
               <p className="text-lg text-muted-foreground mb-8">
-                AcmeCorp was founded in 2010 with a mission to deliver exceptional digital solutions that help businesses thrive in the modern marketplace. We combine innovative technology with strategic thinking to create impactful results.
+                Tophat was founded six years ago with the desire to develop tools that provide advanced 
+                technical capabilities for areas that have been largely under served.
+              </p>
+              <p className="text-lg text-muted-foreground mb-8">
+                Our extensive background in preventing and fixing security problems has been the cornerstone 
+                for developing security products based on an understanding of foreign actors, hidden threats, 
+                and the presence of the Dark Web.
+              </p>
+              <p className="text-lg text-muted-foreground mb-8">
+                Tophat Security addresses hidden threats from devices in the Supply Chain. We also offer 
+                advanced monitoring based on understanding attack vectors and breaches.
               </p>
               
               <div className="space-y-4 mb-8">
