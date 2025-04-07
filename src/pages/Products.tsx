@@ -1,11 +1,10 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import ProductsSection from '@/components/ProductsSection';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, Eye } from "lucide-react";
 import { Link } from 'react-router-dom';
 
 const Products = () => {
@@ -22,142 +21,9 @@ const Products = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="products" className="max-w-7xl mx-auto px-6">
-          <TabsList className="w-full max-w-md mx-auto mb-8">
-            <TabsTrigger value="products" className="flex-1">All Products</TabsTrigger>
-            <TabsTrigger value="secondlook" className="flex-1 flex items-center justify-center gap-2">
-              <Shield className="h-4 w-4" />
-              <span>Supply Chain</span>
-            </TabsTrigger>
-            <TabsTrigger value="visibility" className="flex-1 flex items-center justify-center gap-2">
-              <Eye className="h-4 w-4" />
-              <span>Asset Management</span>
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="products">
-            <ProductsSection />
-          </TabsContent>
-          
-          <TabsContent value="secondlook">
-            <div className="text-center mb-8">
-              <Badge variant="outline" className="mb-4 px-3 py-1 text-sm font-medium text-[#cc0c1a] border-[#cc0c1a]">
-                Supply Chain Security
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">SecondLook X</h2>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
-                Comprehensive supply chain security and intelligence solutions
-              </p>
-              
-              <div className="flex justify-center">
-                <Link to="/contact">
-                  <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
-                    Request a Demo
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            
-            <div className="flex justify-center mb-16">
-              <div className="relative w-full max-w-4xl">
-                <div className="absolute inset-0 blur-lg bg-gradient-to-r from-[#cc0c1a]/20 to-[#222]/20 rounded-2xl transform -rotate-6"></div>
-                <div className="relative bg-white rounded-xl overflow-hidden border p-8 shadow-md flex flex-col items-center">
-                  <img 
-                    src="/lovable-uploads/1428d007-5f52-4f4a-bd6a-d65352b9db3d.png" 
-                    alt="SecondLook Security Dashboard" 
-                    className="w-full h-auto rounded-lg shadow-md mb-6"
-                  />
-                  <h3 className="text-2xl font-bold mb-2">SecondLook X</h3>
-                  <p className="text-center text-muted-foreground">
-                    Protection against the 65% of attacks that traditional systems miss
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="text-center mb-16">
-              <h3 className="text-2xl font-bold mb-4">Supply Chain Security Products</h3>
-              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <Link to="/secondlook" className="block">
-                  <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#cc0c1a] hover:shadow-lg transition-all">
-                    <h4 className="text-xl font-bold mb-2">SecondLook Platform</h4>
-                    <p className="text-muted-foreground">
-                      Comprehensive security monitoring and supply chain intelligence
-                    </p>
-                  </div>
-                </Link>
-                <Link to="/ddx" className="block">
-                  <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#cc0c1a] hover:shadow-lg transition-all">
-                    <h4 className="text-xl font-bold mb-2">DDX</h4>
-                    <p className="text-muted-foreground">
-                      Cyber supply chain forensic inspection platform
-                    </p>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="visibility">
-            <div className="text-center mb-8">
-              <Badge variant="outline" className="mb-4 px-3 py-1 text-sm font-medium text-[#cc0c1a] border-[#cc0c1a]">
-                Asset Management Solutions
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">SeekCAP</h2>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
-                Industrial network visibility and complete OT/ICS monitoring solution
-              </p>
-              
-              <div className="flex justify-center">
-                <Link to="/contact">
-                  <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
-                    Request a Demo
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            
-            <div className="flex justify-center mb-16">
-              <div className="relative w-full max-w-4xl">
-                <div className="absolute inset-0 blur-lg bg-gradient-to-r from-[#cc0c1a]/20 to-[#222]/20 rounded-2xl transform -rotate-6"></div>
-                <div className="relative bg-white rounded-xl overflow-hidden border p-8 shadow-md flex flex-col items-center">
-                  <img 
-                    src="/lovable-uploads/a511ebb5-eb08-41fb-8517-00b96e1b0576.png" 
-                    alt="SeekCAP Dashboard" 
-                    className="w-full h-auto rounded-lg shadow-md mb-6"
-                  />
-                  <h3 className="text-2xl font-bold mb-2">SeekCAP</h3>
-                  <p className="text-center text-muted-foreground">
-                    Complete network visibility without requiring SPAN ports
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-              <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#cc0c1a]">
-                <h3 className="text-xl font-bold mb-3">Industrial Visibility</h3>
-                <p className="text-muted-foreground">
-                  Gain complete visibility into your OT/ICS networks without invasive configuration changes to your infrastructure.
-                </p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#cc0c1a]">
-                <h3 className="text-xl font-bold mb-3">Protocol Analysis</h3>
-                <p className="text-muted-foreground">
-                  Deep packet inspection with support for industrial protocols allows for comprehensive security monitoring.
-                </p>
-              </div>
-            </div>
-            
-            <div className="text-center mb-8">
-              <Link to="/seekcap" className="inline-block">
-                <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
-                  Learn More About SeekCAP
-                </Button>
-              </Link>
-            </div>
-          </TabsContent>
-        </Tabs>
+        <div className="max-w-7xl mx-auto px-6">
+          <ProductsSection />
+        </div>
         
         <div className="text-center py-16 bg-[#f3f3f3] mt-8">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">Need a Customized Security Solution?</h2>
