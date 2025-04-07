@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Menu, X, Shield, Lock } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,11 +26,12 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "Home", href: "#" },
-    { name: "About", href: "#about" },
-    { name: "Services", href: "#services" },
-    { name: "Testimonials", href: "#testimonials" },
-    { name: "Contact", href: "#contact" }
+    { name: "Home", href: "/" },
+    { name: "About", href: "/#about" },
+    { name: "Services", href: "/#services" },
+    { name: "Products", href: "/products" },
+    { name: "Testimonials", href: "/#testimonials" },
+    { name: "Contact", href: "/#contact" }
   ];
 
   return (
@@ -39,7 +41,7 @@ const Navbar = () => {
     )}>
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <a href="#" className="flex items-center">
+          <Link to="/" className="flex items-center">
             <img 
               src="/public/lovable-uploads/3d8e6f15-58c0-462a-854f-0f4cacfa0fb5.png" 
               alt="TopHat Security Logo" 
@@ -49,19 +51,29 @@ const Navbar = () => {
               <span className="block text-2xl font-bold text-[#222]">TOPHAT</span>
               <span className="block text-lg font-bold text-[#cc0c1a]">SECURITY</span>
             </div>
-          </a>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
-            <a 
-              key={link.name} 
-              href={link.href} 
-              className="text-foreground hover:text-[#cc0c1a] transition-colors duration-200"
-            >
-              {link.name}
-            </a>
+            link.href.startsWith('/') && !link.href.includes('#') ? (
+              <Link 
+                key={link.name} 
+                to={link.href} 
+                className="text-foreground hover:text-[#cc0c1a] transition-colors duration-200"
+              >
+                {link.name}
+              </Link>
+            ) : (
+              <a 
+                key={link.name} 
+                href={link.href} 
+                className="text-foreground hover:text-[#cc0c1a] transition-colors duration-200"
+              >
+                {link.name}
+              </a>
+            )
           ))}
           <Button variant="default" className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
             Free Consultation
@@ -88,14 +100,25 @@ const Navbar = () => {
       )}>
         <div className="flex flex-col space-y-4 px-6">
           {navLinks.map((link) => (
-            <a 
-              key={link.name} 
-              href={link.href} 
-              className="text-foreground hover:text-[#cc0c1a] py-2"
-              onClick={() => setIsOpen(false)}
-            >
-              {link.name}
-            </a>
+            link.href.startsWith('/') && !link.href.includes('#') ? (
+              <Link 
+                key={link.name} 
+                to={link.href} 
+                className="text-foreground hover:text-[#cc0c1a] py-2"
+                onClick={() => setIsOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ) : (
+              <a 
+                key={link.name} 
+                href={link.href} 
+                className="text-foreground hover:text-[#cc0c1a] py-2"
+                onClick={() => setIsOpen(false)}
+              >
+                {link.name}
+              </a>
+            )
           ))}
           <Button variant="default" className="bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full">
             Free Consultation
