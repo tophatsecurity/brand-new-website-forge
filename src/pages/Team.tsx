@@ -3,7 +3,7 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Linkedin } from 'lucide-react';
@@ -14,31 +14,36 @@ const Team = () => {
       name: 'Matt Caldwell',
       position: 'CEO & Founder',
       bio: 'Veteran builder in cybersecurity, leading TopHat\'s mission.',
-      initials: 'MC'
+      initials: 'MC',
+      image: '/lovable-uploads/f1760b5d-4433-47bc-9d27-f32a29604863.png'
     },
     {
       name: 'Joe Cardin',
       position: 'Chief Strategy Officer',
       bio: 'Cybersecurity GTM expert focused on executive messaging.',
-      initials: 'JC'
+      initials: 'JC',
+      image: '/lovable-uploads/eadb63aa-1b11-404e-b624-0f0241d22574.png'
     },
     {
       name: 'Rich Mason',
       position: 'CISO (Ex-CISO, Honeywell)',
       bio: 'Industry legend in ICS/OT security.',
-      initials: 'RM'
+      initials: 'RM',
+      image: '/lovable-uploads/be1494fe-58a8-4df1-aa77-293b5cfce159.png'
     },
     {
       name: 'Gerry D\'Agostino',
       position: 'CRO',
       bio: 'Connects TopHat to Partners, DoD, IC, and critical infrastructure agencies.',
-      initials: 'GD'
+      initials: 'GD',
+      image: '/lovable-uploads/ddfcd1d0-8eb9-4ae5-a740-5d1200050e8f.png'
     },
     {
       name: 'Mike Klipstein PHD',
       position: 'Advisor',
       bio: 'Nationally recognized expert in defense technology, space and sigint and AI risk.',
-      initials: 'MK'
+      initials: 'MK',
+      image: '/lovable-uploads/8481a3e3-ebb5-459a-8315-279d932658d9.png'
     }
   ];
 
@@ -59,7 +64,8 @@ const Team = () => {
               <Card key={founder.name} className="overflow-hidden border-none shadow-md hover:shadow-lg transition-shadow duration-300">
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center text-center">
-                    <Avatar className="h-28 w-28 mb-4 bg-[#cc0c1a]">
+                    <Avatar className="h-28 w-28 mb-4 bg-[#cc0c1a] overflow-hidden">
+                      <AvatarImage src={founder.image} alt={founder.name} className="object-cover" />
                       <AvatarFallback className="text-white text-xl font-semibold">
                         {founder.initials}
                       </AvatarFallback>
