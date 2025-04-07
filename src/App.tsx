@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
+import About from "./pages/About";
 import SeekCap from "./pages/SeekCap";
 import DDX from "./pages/DDX";
 import DDXUseCases from "./pages/DDXUseCases";
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/products" element={<Products />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/seekcap" element={<SeekCap />} />
           <Route path="/ddx" element={<DDX />} />
