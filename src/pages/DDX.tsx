@@ -12,6 +12,9 @@ import FrameworkCompliance from '@/components/ddx/FrameworkCompliance';
 import FAQ from '@/components/ddx/FAQ';
 import AnalysisTable from '@/components/ddx/AnalysisTable';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const DDX = () => {
   return (
@@ -21,6 +24,14 @@ const DDX = () => {
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
           <NetworkDiagram />
           <Overview />
+          <div className="text-center my-8">
+            <Link to="/ddx/use-cases">
+              <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
+                <FileText className="mr-2 h-4 w-4" />
+                View Real-World Use Cases
+              </Button>
+            </Link>
+          </div>
           <ComprehensiveCoverage />
           <KeyFeatures />
           <AnalysisTable />

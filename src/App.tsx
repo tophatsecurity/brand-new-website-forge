@@ -10,6 +10,7 @@ import Contact from "./pages/Contact";
 import SecondLook from "./pages/SecondLook";
 import SeekCap from "./pages/SeekCap";
 import DDX from "./pages/DDX";
+import DDXUseCases from "./pages/DDXUseCases";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/secondlook" element={<SecondLook />} />
           <Route path="/seekcap" element={<SeekCap />} />
           <Route path="/ddx" element={<DDX />} />
+          <Route path="/ddx/use-cases" element={<DDXUseCases />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
