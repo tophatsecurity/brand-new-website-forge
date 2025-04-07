@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Shield, Layers, Clock, Search } from "lucide-react";
+import { FileText, Shield, Layers, Clock, Search, Cpu, Wifi } from "lucide-react";
 
 const ServicesSection = () => {
   const services = [
@@ -15,6 +15,12 @@ const ServicesSection = () => {
       title: "Device Assessment",
       description: "Thorough evaluation of hardware and software components to identify vulnerabilities and security risks.",
       icon: <Search className="h-8 w-8 text-primary" />,
+      borderColor: "border-cyan-400"
+    },
+    {
+      title: "IV&V of Device from Hardware, Firmware, Software, Network, RF",
+      description: "Independent Verification and Validation across all device components ensuring comprehensive security assessment.",
+      icon: <Cpu className="h-8 w-8 text-primary" />,
       borderColor: "border-cyan-400"
     },
     {
