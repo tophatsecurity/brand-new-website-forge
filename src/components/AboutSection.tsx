@@ -17,8 +17,8 @@ const AboutSection = () => {
         <div className="flex flex-col lg:flex-row items-center gap-12">
           <div className="lg:w-1/2">
             <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-accent/20 rounded-lg opacity-70 blur-lg"></div>
-              <div className="relative bg-white rounded-lg overflow-hidden shadow-xl">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-primary/20 rounded-lg opacity-70 blur-lg"></div>
+              <div className="relative bg-background rounded-lg overflow-hidden shadow-xl">
                 <img 
                   src="https://images.unsplash.com/photo-1519389950473-47ba0277781c" 
                   alt="Our team collaborating" 
@@ -31,8 +31,8 @@ const AboutSection = () => {
           <div className="lg:w-1/2">
             <div className="animate-slide-up opacity-0" style={{ animationDelay: '100ms' }}>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">TOPHAT SECURITY'S PHILOSOPHY</h2>
-              <div className="w-20 h-1 bg-accent mb-6"></div>
-              <h3 className="text-lg font-semibold text-accent mb-4">Advanced technology protection</h3>
+              <div className="w-20 h-1 bg-primary mb-6"></div>
+              <h3 className="text-lg font-semibold text-primary mb-4">Advanced technology protection</h3>
               <p className="text-lg text-muted-foreground mb-8">
                 Tophat was founded six years ago with the desire to develop tools that provide advanced 
                 technical capabilities for areas that have been largely under served.
@@ -50,7 +50,7 @@ const AboutSection = () => {
               <div className="space-y-4 mb-8">
                 {keyPoints.map((point, index) => (
                   <div key={index} className="flex items-start">
-                    <CheckCircle className="h-6 w-6 text-accent mr-3 flex-shrink-0" />
+                    <CheckCircle className="h-6 w-6 text-primary mr-3 flex-shrink-0" />
                     <p className="text-foreground">{point}</p>
                   </div>
                 ))}

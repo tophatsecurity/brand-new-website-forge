@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 
 const Products = () => {
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <div className="pt-24">
         <ProductsSection />
