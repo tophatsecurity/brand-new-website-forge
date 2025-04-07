@@ -55,9 +55,9 @@ const NetworkDiagram = () => {
 
   return (
     <div className="bg-[#f3f3f3] p-8 rounded-xl mb-16">
-      <h2 className="text-2xl font-bold mb-6 text-center">SEEKCAP Interface</h2>
-      <p className="text-center mb-8 max-w-3xl mx-auto">
-        Experience the powerful interface of SEEKCAP with its intuitive dashboards, comprehensive network topology mapping, performance monitoring, and advanced settings.
+      <h1 className="text-4xl md:text-5xl font-bold mb-6 text-center">SEEKCAP</h1>
+      <p className="text-center mb-8 max-w-3xl mx-auto text-lg">
+        Advanced OT Visibility & Packet Analysis Solution - Experience the powerful interface of SEEKCAP with its intuitive dashboards, comprehensive network topology mapping, and advanced monitoring capabilities.
       </p>
 
       <div className="relative max-w-4xl mx-auto">
@@ -116,12 +116,6 @@ const NetworkDiagram = () => {
             />
           ))}
         </div>
-      </div>
-      
-      <div className="text-center mt-6">
-        <p className="text-sm text-muted-foreground">
-          Screenshots of the SEEKCAP interface showing various features and capabilities
-        </p>
       </div>
     </div>
   );
