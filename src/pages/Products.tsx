@@ -2,6 +2,7 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import ProductsSection from '@/components/ProductsSection';
+import ProductCategories from '@/components/ProductCategories';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -11,16 +12,22 @@ const Products = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <div className="pt-24">
-        <div className="max-w-7xl mx-auto px-6 py-12 md:py-16">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Security Solutions</h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Comprehensive cybersecurity platforms designed for AI Security, Cyber Supply Chain, and Asset Management solutions.
-            </p>
+        <div className="bg-gradient-to-r from-gray-100 to-white py-16">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">Our Security Solutions</h1>
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                Comprehensive cybersecurity platforms designed for AI Security, Cyber Supply Chain, and Asset Management solutions.
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="bg-white">
+          <ProductCategories />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 py-12">
           <ProductsSection />
         </div>
         
@@ -30,7 +37,7 @@ const Products = () => {
             Our experts can help you identify the right security tools for your specific needs.
           </p>
           <Link to="/contact">
-            <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8 py-2">
+            <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8 py-2 text-lg">
               Contact Our Team
             </Button>
           </Link>
