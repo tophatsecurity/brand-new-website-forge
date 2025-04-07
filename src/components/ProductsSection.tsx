@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Lock, Search, Radio, Server, Database, FileCheck, Eye } from "lucide-react";
@@ -61,20 +60,6 @@ const ProductsSection = () => {
           icon: <Eye className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/seekcap"
-        }
-      ]
-    },
-    {
-      category: "Security Services",
-      id: "security-services",
-      products: [
-        {
-          title: "Product Security Perpetual Evaluation",
-          description: "Continuous security assessment and monitoring for evolving threat landscapes.",
-          longDescription: "Our Product Security Perpetual Evaluation service provides ongoing assessment and monitoring to protect your organization against evolving cyber threats and vulnerabilities.",
-          icon: <Search className="h-8 w-8 text-primary" />,
-          borderColor: "border-primary",
-          link: "/security-perpetual"
         }
       ]
     }

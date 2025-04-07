@@ -12,7 +12,6 @@ import DDX from "./pages/DDX";
 import DDXUseCases from "./pages/DDXUseCases";
 import ParaGuard from "./pages/ParaGuard";
 import SecondLook from "./pages/SecondLook";
-import SecurityPerpetual from "./pages/SecurityPerpetual";
 import Careers from "./pages/Careers";
 import NotFound from "./pages/NotFound";
 
@@ -33,7 +32,6 @@ const App = () => (
           <Route path="/ddx/use-cases" element={<DDXUseCases />} />
           <Route path="/paraguard" element={<ParaGuard />} />
           <Route path="/secondlook" element={<SecondLook />} />
-          <Route path="/security-perpetual" element={<SecurityPerpetual />} />
           <Route path="/careers" element={<Careers />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
