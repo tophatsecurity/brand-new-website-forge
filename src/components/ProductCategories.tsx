@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Shield, Lock, Database } from "lucide-react";
+import { Shield, Lock, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const ProductCategories = () => {
@@ -12,15 +12,15 @@ const ProductCategories = () => {
       description: "Advanced protection for AI systems"
     },
     {
-      title: "Supply Chain Security",
+      title: "Cyber Supply Chain",
       icon: <Lock className="h-12 w-12 text-[#cc0c1a]" />,
-      link: "/products#supply-chain-security",
+      link: "/products#cyber-supply-chain",
       description: "Secure your entire digital supply chain"
     },
     {
-      title: "Industrial Asset Management",
-      icon: <Database className="h-12 w-12 text-[#cc0c1a]" />,
-      link: "/products#industrial-asset-management",
+      title: "Visibility",
+      icon: <Eye className="h-12 w-12 text-[#cc0c1a]" />,
+      link: "/products#visibility",
       description: "Complete visibility for OT/ICS environments"
     }
   ];

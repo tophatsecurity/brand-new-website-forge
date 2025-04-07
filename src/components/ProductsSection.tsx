@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Lock, Search, Radio, ChevronLeft, ChevronRight, Server, Database, FileCheck } from "lucide-react";
+import { Shield, Lock, Search, Radio, ChevronLeft, ChevronRight, Server, Database, FileCheck, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,8 +29,8 @@ const ProductsSection = () => {
       ]
     },
     {
-      category: "Supply Chain Security",
-      id: "supply-chain-security",
+      category: "Cyber Supply Chain",
+      id: "cyber-supply-chain",
       products: [
         {
           title: "DDX",
@@ -59,14 +59,14 @@ const ProductsSection = () => {
       ]
     },
     {
-      category: "OT/ICS/IT Industrial Asset Management",
-      id: "industrial-asset-management",
+      category: "Visibility",
+      id: "visibility",
       products: [
         {
           title: "SeekCAP",
           description: "Industrial network visibility and packet analysis without SPAN ports.",
           longDescription: "SeekCAP provides comprehensive industrial network visibility and detailed packet analysis without requiring SPAN ports. It enables security teams to monitor OT networks with minimal infrastructure changes.",
-          icon: <Search className="h-8 w-8 text-primary" />,
+          icon: <Eye className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/seekcap"
         }

@@ -8,7 +8,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, FileCheck } from "lucide-react";
+import { Shield, FileCheck, Eye } from "lucide-react";
 
 const Products = () => {
   return (
@@ -19,7 +19,7 @@ const Products = () => {
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Security Solutions</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Comprehensive cybersecurity platforms designed for AI Security, Supply Chain Security, and Industrial Asset Management.
+              Comprehensive cybersecurity platforms designed for AI Security, Cyber Supply Chain, and Visibility solutions.
             </p>
           </div>
           
@@ -35,11 +35,11 @@ const Products = () => {
             <TabsTrigger value="products" className="flex-1">All Products</TabsTrigger>
             <TabsTrigger value="secondlook" className="flex-1 flex items-center justify-center gap-2">
               <Shield className="h-4 w-4" />
-              <span>SecondLook X</span>
+              <span>Supply Chain</span>
             </TabsTrigger>
-            <TabsTrigger value="sbom" className="flex-1 flex items-center justify-center gap-2">
-              <FileCheck className="h-4 w-4" />
-              <span>SBOM Platform</span>
+            <TabsTrigger value="visibility" className="flex-1 flex items-center justify-center gap-2">
+              <Eye className="h-4 w-4" />
+              <span>Visibility</span>
             </TabsTrigger>
           </TabsList>
           
@@ -50,11 +50,11 @@ const Products = () => {
           <TabsContent value="secondlook">
             <div className="text-center mb-12">
               <Badge variant="outline" className="mb-4 px-3 py-1 text-sm font-medium text-[#cc0c1a] border-[#cc0c1a]">
-                Advanced Security Solution
+                Supply Chain Security
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">SecondLook X</h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                Passive monitoring with automated alerts for enhanced cybersecurity
+                Comprehensive supply chain security and intelligence solutions
               </p>
             </div>
             
@@ -80,14 +80,14 @@ const Products = () => {
             <SecondLookSection />
           </TabsContent>
           
-          <TabsContent value="sbom">
+          <TabsContent value="visibility">
             <div className="text-center mb-12">
               <Badge variant="outline" className="mb-4 px-3 py-1 text-sm font-medium text-[#cc0c1a] border-[#cc0c1a]">
-                Supply Chain Intelligence
+                Visibility Solutions
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">SecondLook SBOM Platform</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">SeekCAP</h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                Comprehensive bill of materials intelligence for software, hardware, and firmware components
+                Industrial network visibility and complete OT/ICS monitoring solution
               </p>
             </div>
             
@@ -98,19 +98,32 @@ const Products = () => {
                   <div className="bg-white p-2 rounded-full mb-6">
                     <img 
                       src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
-                      alt="SecondLook SBOM Platform" 
+                      alt="SeekCAP Visibility" 
                       className="h-40 md:h-48"
                     />
                   </div>
-                  <h3 className="text-2xl font-bold mb-2">SecondLook SBOM Platform</h3>
+                  <h3 className="text-2xl font-bold mb-2">SeekCAP</h3>
                   <p className="text-center text-muted-foreground">
-                    Complete visibility into your software, hardware, and firmware supply chain
+                    Complete network visibility without requiring SPAN ports
                   </p>
                 </div>
               </div>
             </div>
             
-            <SecondLookSection />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+              <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#cc0c1a]">
+                <h3 className="text-xl font-bold mb-3">Industrial Visibility</h3>
+                <p className="text-muted-foreground">
+                  Gain complete visibility into your OT/ICS networks without invasive configuration changes to your infrastructure.
+                </p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#cc0c1a]">
+                <h3 className="text-xl font-bold mb-3">Protocol Analysis</h3>
+                <p className="text-muted-foreground">
+                  Deep packet inspection with support for industrial protocols allows for comprehensive security monitoring.
+                </p>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
         
