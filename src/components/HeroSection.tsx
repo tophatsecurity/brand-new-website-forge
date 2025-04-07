@@ -11,10 +11,10 @@ const HeroSection = () => {
         <div className="flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2 animate-fade-in">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-              Advanced <span className="text-[#cc0c1a]">cybersecurity</span> for the modern business
+              <span className="text-[#cc0c1a]">AI Security</span> & Cyber Supply Chain Protection
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl">
-              Protecting your digital assets with enterprise-grade security solutions tailored to your organization's unique needs.
+              Safeguarding your AI systems and securing your entire digital supply chain with specialized solutions for today's complex threat landscape.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8 py-6 text-lg">
