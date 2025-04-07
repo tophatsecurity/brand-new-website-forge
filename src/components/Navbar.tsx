@@ -30,7 +30,7 @@ const Navbar = () => {
     { name: "About", href: "/#about" },
     { name: "Services", href: "/#services" },
     { name: "Products", href: "/products" },
-    { name: "Testimonials", href: "/#testimonials" },
+    { name: "SecondLook", href: "/secondlook" },
     { name: "Contact", href: "/#contact" }
   ];
 
@@ -43,9 +43,9 @@ const Navbar = () => {
         <div className="flex items-center">
           <Link to="/" className="flex items-center">
             <img 
-              src="/public/lovable-uploads/3d8e6f15-58c0-462a-854f-0f4cacfa0fb5.png" 
+              src="/public/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
               alt="TopHat Security Logo" 
-              className="h-10 md:h-12 mr-3"
+              className="h-14 md:h-16 mr-3"
             />
             <div>
               <span className="block text-2xl font-bold text-[#222]">TOPHAT</span>
