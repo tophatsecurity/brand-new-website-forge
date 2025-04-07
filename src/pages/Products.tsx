@@ -20,7 +20,7 @@ const Products = () => {
           </div>
         </div>
         <ProductsSection />
-        <div className="text-center py-16 bg-[#f3f3f3]">
+        <div className="text-center py-16 bg-[#f3f3f3] mt-8">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">Need a Customized Security Solution?</h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
             Our experts can help you identify the right security tools for your specific needs.

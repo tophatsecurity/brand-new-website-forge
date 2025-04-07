@@ -1,15 +1,23 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Lock, Search, Radio } from "lucide-react";
+import { Shield, Lock, Search, Radio, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const ProductsSection = () => {
   const products = [
     {
       title: "SeekCAP",
       description: "Industrial network visibility and packet analysis without SPAN ports.",
+      longDescription: "SeekCAP provides comprehensive industrial network visibility and detailed packet analysis without requiring SPAN ports. It enables security teams to monitor OT networks with minimal infrastructure changes.",
       icon: <Search className="h-8 w-8 text-primary" />,
       borderColor: "border-primary",
       link: "/seekcap"
@@ -17,6 +25,7 @@ const ProductsSection = () => {
     {
       title: "DDX",
       description: "Cyber supply chain forensic inspection for embedded threats and exploits.",
+      longDescription: "The DDX platform delivers in-depth cyber supply chain forensic inspection capabilities, detecting embedded threats and exploits in hardware, firmware, and software components before deployment.",
       icon: <Shield className="h-8 w-8 text-primary" />,
       borderColor: "border-primary",
       link: "/ddx"
@@ -24,6 +33,7 @@ const ProductsSection = () => {
     {
       title: "Paraguard",
       description: "AI security detection & response for AI Edge and Hyperscale environments.",
+      longDescription: "Paraguard offers advanced AI-powered security detection and automated response systems specifically designed for AI Edge computing and Hyperscale environments, protecting against emerging threats.",
       icon: <Lock className="h-8 w-8 text-primary" />,
       borderColor: "border-primary",
       link: "#"
@@ -31,6 +41,7 @@ const ProductsSection = () => {
     {
       title: "The Listening Post",
       description: "Real-time passive monitoring of communications and RF traffic.",
+      longDescription: "The Listening Post enables real-time passive monitoring of communications and RF traffic, providing intelligence gathering capabilities without detection in sensitive environments.",
       icon: <Radio className="h-8 w-8 text-primary" />,
       borderColor: "border-primary",
       link: "/secondlook"
@@ -48,7 +59,8 @@ const ProductsSection = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Product cards in grid layout for larger screens */}
+        <div className="hidden md:grid md:grid-cols-2 gap-8">
           {products.map((product, index) => (
             <Card key={index} className={`service-card transition-all duration-300 animate-slide-up opacity-0 border-t-0 border-l-4 ${product.borderColor} bg-background text-foreground`} style={{ animationDelay: `${index * 100 + 200}ms` }}>
               <CardHeader className="pb-2">
@@ -68,6 +80,42 @@ const ProductsSection = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+        
+        {/* Product carousel for mobile and featured display */}
+        <div className="block md:mt-16">
+          <h3 className="text-2xl font-semibold mb-6 text-center">Threat Protection Solutions</h3>
+          <Carousel className="w-full max-w-5xl mx-auto">
+            <CarouselContent>
+              {products.map((product, index) => (
+                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2">
+                  <div className="p-1">
+                    <Card className={`h-full border-t-0 border-l-4 ${product.borderColor} bg-background text-foreground`}>
+                      <CardHeader className="pb-2">
+                        <div className="mb-4">{product.icon}</div>
+                        <CardTitle>{product.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="flex flex-col h-full">
+                        <p className="text-muted-foreground mb-6 flex-grow">{product.longDescription}</p>
+                        <Link to={product.link} className="mt-auto">
+                          <Button 
+                            variant={product.link !== "#" ? "default" : "outline"} 
+                            className={product.link !== "#" ? "bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full" : "w-full"}
+                          >
+                            {product.link !== "#" ? "Learn More" : "Coming Soon"}
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="flex items-center justify-center mt-4">
+              <CarouselPrevious className="static transform-none mx-2" />
+              <CarouselNext className="static transform-none mx-2" />
+            </div>
+          </Carousel>
         </div>
         
         <div className="text-center mt-12 animate-slide-up opacity-0" style={{ animationDelay: "600ms" }}>
