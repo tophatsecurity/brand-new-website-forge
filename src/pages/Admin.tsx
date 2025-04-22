@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -35,7 +34,6 @@ const Admin = () => {
       const { data: { users }, error } = await supabase.auth.admin.listUsers();
       if (error) throw error;
 
-      // Fetch permissions for all users
       const { data: perms } = await supabase
         .from("user_permissions")
         .select("*");
@@ -89,7 +87,7 @@ const Admin = () => {
       const { error } = await supabase.from("user_permissions").insert([{
         user_id: userId,
         permission,
-        granted_by: null, // Auto set to admin? modify as needed
+        granted_by: null,
       }]);
       if (error) throw error;
       toast({ title: `Granted ${permission} permission` });
@@ -176,7 +174,6 @@ const Admin = () => {
                                     </Button>
                                   </Badge>
                                 ))}
-                                {/* Grant missing permissions buttons */}
                                 {permissionTypes
                                   .filter(pt =>
                                     !user.permissions.some(p => p.permission === pt.key)
@@ -184,7 +181,7 @@ const Admin = () => {
                                   .map(pt => (
                                     <Button
                                       key={pt.key}
-                                      size="xs"
+                                      size="sm"
                                       variant="secondary"
                                       className="ml-1"
                                       onClick={() => handleGrantPermission(user.id, pt.key)}

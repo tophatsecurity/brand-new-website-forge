@@ -56,13 +56,15 @@ const Support = () => {
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl font-bold mb-6">Support Center</h1>
           <div className="mb-6 p-4 rounded-lg bg-card shadow">
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search help articles..."
-              className="mb-2 w-full"
-              startAdornment={<Search className="mr-2" />}
-            />
+            <div className="relative mb-2">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search help articles..."
+                className="w-full pl-10"
+              />
+            </div>
             <div className="text-sm text-muted-foreground">Search documentation or articles by keyword, tag, or content.</div>
           </div>
           {loading ? (
