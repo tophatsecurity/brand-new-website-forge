@@ -1,12 +1,16 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Menu, X, User, LogOut } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,6 +28,11 @@ const Navbar = () => {
     };
   }, []);
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Products", href: "/products" },
@@ -33,6 +42,11 @@ const Navbar = () => {
     { name: "Careers", href: "/careers" },
     { name: "Contact", href: "/contact" }
   ];
+
+  // Add admin link if user is admin
+  if (user && user.user_metadata?.role === 'admin') {
+    navLinks.push({ name: "Admin", href: "/admin" });
+  }
 
   return (
     <nav className={cn(
@@ -75,9 +89,43 @@ const Navbar = () => {
               </a>
             )
           ))}
-          <Button variant="default" className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
-            Free Consultation
-          </Button>
+          
+          {/* Authentication Buttons */}
+          {user ? (
+            <div className="flex items-center space-x-2">
+              <Button 
+                variant="outline" 
+                className="flex items-center space-x-2"
+                onClick={() => navigate('/profile')}
+              >
+                <User className="h-4 w-4" />
+                <span>{user.email?.split('@')[0] || 'Account'}</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleSignOut}
+                aria-label="Sign Out"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-4">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/login')}
+              >
+                Login
+              </Button>
+              <Button 
+                className="bg-[#cc0c1a] hover:bg-[#a80916] text-white"
+                onClick={() => navigate('/register')}
+              >
+                Register
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Mobile Navigation Button */}
@@ -96,7 +144,7 @@ const Navbar = () => {
       {/* Mobile Navigation Menu */}
       <div className={cn(
         "md:hidden absolute left-0 right-0 bg-white shadow-lg transition-all duration-300 ease-in-out overflow-hidden",
-        isOpen ? "max-h-96 py-4" : "max-h-0"
+        isOpen ? "max-h-screen py-4" : "max-h-0"
       )}>
         <div className="flex flex-col space-y-4 px-6">
           {navLinks.map((link) => (
@@ -120,9 +168,48 @@ const Navbar = () => {
               </a>
             )
           ))}
-          <Button variant="default" className="bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full">
-            Free Consultation
-          </Button>
+          
+          {user ? (
+            <>
+              <Link 
+                to="/profile" 
+                className="text-foreground hover:text-[#cc0c1a] py-2"
+                onClick={() => setIsOpen(false)}
+              >
+                My Account
+              </Link>
+              <Button 
+                variant="outline" 
+                className="justify-start px-2"
+                onClick={() => {
+                  handleSignOut();
+                  setIsOpen(false);
+                }}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link 
+                to="/login" 
+                className="text-foreground hover:text-[#cc0c1a] py-2"
+                onClick={() => setIsOpen(false)}
+              >
+                Login
+              </Link>
+              <Button 
+                className="bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full"
+                onClick={() => {
+                  navigate('/register');
+                  setIsOpen(false);
+                }}
+              >
+                Register
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </nav>
