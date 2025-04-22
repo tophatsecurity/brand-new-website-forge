@@ -18,11 +18,12 @@ const ContactSection = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    message: ""
+    message: "",
+    meetingType: "candleryMeeting" // New field
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -31,13 +32,15 @@ const ContactSection = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
+    // Simulate form submission with meeting type
     setTimeout(() => {
       toast({
-        title: "Message sent!",
+        title: formData.meetingType === 'candleryMeeting' 
+          ? "Candlery Meeting Request Sent!" 
+          : "Message sent!",
         description: "We'll get back to you as soon as possible.",
       });
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({ name: "", email: "", message: "", meetingType: "candleryMeeting" });
       setIsSubmitting(false);
     }, 1500);
   };
@@ -62,6 +65,23 @@ const ContactSection = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label htmlFor="meetingType" className="block text-sm font-medium mb-2">
+                      Meeting Type
+                    </label>
+                    <select
+                      id="meetingType"
+                      name="meetingType"
+                      value={formData.meetingType}
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="candleryMeeting">Candlery Meeting</option>
+                      <option value="freeConsultation">Free Consultation</option>
+                      <option value="freeAssessment">Free Assessment</option>
+                    </select>
+                  </div>
+
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium mb-2">
                       Your Name
@@ -113,7 +133,7 @@ const ContactSection = () => {
                     className="w-full bg-[#cc0c1a] hover:bg-[#a80916] text-white"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Sending..." : "Send Message"}
+                    {isSubmitting ? "Sending..." : "Schedule Meeting"}
                   </Button>
                 </form>
               </CardContent>

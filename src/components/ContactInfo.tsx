@@ -2,6 +2,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Phone, MapPin, Building } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from 'react-router-dom';
 
 const ContactInfo = () => {
   const locations = [
@@ -54,7 +56,32 @@ const ContactInfo = () => {
 
   return (
     <div>
-      <h3 className="text-2xl font-bold mb-8">Contact Information</h3>
+      <h3 className="text-2xl font-bold mb-8">Contact Methods</h3>
+      
+      {/* Quick Action Buttons */}
+      <div className="space-y-4 mb-8">
+        <Button 
+          className="w-full bg-[#cc0c1a] hover:bg-[#a80916] text-white"
+          onClick={() => window.location.href='/contact?type=candleryMeeting'}
+        >
+          Candlery Meeting
+        </Button>
+        
+        <Button 
+          className="w-full bg-[#cc0c1a] hover:bg-[#a80916] text-white"
+          onClick={() => window.location.href='/contact?type=freeConsultation'}
+        >
+          Free Consultation
+        </Button>
+        
+        <Button 
+          className="w-full bg-[#cc0c1a] hover:bg-[#a80916] text-white"
+          onClick={() => window.location.href='/contact?type=freeAssessment'}
+        >
+          Get Free Assessment
+        </Button>
+      </div>
+
       <div className="space-y-8 mb-8">
         {contactMethods.map((item, index) => (
           <div key={index} className="flex items-start">
