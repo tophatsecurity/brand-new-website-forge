@@ -19,7 +19,7 @@ const ContactSection = () => {
     name: "",
     email: "",
     message: "",
-    meetingType: "candleryMeeting" // New field
+    meetingType: "calendlyMeeting" // Updated from candleryMeeting to calendlyMeeting
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -35,12 +35,12 @@ const ContactSection = () => {
     // Simulate form submission with meeting type
     setTimeout(() => {
       toast({
-        title: formData.meetingType === 'candleryMeeting' 
-          ? "Candlery Meeting Request Sent!" 
+        title: formData.meetingType === 'calendlyMeeting' 
+          ? "Calendly Meeting Request Sent!" 
           : "Message sent!",
         description: "We'll get back to you as soon as possible.",
       });
-      setFormData({ name: "", email: "", message: "", meetingType: "candleryMeeting" });
+      setFormData({ name: "", email: "", message: "", meetingType: "calendlyMeeting" });
       setIsSubmitting(false);
     }, 1500);
   };
@@ -76,7 +76,7 @@ const ContactSection = () => {
                       onChange={handleChange}
                       className="w-full p-2 border rounded"
                     >
-                      <option value="candleryMeeting">Candlery Meeting</option>
+                      <option value="calendlyMeeting">Calendly Meeting</option>
                       <option value="freeConsultation">Free Consultation</option>
                       <option value="freeAssessment">Free Assessment</option>
                     </select>

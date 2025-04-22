@@ -62,9 +62,9 @@ const ContactInfo = () => {
       <div className="space-y-4 mb-8">
         <Button 
           className="w-full bg-[#cc0c1a] hover:bg-[#a80916] text-white"
-          onClick={() => window.location.href='/contact?type=candleryMeeting'}
+          onClick={() => window.location.href='/contact?type=calendlyMeeting'}
         >
-          Candlery Meeting
+          Calendly Meeting
         </Button>
         
         <Button 
