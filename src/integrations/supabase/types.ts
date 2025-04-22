@@ -9,7 +9,93 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      product_downloads: {
+        Row: {
+          description: string | null
+          file_url: string
+          id: string
+          is_latest: boolean
+          product_name: string
+          product_type: string
+          release_date: string
+          version: string
+        }
+        Insert: {
+          description?: string | null
+          file_url: string
+          id?: string
+          is_latest?: boolean
+          product_name: string
+          product_type: string
+          release_date?: string
+          version: string
+        }
+        Update: {
+          description?: string | null
+          file_url?: string
+          id?: string
+          is_latest?: boolean
+          product_name?: string
+          product_type?: string
+          release_date?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      support_documents: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          id: string
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          id?: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_permissions: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          id: string
+          permission: Database["public"]["Enums"]["permission_type"]
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          permission: Database["public"]["Enums"]["permission_type"]
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          permission?: Database["public"]["Enums"]["permission_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +104,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      permission_type: "downloads" | "support" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +219,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      permission_type: ["downloads", "support", "admin"],
+    },
   },
 } as const

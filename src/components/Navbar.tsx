@@ -44,17 +44,21 @@ const Navbar = () => {
     { name: "Contact", href: "/contact" }
   ];
 
-  // For logged-in users, show Support, Downloads, Profile
+  // Downloads and Support accessible by permission
   if (user) {
-    navLinks.push(
-      { name: "Support", href: "/support" },
-      { name: "Downloads", href: "/downloads" },
-      { name: "Profile", href: "/profile" }
-    );
-  }
-  // Add admin link if user is admin
-  if (user && user.user_metadata?.role === 'admin') {
-    navLinks.push({ name: "Admin", href: "/admin" });
+    // Only add if user has appropriate roles - evaluated clientside for menu
+    const uMeta = user.user_metadata || {};
+    if (uMeta.approved) {
+      navLinks.push(
+        { name: "Support", href: "/support" },
+        { name: "Downloads", href: "/downloads" },
+        { name: "Profile", href: "/profile" }
+      );
+    }
+    // Add admin link if user is admin
+    if (uMeta.role === 'admin') {
+      navLinks.push({ name: "Admin", href: "/admin" });
+    }
   }
 
   return (
