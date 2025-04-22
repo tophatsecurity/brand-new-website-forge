@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -13,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useToast } from '@/hooks/use-toast';
+import { User } from '@supabase/supabase-js';
 
 const permissionTypes = [
   { key: "downloads", label: "Downloads" },
@@ -34,7 +36,7 @@ const Admin = () => {
       const { data: { users }, error } = await supabase.auth.admin.listUsers();
       if (error) throw error;
 
-      const adminUser = users.find(user => user.email === 'admin@tophatsecurity.com');
+      const adminUser = users.find((user: User) => user.email === 'admin@tophatsecurity.com');
       
       if (adminUser) {
         console.log('Admin user found:', {
