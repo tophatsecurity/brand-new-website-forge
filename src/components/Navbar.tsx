@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, FileText, Download, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -33,6 +33,7 @@ const Navbar = () => {
     navigate('/');
   };
 
+  // Navigation links setup
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Products", href: "/products" },
@@ -43,6 +44,13 @@ const Navbar = () => {
     { name: "Contact", href: "/contact" }
   ];
 
+  // For logged-in users, add Support and Downloads
+  if (user) {
+    navLinks.push(
+      { name: "Support", href: "/support" },
+      { name: "Downloads", href: "/downloads" }
+    );
+  }
   // Add admin link if user is admin
   if (user && user.user_metadata?.role === 'admin') {
     navLinks.push({ name: "Admin", href: "/admin" });
@@ -56,9 +64,9 @@ const Navbar = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <Link to="/" className="flex items-center">
-            <img 
-              src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
-              alt="TopHat Security Logo" 
+            <img
+              src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png"
+              alt="TopHat Security Logo"
               className="h-14 md:h-16 mr-3"
             />
             <div>
@@ -72,38 +80,42 @@ const Navbar = () => {
         <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
             link.href.startsWith('/') && !link.href.includes('#') ? (
-              <Link 
-                key={link.name} 
-                to={link.href} 
-                className="text-foreground hover:text-[#cc0c1a] transition-colors duration-200"
+              <Link
+                key={link.name}
+                to={link.href}
+                className="text-foreground hover:text-[#cc0c1a] transition-colors duration-200 flex items-center"
               >
+                {/* Add icons only to Support/Admin/Downloads */}
+                {link.name === "Support" && <FileText className="h-4 w-4 mr-1" />}
+                {link.name === "Downloads" && <Download className="h-4 w-4 mr-1" />}
+                {link.name === "Admin" && <Settings className="h-4 w-4 mr-1" />}
                 {link.name}
               </Link>
             ) : (
-              <a 
-                key={link.name} 
-                href={link.href} 
+              <a
+                key={link.name}
+                href={link.href}
                 className="text-foreground hover:text-[#cc0c1a] transition-colors duration-200"
               >
                 {link.name}
               </a>
             )
           ))}
-          
+
           {/* Authentication Buttons */}
           {user ? (
             <div className="flex items-center space-x-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="flex items-center space-x-2"
                 onClick={() => navigate('/profile')}
               >
                 <User className="h-4 w-4" />
                 <span>{user.email?.split('@')[0] || 'Account'}</span>
               </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={handleSignOut}
                 aria-label="Sign Out"
               >
@@ -112,13 +124,13 @@ const Navbar = () => {
             </div>
           ) : (
             <div className="flex items-center space-x-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => navigate('/login')}
               >
                 Login
               </Button>
-              <Button 
+              <Button
                 className="bg-[#cc0c1a] hover:bg-[#a80916] text-white"
                 onClick={() => navigate('/register')}
               >
@@ -130,9 +142,9 @@ const Navbar = () => {
 
         {/* Mobile Navigation Button */}
         <div className="md:hidden">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle Menu"
           >
@@ -149,18 +161,21 @@ const Navbar = () => {
         <div className="flex flex-col space-y-4 px-6">
           {navLinks.map((link) => (
             link.href.startsWith('/') && !link.href.includes('#') ? (
-              <Link 
-                key={link.name} 
-                to={link.href} 
-                className="text-foreground hover:text-[#cc0c1a] py-2"
+              <Link
+                key={link.name}
+                to={link.href}
+                className="text-foreground hover:text-[#cc0c1a] py-2 flex items-center"
                 onClick={() => setIsOpen(false)}
               >
+                {link.name === "Support" && <FileText className="h-4 w-4 mr-1" />}
+                {link.name === "Downloads" && <Download className="h-4 w-4 mr-1" />}
+                {link.name === "Admin" && <Settings className="h-4 w-4 mr-1" />}
                 {link.name}
               </Link>
             ) : (
-              <a 
-                key={link.name} 
-                href={link.href} 
+              <a
+                key={link.name}
+                href={link.href}
                 className="text-foreground hover:text-[#cc0c1a] py-2"
                 onClick={() => setIsOpen(false)}
               >
@@ -168,18 +183,18 @@ const Navbar = () => {
               </a>
             )
           ))}
-          
+
           {user ? (
             <>
-              <Link 
-                to="/profile" 
+              <Link
+                to="/profile"
                 className="text-foreground hover:text-[#cc0c1a] py-2"
                 onClick={() => setIsOpen(false)}
               >
                 My Account
               </Link>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="justify-start px-2"
                 onClick={() => {
                   handleSignOut();
@@ -192,14 +207,14 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="text-foreground hover:text-[#cc0c1a] py-2"
                 onClick={() => setIsOpen(false)}
               >
                 Login
               </Link>
-              <Button 
+              <Button
                 className="bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full"
                 onClick={() => {
                   navigate('/register');

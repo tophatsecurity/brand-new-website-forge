@@ -27,16 +27,18 @@ const Admin = () => {
   const fetchUsers = async () => {
     try {
       const { data: { users }, error } = await supabase.auth.admin.listUsers();
-      
+
       if (error) throw error;
-      
+
       if (users) {
-        setUsers(users.map(user => ({
-          id: user.id,
-          email: user.email,
-          user_metadata: user.user_metadata,
-          createdAt: user.created_at ? new Date(user.created_at).toLocaleString() : 'Unknown'
-        })));
+        setUsers(
+          users.map((user: any) => ({
+            id: user.id,
+            email: user.email,
+            user_metadata: user.user_metadata,
+            createdAt: user.created_at ? new Date(user.created_at).toLocaleString() : 'Unknown', // access created_at from the original user object
+          }))
+        );
       }
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -55,18 +57,18 @@ const Admin = () => {
       const { error } = await supabase.auth.admin.updateUserById(userId, {
         user_metadata: { approved: true }
       });
-      
+
       if (error) throw error;
-      
+
       toast({
         title: 'User approved',
         description: 'The user can now access restricted content.',
       });
-      
+
       // Update local state
-      setUsers(users.map(user => 
-        user.id === userId 
-          ? { ...user, user_metadata: { ...user.user_metadata, approved: true } } 
+      setUsers(users.map(user =>
+        user.id === userId
+          ? { ...user, user_metadata: { ...user.user_metadata, approved: true } }
           : user
       ));
     } catch (error) {
@@ -85,10 +87,10 @@ const Admin = () => {
       <div className="pt-32 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-          
+
           <div className="bg-card rounded-lg shadow-md p-6">
             <h2 className="text-2xl font-bold mb-4">User Management</h2>
-            
+
             {loading ? (
               <div className="text-center py-8">Loading users...</div>
             ) : (
@@ -124,8 +126,8 @@ const Admin = () => {
                             </TableCell>
                             <TableCell>
                               {!user.user_metadata?.approved && (
-                                <Button 
-                                  variant="default" 
+                                <Button
+                                  variant="default"
                                   size="sm"
                                   onClick={() => handleApproveUser(user.id)}
                                 >
