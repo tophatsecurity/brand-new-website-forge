@@ -34,6 +34,28 @@ const Products = () => {
               Explore our comprehensive suite of cybersecurity products designed to protect your most critical assets
             </p>
           </div>
+          <div className="mb-10 p-8 bg-secondary/60 rounded-lg shadow flex flex-col items-center">
+            <h3 className="text-2xl font-bold mb-4 text-[#cc0c1a]">XBOM (SBOM/HBOM/FWBOM/FBOM) Platform</h3>
+            <p className="text-md text-muted-foreground mb-2 text-center max-w-3xl">
+              Beyond the standard Software Bill of Materials (SBOM), our XBOM platform unifies:
+              <br />
+              <span className="font-semibold">
+                Hardware Bill of Materials (HBOM)&nbsp;|&nbsp;
+                Software Bill of Materials (SBOM)&nbsp;|&nbsp;
+                Firmware Bill of Materials (FWBOM)&nbsp;|&nbsp;
+                Forensics Bill of Materials (FBOM)
+              </span>
+              <br />
+              Gain deep, forensics-level clarity in your supply chain. 
+            </p>
+            <p className="mt-2 text-center text-sm max-w-xl text-muted-foreground">
+              <span className="font-bold text-[#cc0c1a]">We don't need vendor attestation-based BOMs:</span>
+              Most solutions rely on what vendors claim about their components. With XBOM, you get independent, in-depth analysis—so you know what others aren’t saying about their BOMs.
+            </p>
+            <p className="mt-2 text-center text-xs text-muted-foreground italic max-w-xl">
+              Discover the truth hiding in your supply chain—know what’s inside, not just what’s declared.
+            </p>
+          </div>
           <ProductsSection />
         </div>
         
