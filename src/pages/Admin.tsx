@@ -34,6 +34,18 @@ const Admin = () => {
       const { data: { users }, error } = await supabase.auth.admin.listUsers();
       if (error) throw error;
 
+      const adminUser = users.find(user => user.email === 'admin@tophatsecurity.com');
+      
+      if (adminUser) {
+        console.log('Admin user found:', {
+          id: adminUser.id,
+          email: adminUser.email,
+          metadata: adminUser.user_metadata
+        });
+      } else {
+        console.log('Admin user not found in Supabase');
+      }
+
       const { data: perms } = await supabase
         .from("user_permissions")
         .select("*");
