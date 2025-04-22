@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Lock, Database, Images } from "lucide-react";
@@ -72,7 +71,7 @@ const HeroSection = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-semibold flex items-center">
                     <Images className="w-5 h-5 mr-2 text-[#cc0c1a]" />
-                    Product Screenshots
+                    Our Products
                   </h3>
                 </div>
                 
