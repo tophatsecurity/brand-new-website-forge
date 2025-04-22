@@ -44,11 +44,12 @@ const Navbar = () => {
     { name: "Contact", href: "/contact" }
   ];
 
-  // For logged-in users, add Support and Downloads
+  // For logged-in users, show Support, Downloads, Profile
   if (user) {
     navLinks.push(
       { name: "Support", href: "/support" },
-      { name: "Downloads", href: "/downloads" }
+      { name: "Downloads", href: "/downloads" },
+      { name: "Profile", href: "/profile" }
     );
   }
   // Add admin link if user is admin
@@ -85,10 +86,11 @@ const Navbar = () => {
                 to={link.href}
                 className="text-foreground hover:text-[#cc0c1a] transition-colors duration-200 flex items-center"
               >
-                {/* Add icons only to Support/Admin/Downloads */}
+                {/* Add icons only to Support/Admin/Downloads/Profile */}
                 {link.name === "Support" && <FileText className="h-4 w-4 mr-1" />}
                 {link.name === "Downloads" && <Download className="h-4 w-4 mr-1" />}
                 {link.name === "Admin" && <Settings className="h-4 w-4 mr-1" />}
+                {link.name === "Profile" && <User className="h-4 w-4 mr-1" />}
                 {link.name}
               </Link>
             ) : (
@@ -170,6 +172,7 @@ const Navbar = () => {
                 {link.name === "Support" && <FileText className="h-4 w-4 mr-1" />}
                 {link.name === "Downloads" && <Download className="h-4 w-4 mr-1" />}
                 {link.name === "Admin" && <Settings className="h-4 w-4 mr-1" />}
+                {link.name === "Profile" && <User className="h-4 w-4 mr-1" />}
                 {link.name}
               </Link>
             ) : (
