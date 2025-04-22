@@ -35,7 +35,6 @@ const Admin = () => {
           id: user.id,
           email: user.email,
           user_metadata: user.user_metadata,
-          // Format creation date if it exists
           createdAt: user.created_at ? new Date(user.created_at).toLocaleString() : 'Unknown'
         })));
       }
