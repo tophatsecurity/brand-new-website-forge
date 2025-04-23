@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -35,6 +34,14 @@ const Team = () => {
       linkedinUrl: 'https://www.linkedin.com/in/rich-mason-1a74711/'
     },
     {
+      name: 'Christy Henry',
+      position: 'Vice President and CFO',
+      bio: 'Driving operational excellence and strategic financial initiatives.',
+      initials: 'CH',
+      image: '/lovable-uploads/placeholder-christy-henry.png',
+      linkedinUrl: 'https://www.linkedin.com/in/christyhenry/'
+    },
+    {
       name: 'Gerry D\'Agostino',
       position: 'CRO',
       bio: 'Connects TopHat to Partners, DoD, IC, and critical infrastructure agencies.',
@@ -47,14 +54,6 @@ const Team = () => {
       bio: 'Nationally recognized expert in defense technology, space and sigint and AI risk.',
       initials: 'MK',
       image: '/lovable-uploads/8481a3e3-ebb5-459a-8315-279d932658d9.png'
-    },
-    {
-      name: 'Christy Henry',
-      position: 'Vice President and CFO',
-      bio: 'Driving operational excellence and strategic financial initiatives.',
-      initials: 'CH',
-      image: '/lovable-uploads/placeholder-christy-henry.png',
-      linkedinUrl: 'https://www.linkedin.com/in/christyhenry/'
     }
   ];
 
