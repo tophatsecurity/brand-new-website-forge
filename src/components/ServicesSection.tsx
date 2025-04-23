@@ -82,7 +82,10 @@ const ServicesSection = () => {
                 {service.link && (
                   <div className="mt-4">
                     <Link to={service.link}>
-                      <Button variant="outline" className="border-gray-600 text-white hover:bg-gray-800">
+                      <Button 
+                        variant="outline" 
+                        className="bg-[#cc0c1a] hover:bg-[#a80916] text-white border-none"
+                      >
                         Learn More
                       </Button>
                     </Link>
