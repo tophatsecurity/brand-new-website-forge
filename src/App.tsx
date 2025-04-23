@@ -24,6 +24,7 @@ import Register from "./pages/Register";
 import PendingApproval from "./pages/PendingApproval";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
+import SecurityPerpetual from "./pages/SecurityPerpetual";
 
 const queryClient = new QueryClient();
 
@@ -47,12 +48,13 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/pending-approval" element={<PendingApproval />} />
             
-            {/* Product routes - moved out of protected routes */}
+            {/* Product routes */}
             <Route path="/seekcap" element={<SeekCap />} />
             <Route path="/ddx" element={<DDX />} />
             <Route path="/ddx/use-cases" element={<DDXUseCases />} />
             <Route path="/paraguard" element={<ParaGuard />} />
             <Route path="/secondlook" element={<SecondLook />} />
+            <Route path="/security-perpetual" element={<SecurityPerpetual />} />
             
             {/* Protected routes requiring authentication and approval */}
             <Route path="/admin" element={
