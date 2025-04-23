@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -15,7 +14,8 @@ const Team = () => {
       position: 'CEO & Founder',
       bio: 'Veteran builder in cybersecurity, leading TopHat\'s mission.',
       initials: 'MC',
-      image: '/lovable-uploads/c19a0f81-ce2e-4f42-9922-65f06749af1b.png'
+      image: '/lovable-uploads/c19a0f81-ce2e-4f42-9922-65f06749af1b.png',
+      linkedinUrl: 'https://www.linkedin.com/in/matthew-caldwell-1a1421/'
     },
     {
       name: 'Joe Cardin',
@@ -80,10 +80,17 @@ const Team = () => {
                     <h3 className="text-xl font-bold mb-1">{founder.name}</h3>
                     <p className="text-sm text-[#cc0c1a] font-medium mb-3">{founder.position}</p>
                     <p className="text-muted-foreground mb-4">{founder.bio}</p>
-                    <Button variant="outline" size="sm" className="mt-2">
-                      <Linkedin className="mr-2 h-4 w-4" />
-                      Connect
-                    </Button>
+                    {founder.linkedinUrl && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="mt-2"
+                        onClick={() => window.open(founder.linkedinUrl, '_blank', 'noopener,noreferrer')}
+                      >
+                        <Linkedin className="mr-2 h-4 w-4" />
+                        Connect
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
