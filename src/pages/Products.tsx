@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import ProductsSection from '@/components/ProductsSection';
@@ -22,11 +23,8 @@ const Products = () => {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-16 -mt-16">
-          <div className="mb-12 bg-muted/30 p-8 rounded-xl">
-            <ProductCategories />
-          </div>
-
+        <div className="max-w-7xl mx-auto px-6 py-16">
+          <ProductCategories />
           <ProductsSection />
 
           <div className="text-center py-16 bg-muted/30 mt-16 rounded-xl">
