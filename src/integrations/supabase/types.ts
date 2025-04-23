@@ -42,6 +42,30 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          approved: boolean | null
+          created_at: string
+          email: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          approved?: boolean | null
+          created_at?: string
+          email?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          approved?: boolean | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_documents: {
         Row: {
           category: string
