@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -77,11 +78,11 @@ const Team = () => {
                   <div className="flex flex-col items-center text-center">
                     <HoverCard>
                       <HoverCardTrigger>
-                        <Avatar className="h-28 w-28 mb-4 bg-[#cc0c1a] relative group">
+                        <Avatar className="h-28 w-28 mb-4 bg-[#8E9196] relative group">
                           {founder.image ? (
                             <AvatarImage src={founder.image} alt={founder.name} className="object-cover" />
                           ) : (
-                            <AvatarFallback className="text-white text-xl font-semibold bg-[#cc0c1a] flex items-center justify-center">
+                            <AvatarFallback className="text-white text-xl font-semibold bg-[#8E9196] flex items-center justify-center">
                               <UserRound className="h-16 w-16 text-white" />
                             </AvatarFallback>
                           )}
