@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -79,8 +78,8 @@ const Team = () => {
                       {founder.image ? (
                         <AvatarImage src={founder.image} alt={founder.name} className="object-cover" />
                       ) : (
-                        <AvatarFallback className="text-white text-xl font-semibold bg-[#cc0c1a]">
-                          <UserRound className="h-12 w-12 text-white" />
+                        <AvatarFallback className="text-white text-xl font-semibold bg-[#cc0c1a] flex items-center justify-center">
+                          <UserRound className="h-16 w-16 text-white" />
                         </AvatarFallback>
                       )}
                       {!founder.image && (
@@ -128,4 +127,3 @@ const Team = () => {
 };
 
 export default Team;
-
