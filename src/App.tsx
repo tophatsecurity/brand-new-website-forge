@@ -25,6 +25,7 @@ import PendingApproval from "./pages/PendingApproval";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import SecurityPerpetual from "./pages/SecurityPerpetual";
+import Licensing from "./pages/Licensing";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,11 @@ const App = () => (
             <Route path="/profile" element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            } />
+            <Route path="/licensing" element={
+              <ProtectedRoute>
+                <Licensing />
               </ProtectedRoute>
             } />
             

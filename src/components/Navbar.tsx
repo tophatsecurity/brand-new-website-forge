@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Menu, X, User, LogOut, FileText, Download, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import UserNavMenu from './UserNavMenu';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -107,6 +107,8 @@ const Navbar = () => {
               </a>
             )
           ))}
+
+          {user?.user_metadata?.approved && <UserNavMenu />}
 
           {/* Authentication Buttons */}
           {user ? (
