@@ -26,6 +26,8 @@ import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import SecurityPerpetual from "./pages/SecurityPerpetual";
 import Licensing from "./pages/Licensing";
+import Downloads from "./pages/Downloads";
+import Support from "./pages/Support";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +73,16 @@ const App = () => (
             <Route path="/licensing" element={
               <ProtectedRoute>
                 <Licensing />
+              </ProtectedRoute>
+            } />
+            <Route path="/downloads" element={
+              <ProtectedRoute>
+                <Downloads />
+              </ProtectedRoute>
+            } />
+            <Route path="/support" element={
+              <ProtectedRoute>
+                <Support />
               </ProtectedRoute>
             } />
             
