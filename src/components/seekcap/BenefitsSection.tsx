@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Server, Zap, Database, Network, Lock, AlertCircle, Activity, Eye } from 'lucide-react';
@@ -93,14 +92,6 @@ const BenefitsSection = () => {
             <p className="text-sm text-gray-700">{useCase.description}</p>
           </div>
         ))}
-      </div>
-      
-      <div className="mt-8 text-center">
-        <img 
-          src="/public/lovable-uploads/1a1af815-c4d8-4494-8f82-c9fc8332de87.png" 
-          alt="SEEKCAP Benefits" 
-          className="mx-auto rounded-lg shadow-md max-w-full"
-        />
       </div>
     </div>
   );
