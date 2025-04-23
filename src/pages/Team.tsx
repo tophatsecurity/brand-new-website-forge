@@ -50,10 +50,11 @@ const Team = () => {
     },
     {
       name: 'Christy Henry',
-      position: 'COO/VP of Operations',
-      bio: 'Driving operational excellence and strategic initiatives.',
+      position: 'Vice President and CFO',
+      bio: 'Driving operational excellence and strategic financial initiatives.',
       initials: 'CH',
-      image: '/lovable-uploads/placeholder-christy-henry.png'
+      image: '/lovable-uploads/placeholder-christy-henry.png',
+      linkedinUrl: 'https://www.linkedin.com/in/christyhenry/'
     }
   ];
 
