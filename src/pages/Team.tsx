@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -49,8 +50,8 @@ const Team = () => {
     },
     {
       name: 'Christy Henry',
-      position: 'VP of Communications',
-      bio: 'The unofficial corporate mom who keeps things moving smoothly.',
+      position: 'COO/VP of Operations',
+      bio: 'Driving operational excellence and strategic initiatives.',
       initials: 'CH',
       image: '/lovable-uploads/placeholder-christy-henry.png'
     }
