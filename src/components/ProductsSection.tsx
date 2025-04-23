@@ -65,13 +65,11 @@ const ProductsSection = () => {
     }
   ];
 
-  // Flatten products array for the carousel
   const allProducts = productCategories.flatMap(category => category.products);
 
   return (
     <section id="products" className="section-padding">
       <div className="max-w-7xl mx-auto">
-        {/* Display products by category */}
         {productCategories.map((category, categoryIndex) => (
           <div key={categoryIndex} className="mb-16" id={category.id}>
             <h3 className="text-2xl font-semibold mb-6 border-l-4 border-primary pl-4">
@@ -86,7 +84,9 @@ const ProductsSection = () => {
                 >
                   <CardHeader className="pb-2">
                     <div className="mb-4">{product.icon}</div>
-                    <CardTitle>{product.title}</CardTitle>
+                    <Link to={product.link}>
+                      <CardTitle className="hover:text-primary transition-colors">{product.title}</CardTitle>
+                    </Link>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground mb-4">{product.description}</p>
@@ -105,7 +105,6 @@ const ProductsSection = () => {
           </div>
         ))}
         
-        {/* Product carousel for featured solutions */}
         <div className="block md:mt-16">
           <h3 className="text-2xl font-semibold mb-6 text-center">Featured Solutions</h3>
           <Carousel className="w-full max-w-5xl mx-auto">
@@ -116,7 +115,9 @@ const ProductsSection = () => {
                     <Card className={`h-full border-t-0 border-l-4 ${product.borderColor} bg-background text-foreground`}>
                       <CardHeader className="pb-2">
                         <div className="mb-4">{product.icon}</div>
-                        <CardTitle>{product.title}</CardTitle>
+                        <Link to={product.link}>
+                          <CardTitle className="hover:text-primary transition-colors">{product.title}</CardTitle>
+                        </Link>
                       </CardHeader>
                       <CardContent className="flex flex-col h-full">
                         <p className="text-muted-foreground mb-6 flex-grow">{product.longDescription}</p>
