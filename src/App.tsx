@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -48,41 +47,19 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/pending-approval" element={<PendingApproval />} />
             
-            {/* Protected routes requiring authentication and approval */}
-            <Route path="/seekcap" element={
-              <ProtectedRoute>
-                <SeekCap />
-              </ProtectedRoute>
-            } />
-            <Route path="/ddx" element={
-              <ProtectedRoute>
-                <DDX />
-              </ProtectedRoute>
-            } />
-            <Route path="/ddx/use-cases" element={
-              <ProtectedRoute>
-                <DDXUseCases />
-              </ProtectedRoute>
-            } />
-            <Route path="/paraguard" element={
-              <ProtectedRoute>
-                <ParaGuard />
-              </ProtectedRoute>
-            } />
-            <Route path="/secondlook" element={
-              <ProtectedRoute>
-                <SecondLook />
-              </ProtectedRoute>
-            } />
+            {/* Product routes - moved out of protected routes */}
+            <Route path="/seekcap" element={<SeekCap />} />
+            <Route path="/ddx" element={<DDX />} />
+            <Route path="/ddx/use-cases" element={<DDXUseCases />} />
+            <Route path="/paraguard" element={<ParaGuard />} />
+            <Route path="/secondlook" element={<SecondLook />} />
             
-            {/* Admin route */}
+            {/* Protected routes requiring authentication and approval */}
             <Route path="/admin" element={
               <ProtectedRoute>
                 <Admin />
               </ProtectedRoute>
             } />
-
-            {/* Profile route */}
             <Route path="/profile" element={
               <ProtectedRoute>
                 <Profile />

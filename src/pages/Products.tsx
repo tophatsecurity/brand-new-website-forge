@@ -12,16 +12,6 @@ const Products = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <div className="pt-24">
-        <div className="bg-gradient-to-r from-gray-100 to-white py-16">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6"></h1>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              </p>
-            </div>
-          </div>
-        </div>
-
         <div className="bg-white py-12">
           <ProductCategories />
         </div>
