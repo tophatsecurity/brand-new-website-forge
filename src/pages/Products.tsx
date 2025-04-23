@@ -9,29 +9,29 @@ import { Link } from 'react-router-dom';
 
 const Products = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-24">
-        <div className="bg-white py-12">
+      <main className="container mx-auto px-6 pt-32 pb-16">
+        <div className="bg-muted/30 py-12 rounded-lg mb-16">
           <ProductCategories />
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="max-w-7xl mx-auto">
           <ProductsSection />
         </div>
         
-        <div className="text-center py-16 bg-[#f3f3f3] mt-8">
+        <div className="text-center py-16 bg-muted/30 mt-16 rounded-lg">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">Need a Customized Security Solution?</h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
             Our experts can help you identify the right security tools for your specific needs.
           </p>
           <Link to="/contact">
-            <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8 py-2 text-lg">
+            <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8">
               Contact Our Team
             </Button>
           </Link>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );

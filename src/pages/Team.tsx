@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -5,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Linkedin, Users } from 'lucide-react';
+import { Linkedin } from 'lucide-react';
 
 const Team = () => {
   const founders = [
@@ -58,10 +59,10 @@ const Team = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-24">
-        <div className="max-w-7xl mx-auto px-6 py-12 md:py-16">
+      <main className="container mx-auto px-6 pt-32 pb-16">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Team</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -71,10 +72,10 @@ const Team = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
             {founders.map((founder) => (
-              <Card key={founder.name} className="overflow-hidden border-none shadow-md hover:shadow-lg transition-shadow duration-300">
+              <Card key={founder.name} className="overflow-hidden border shadow-md hover:shadow-lg transition-shadow duration-300">
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center text-center">
-                    <Avatar className="h-28 w-28 mb-4 bg-[#cc0c1a] overflow-hidden">
+                    <Avatar className="h-28 w-28 mb-4 bg-[#cc0c1a]">
                       <AvatarImage src={founder.image} alt={founder.name} className="object-cover" />
                       <AvatarFallback className="text-white text-xl font-semibold">
                         {founder.initials}
@@ -101,18 +102,18 @@ const Team = () => {
           </div>
         </div>
         
-        <div className="text-center py-16 bg-[#f3f3f3] mt-8">
+        <div className="text-center py-16 bg-muted/30 mt-16 rounded-lg">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">Join Our Team</h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
             Interested in working with our team of cybersecurity experts? Check out our open positions.
           </p>
           <Link to="/careers">
-            <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8 py-2">
+            <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8">
               View Career Opportunities
             </Button>
           </Link>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );

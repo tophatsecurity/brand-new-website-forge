@@ -6,11 +6,11 @@ import AboutSection from '@/components/AboutSection';
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-24">
+      <main className="container mx-auto px-6 pt-32 pb-16">
         <AboutSection />
-      </div>
+      </main>
       <Footer />
     </div>
   );
