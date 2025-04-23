@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Linkedin } from 'lucide-react';
+import { Linkedin, UserRound } from 'lucide-react';
 
 const Team = () => {
   const founders = [
@@ -76,10 +76,18 @@ const Team = () => {
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center text-center">
                     <Avatar className="h-28 w-28 mb-4 bg-[#cc0c1a]">
-                      <AvatarImage src={founder.image} alt={founder.name} className="object-cover" />
-                      <AvatarFallback className="text-white text-xl font-semibold">
-                        {founder.initials}
-                      </AvatarFallback>
+                      {founder.image ? (
+                        <AvatarImage src={founder.image} alt={founder.name} className="object-cover" />
+                      ) : (
+                        <AvatarFallback className="text-white text-xl font-semibold bg-[#cc0c1a]">
+                          <UserRound className="h-12 w-12 text-white" />
+                        </AvatarFallback>
+                      )}
+                      {!founder.image && (
+                        <AvatarFallback className="text-white text-xl font-semibold">
+                          {founder.initials}
+                        </AvatarFallback>
+                      )}
                     </Avatar>
                     <h3 className="text-xl font-bold mb-1">{founder.name}</h3>
                     <p className="text-sm text-[#cc0c1a] font-medium mb-3">{founder.position}</p>
@@ -120,3 +128,4 @@ const Team = () => {
 };
 
 export default Team;
+
