@@ -1,24 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import UserList from './UserList';
 import { User } from '@supabase/supabase-js';
-
-const permissionTypes = [
-  { key: "downloads", label: "Downloads" },
-  { key: "support", label: "Support" },
-  { key: "admin", label: "Admin" }
-];
 
 const UserManagement = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -27,24 +12,12 @@ const UserManagement = () => {
 
   useEffect(() => {
     fetchUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUsers = async () => {
     try {
       const { data: { users }, error } = await supabase.auth.admin.listUsers();
       if (error) throw error;
-
-      const adminUser = users.find((user: User) => user.email === 'admin@tophatsecurity.com');
-      if (adminUser) {
-        console.log('Admin user found:', {
-          id: adminUser.id,
-          email: adminUser.email,
-          metadata: adminUser.user_metadata
-        });
-      } else {
-        console.log('Admin user not found in Supabase');
-      }
 
       const { data: perms } = await supabase
         .from("user_permissions")
@@ -139,81 +112,12 @@ const UserManagement = () => {
           {users.length === 0 ? (
             <div className="text-center py-8">No users found.</div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Registration Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Permissions</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.createdAt}</TableCell>
-                      <TableCell>
-                        {user.user_metadata?.approved ? (
-                          <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
-                            Approved
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
-                            Pending Approval
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-2">
-                          {user.permissions.map((p: any) => (
-                            <Badge key={p.id} className="bg-blue-50 text-blue-800 border-blue-200">
-                              {permissionTypes.find(pt => pt.key === p.permission)?.label || p.permission}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-5 px-1 ml-1"
-                                onClick={() => handleRevokePermission(p.id)}
-                              >
-                                ✕
-                              </Button>
-                            </Badge>
-                          ))}
-                          {permissionTypes
-                            .filter(pt =>
-                              !user.permissions.some((p: any) => p.permission === pt.key)
-                            )
-                            .map(pt => (
-                              <Button
-                                key={pt.key}
-                                size="sm"
-                                variant="secondary"
-                                className="ml-1"
-                                onClick={() => handleGrantPermission(user.id, pt.key)}
-                              >
-                                Grant {pt.label}
-                              </Button>
-                            ))}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {!user.user_metadata?.approved && (
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => handleApproveUser(user.id)}
-                          >
-                            Approve
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+            <UserList 
+              users={users}
+              onApproveUser={handleApproveUser}
+              onGrantPermission={handleGrantPermission}
+              onRevokePermission={handleRevokePermission}
+            />
           )}
         </>
       )}
@@ -222,3 +126,4 @@ const UserManagement = () => {
 };
 
 export default UserManagement;
+
