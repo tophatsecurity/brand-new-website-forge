@@ -12,36 +12,38 @@ const Products = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <div className="bg-[#1A1F2C] text-white py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Security Solutions</h1>
-            <p className="text-lg max-w-3xl mx-auto opacity-90">
-              Comprehensive cybersecurity platforms for today's evolving threat landscape.
-            </p>
+      <main className="pt-32">
+        <div className="bg-[#1A1F2C] text-white py-16">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Security Solutions</h1>
+              <p className="text-lg max-w-3xl mx-auto opacity-90">
+                Comprehensive cybersecurity platforms for today's evolving threat landscape.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-16 -mt-16">
-        <div className="mb-12 bg-muted/30 p-8 rounded-xl">
-          <ProductCategories />
+        <div className="max-w-7xl mx-auto px-6 py-16 -mt-16">
+          <div className="mb-12 bg-muted/30 p-8 rounded-xl">
+            <ProductCategories />
+          </div>
+
+          <ProductsSection />
+
+          <div className="text-center py-16 bg-muted/30 mt-16 rounded-xl">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">Need a Customized Security Solution?</h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+              Our experts can help you identify the right security tools for your specific needs.
+            </p>
+            <Link to="/contact">
+              <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8">
+                Contact Our Team
+              </Button>
+            </Link>
+          </div>
         </div>
-
-        <ProductsSection />
-
-        <div className="text-center py-16 bg-muted/30 mt-16 rounded-xl">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6">Need a Customized Security Solution?</h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
-            Our experts can help you identify the right security tools for your specific needs.
-          </p>
-          <Link to="/contact">
-            <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8">
-              Contact Our Team
-            </Button>
-          </Link>
-        </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );

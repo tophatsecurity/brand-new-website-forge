@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import ServicesSection from '@/components/ServicesSection';
@@ -52,8 +53,8 @@ const Services = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main>
-        <div className="bg-[#1A1F2C] pt-32 pb-16">
+      <main className="pt-32">
+        <div className="bg-[#1A1F2C] pb-16">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center">
               <h1 className="text-5xl font-bold text-white mb-6">Our Security Services</h1>
