@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Linkedin, UserRound } from 'lucide-react';
+import { Linkedin, UserRound, QrCode } from 'lucide-react';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 const Team = () => {
   const founders = [
@@ -74,20 +75,36 @@ const Team = () => {
               <Card key={founder.name} className="overflow-hidden border shadow-md hover:shadow-lg transition-shadow duration-300">
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center text-center">
-                    <Avatar className="h-28 w-28 mb-4 bg-[#cc0c1a]">
-                      {founder.image ? (
-                        <AvatarImage src={founder.image} alt={founder.name} className="object-cover" />
-                      ) : (
-                        <AvatarFallback className="text-white text-xl font-semibold bg-[#cc0c1a] flex items-center justify-center">
-                          <UserRound className="h-16 w-16 text-white" />
-                        </AvatarFallback>
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        <Avatar className="h-28 w-28 mb-4 bg-[#cc0c1a] relative group">
+                          {founder.image ? (
+                            <AvatarImage src={founder.image} alt={founder.name} className="object-cover" />
+                          ) : (
+                            <AvatarFallback className="text-white text-xl font-semibold bg-[#cc0c1a] flex items-center justify-center">
+                              <UserRound className="h-16 w-16 text-white" />
+                            </AvatarFallback>
+                          )}
+                          {founder.linkedinUrl && (
+                            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <QrCode className="h-16 w-16 text-white" />
+                            </div>
+                          )}
+                        </Avatar>
+                      </HoverCardTrigger>
+                      {founder.linkedinUrl && (
+                        <HoverCardContent className="w-80 p-4">
+                          <div className="flex flex-col items-center space-y-2">
+                            <p className="text-sm text-muted-foreground">Scan to view LinkedIn Profile</p>
+                            <img 
+                              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(founder.linkedinUrl)}`}
+                              alt={`QR Code for ${founder.name}'s LinkedIn`}
+                              className="w-48 h-48"
+                            />
+                          </div>
+                        </HoverCardContent>
                       )}
-                      {!founder.image && (
-                        <AvatarFallback className="text-white text-xl font-semibold">
-                          {founder.initials}
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
+                    </HoverCard>
                     <h3 className="text-xl font-bold mb-1">{founder.name}</h3>
                     <p className="text-sm text-[#cc0c1a] font-medium mb-3">{founder.position}</p>
                     <p className="text-muted-foreground mb-4">{founder.bio}</p>
