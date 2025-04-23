@@ -72,14 +72,6 @@ const ProductsSection = () => {
   return (
     <section id="products" className="section-padding">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16 animate-slide-up opacity-0">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Products</h2>
-          <div className="w-20 h-1 bg-primary mx-auto mb-6"></div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Cutting-edge cybersecurity solutions designed to protect your business from evolving digital threats.
-          </p>
-        </div>
-        
         {/* Display products by category */}
         {productCategories.map((category, categoryIndex) => (
           <div key={categoryIndex} className="mb-16" id={category.id}>
@@ -148,12 +140,6 @@ const ProductsSection = () => {
               <CarouselNext className="static transform-none mx-2" />
             </div>
           </Carousel>
-        </div>
-        
-        <div className="text-center mt-12 animate-slide-up opacity-0" style={{ animationDelay: "600ms" }}>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Each platform is modular, field-tested, and tailored to OT, defense, and AI environments.
-          </p>
         </div>
       </div>
     </section>
