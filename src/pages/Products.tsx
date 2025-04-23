@@ -28,12 +28,6 @@ const Products = () => {
         </div>
 
         <div className="max-w-7xl mx-auto px-6 py-16">
-          <div className="mb-8 text-center">
-            <h2 className="text-3xl font-bold mb-4">Detailed Product Information</h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Explore our comprehensive suite of cybersecurity products designed to protect your most critical assets
-            </p>
-          </div>
           <ProductsSection />
         </div>
         
@@ -55,3 +49,4 @@ const Products = () => {
 };
 
 export default Products;
+
