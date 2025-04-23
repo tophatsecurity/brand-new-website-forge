@@ -34,9 +34,6 @@ const Products = () => {
               Explore our comprehensive suite of cybersecurity products designed to protect your most critical assets
             </p>
           </div>
-          <div className="mb-10 p-8 bg-secondary/60 rounded-lg shadow flex flex-col items-center">
-            <h3 className="text-2xl font-bold mb-4 text-[#cc0c1a]">XBOM (SBOM/HBOM/FWBOM/FBOM) Platform</h3>
-          </div>
           <ProductsSection />
         </div>
         
