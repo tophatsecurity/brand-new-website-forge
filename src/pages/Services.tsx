@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import ServicesSection from '@/components/ServicesSection';
@@ -65,7 +64,6 @@ const Services = () => {
           </div>
         </div>
 
-        {/* Service highlights */}
         <div className="max-w-7xl mx-auto px-6 py-16 -mt-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {serviceHighlights.map((highlight, index) => (
@@ -82,7 +80,6 @@ const Services = () => {
           </div>
         </div>
 
-        {/* Service categories */}
         <div className="bg-gray-50 py-16">
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-3xl font-bold mb-12 text-center">Our Service Categories</h2>
@@ -96,7 +93,7 @@ const Services = () => {
                       {category.services.map((service, serviceIndex) => (
                         <li key={serviceIndex} className="flex items-center">
                           <div className="h-2 w-2 rounded-full bg-[#cc0c1a] mr-2"></div>
-                          <span>{service}</span>
+                          <span className="text-[#ea384c] hover:underline">{service}</span>
                         </li>
                       ))}
                     </ul>
@@ -107,7 +104,6 @@ const Services = () => {
           </div>
         </div>
 
-        {/* Detailed services */}
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="mb-8 text-center">
             <h2 className="text-3xl font-bold mb-4">Detailed Service Offerings</h2>
