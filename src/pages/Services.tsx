@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import ServicesSection from '@/components/ServicesSection';
@@ -54,11 +53,11 @@ const Services = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="pt-32">
-        <div className="bg-[#1A1F2C] pb-16">
-          <div className="max-w-7xl mx-auto px-6">
+        <div className="hero-section">
+          <div className="hero-content">
             <div className="text-center">
-              <h1 className="text-5xl font-bold text-white mb-6">Our Security Services</h1>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <h1 className="hero-title">Our Security Services</h1>
+              <p className="hero-description">
                 Professional cybersecurity services tailored to protect your organization from emerging threats.
               </p>
             </div>

@@ -1,10 +1,8 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import ProductsSection from '@/components/ProductsSection';
 import ProductCategories from '@/components/ProductCategories';
 import Footer from '@/components/Footer';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
@@ -13,11 +11,11 @@ const Products = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main className="pt-32">
-        <div className="bg-[#1A1F2C] text-white py-16">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Security Solutions</h1>
-              <p className="text-lg max-w-3xl mx-auto opacity-90">
+        <div className="hero-section">
+          <div className="hero-content">
+            <div className="text-center">
+              <h1 className="hero-title">Our Security Solutions</h1>
+              <p className="hero-description">
                 Comprehensive cybersecurity platforms for today's evolving threat landscape.
               </p>
             </div>
