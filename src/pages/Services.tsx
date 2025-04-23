@@ -50,21 +50,21 @@ const Services = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-24">
-        <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
+      <main>
+        <div className="bg-[#1A1F2C] pt-32 pb-16">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Security Services</h1>
-              <p className="text-lg max-w-3xl mx-auto opacity-90">
+            <div className="text-center">
+              <h1 className="text-5xl font-bold text-white mb-6">Our Security Services</h1>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
                 Professional cybersecurity services tailored to protect your organization from emerging threats.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-16 -mt-16">
+        <div className="max-w-7xl mx-auto px-6 -mt-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {serviceHighlights.map((highlight, index) => (
               <Card key={index} className="border-none shadow-xl bg-white">
@@ -125,7 +125,7 @@ const Services = () => {
             </Button>
           </Link>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );
