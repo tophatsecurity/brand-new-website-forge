@@ -54,6 +54,7 @@ export const getNavLinks = (user: any) => {
     const uMeta = user.user_metadata || {};
     if (uMeta.approved) {
       navLinks.push(
+        { name: "Licensing", href: "/licensing" },
         { name: "Support", href: "/support" },
         { name: "Downloads", href: "/downloads" }
       );
