@@ -6,18 +6,14 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NavLink, getNavLinks } from './NavLinks';
 import { Separator } from "@/components/ui/separator";
-import { supabase } from "@/integrations/supabase/client";
+import { useAdminNavigation } from '@/hooks/useAdminNavigation';
+import { getIconComponent } from './IconRegistry';
 
 // Import all required icons
 import { 
-  Users, 
   FileText, 
-  Shield, 
-  Download, 
-  Settings, 
   BadgeHelp, 
-  LayoutDashboard,
-  ActivitySquare
+  Download
 } from 'lucide-react';
 
 interface MobileNavProps {
@@ -25,35 +21,8 @@ interface MobileNavProps {
   signOut: () => Promise<void>;
 }
 
-// Helper to convert icon string to component
-const getIconComponent = (iconName: string) => {
-  const iconMap: Record<string, React.ReactNode> = {
-    'Users': <Users className="h-4 w-4 mr-2" />,
-    'Settings': <Settings className="h-4 w-4 mr-2" />,
-    'Shield': <Shield className="h-4 w-4 mr-2" />,
-    'Download': <Download className="h-4 w-4 mr-2" />,
-    'FileText': <FileText className="h-4 w-4 mr-2" />,
-    'BadgeHelp': <BadgeHelp className="h-4 w-4 mr-2" />,
-    'LayoutDashboard': <LayoutDashboard className="h-4 w-4 mr-2" />,
-    'ActivitySquare': <ActivitySquare className="h-4 w-4 mr-2" />
-  };
-  
-  return iconMap[iconName] || <FileText className="h-4 w-4 mr-2" />;
-};
-
-type AdminNavItem = {
-  id: string;
-  title: string;
-  icon: string;
-  description: string;
-  route: string;
-  display_order: number;
-}
-
 const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [adminNavItems, setAdminNavItems] = useState<AdminNavItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const navLinks = getNavLinks(user);
@@ -66,55 +35,9 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
 
   const isAdmin = user?.user_metadata?.role === 'admin';
   const isApproved = user?.user_metadata?.approved;
-
-  React.useEffect(() => {
-    const fetchAdminNavItems = async () => {
-      if (isAdmin) {
-        try {
-          const { data, error } = await supabase
-            .from('admin_navigation')
-            .select('*')
-            .order('display_order', { ascending: true });
-            
-          if (error) {
-            console.error('Error fetching admin navigation:', error);
-          } else {
-            setAdminNavItems(data || []);
-          }
-        } catch (err) {
-          console.error('Exception fetching admin navigation:', err);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    };
-    
-    fetchAdminNavItems();
-  }, [isAdmin]);
-
-  // Define all admin pages
-  const allAdminItems = [
-    { name: "Admin Dashboard", route: "/admin", icon: "LayoutDashboard" },
-    { name: "Users", route: "/admin/users", icon: "Users" },
-    { name: "Actions", route: "/admin/actions", icon: "ActivitySquare" },
-    { name: "Permissions", route: "/admin/permissions", icon: "Shield" },
-    { name: "Downloads", route: "/admin/downloads", icon: "Download" },
-    { name: "Licensing", route: "/admin/licensing", icon: "FileText" },
-  ];
   
-  // Add dynamic links that don't already exist in predefined links
-  adminNavItems.forEach(dynamicItem => {
-    const exists = allAdminItems.some(item => item.route === dynamicItem.route);
-    if (!exists) {
-      allAdminItems.push({
-        name: dynamicItem.title,
-        route: dynamicItem.route,
-        icon: dynamicItem.icon
-      });
-    }
-  });
+  // Use the shared admin navigation hook
+  const { adminLinks } = useAdminNavigation(isAdmin);
 
   return (
     <div className="md:hidden">
@@ -181,19 +104,19 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
                 Admin
               </div>
               
-              {allAdminItems.map((item) => (
+              {adminLinks.map((item) => (
                 <Link
                   key={item.name}
-                  to={item.route}
+                  to={item.href}
                   className={cn(
                     "font-medium py-2 flex items-center",
-                    location.pathname === item.route
+                    location.pathname === item.href
                       ? "text-[#cc0c1a] dark:text-[#cc0c1a]"
                       : "text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a]"
                   )}
                   onClick={() => setIsOpen(false)}
                 >
-                  {getIconComponent(item.icon)} {item.name}
+                  <item.icon className="h-4 w-4 mr-2" /> {item.name}
                 </Link>
               ))}
             </>
