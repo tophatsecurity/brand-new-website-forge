@@ -4,7 +4,6 @@ import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import ProductsSection from '@/components/ProductsSection';
 import ProductCategories from '@/components/ProductCategories';
-import TestimonialsSection from '@/components/TestimonialsSection';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -39,8 +38,6 @@ const Index = () => {
           </Link>
         </div>
       </div>
-      
-      <TestimonialsSection />
       
       <div className="bg-gray-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-6 text-center">
