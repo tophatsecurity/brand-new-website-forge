@@ -16,7 +16,8 @@ import {
   Download, 
   Settings, 
   BadgeHelp, 
-  LayoutDashboard 
+  LayoutDashboard,
+  ActivitySquare
 } from 'lucide-react';
 
 interface MobileNavProps {
@@ -33,7 +34,8 @@ const getIconComponent = (iconName: string) => {
     'Download': <Download className="h-4 w-4 mr-2" />,
     'FileText': <FileText className="h-4 w-4 mr-2" />,
     'BadgeHelp': <BadgeHelp className="h-4 w-4 mr-2" />,
-    'LayoutDashboard': <LayoutDashboard className="h-4 w-4 mr-2" />
+    'LayoutDashboard': <LayoutDashboard className="h-4 w-4 mr-2" />,
+    'ActivitySquare': <ActivitySquare className="h-4 w-4 mr-2" />
   };
   
   return iconMap[iconName] || <FileText className="h-4 w-4 mr-2" />;
@@ -91,6 +93,31 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
     
     fetchAdminNavItems();
   }, [isAdmin]);
+
+  // Define predefined admin pages
+  const predefinedAdminLinks = [
+    { name: "Admin Dashboard", route: "/admin", icon: "LayoutDashboard" },
+    { name: "Users", route: "/admin/users", icon: "Users" },
+    { name: "Actions", route: "/admin/actions", icon: "ActivitySquare" },
+    { name: "Permissions", route: "/admin/permissions", icon: "Shield" },
+    { name: "Downloads", route: "/admin/downloads", icon: "Download" },
+    { name: "Licensing", route: "/admin/licensing", icon: "FileText" },
+  ];
+
+  // Combine predefined and dynamic admin links, but avoid duplicates
+  const allAdminItems = [...predefinedAdminLinks];
+  
+  // Only add dynamic links if they don't already exist in predefined links
+  adminNavItems.forEach(dynamicItem => {
+    const exists = allAdminItems.some(item => item.route === dynamicItem.route);
+    if (!exists) {
+      allAdminItems.push({
+        name: dynamicItem.title,
+        route: dynamicItem.route,
+        icon: dynamicItem.icon
+      });
+    }
+  });
 
   return (
     <div className="md:hidden">
@@ -157,22 +184,9 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
                 Admin
               </div>
               
-              <Link
-                to="/admin"
-                className={cn(
-                  "font-medium py-2 flex items-center",
-                  location.pathname === '/admin'
-                    ? "text-[#cc0c1a] dark:text-[#cc0c1a]"
-                    : "text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a]"
-                )}
-                onClick={() => setIsOpen(false)}
-              >
-                <LayoutDashboard className="h-4 w-4 mr-2" /> Admin Dashboard
-              </Link>
-              
-              {adminNavItems.map((item) => (
+              {allAdminItems.map((item) => (
                 <Link
-                  key={item.id}
+                  key={item.name}
                   to={item.route}
                   className={cn(
                     "font-medium py-2 flex items-center",
@@ -182,7 +196,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
                   )}
                   onClick={() => setIsOpen(false)}
                 >
-                  {getIconComponent(item.icon)} {item.title}
+                  {getIconComponent(item.icon)} {item.name}
                 </Link>
               ))}
             </>

@@ -37,7 +37,7 @@ export const NavLink: React.FC<NavLinkProps> = ({ name, href, onClick }) => {
 };
 
 export const getNavLinks = (user: any) => {
-  // Base navigation links
+  // Base navigation links without admin link
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Products", href: "/products" },
@@ -48,6 +48,5 @@ export const getNavLinks = (user: any) => {
     { name: "Contact", href: "/contact" }
   ];
 
-  // No need for admin link in the main navigation anymore
   return navLinks;
 };

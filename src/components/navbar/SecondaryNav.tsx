@@ -24,7 +24,8 @@ import {
   Wrench, 
   Database, 
   Key,
-  LayoutDashboard
+  LayoutDashboard,
+  ActivitySquare
 } from 'lucide-react';
 
 // Helper to convert icon string to Lucide icon component
@@ -40,7 +41,8 @@ const getIconComponent = (iconName: string): LucideIcon => {
     'Wrench': Wrench,
     'Database': Database,
     'Key': Key,
-    'LayoutDashboard': LayoutDashboard
+    'LayoutDashboard': LayoutDashboard,
+    'ActivitySquare': ActivitySquare
   };
   
   return iconMap[iconName] || FileText;  // Default to FileText if icon not found
@@ -51,7 +53,7 @@ const SecondaryNavLink: React.FC<SecondaryNavLinkProps> = ({ name, href, icon: I
     <Link
       to={href}
       className={cn(
-        "flex items-center font-medium transition-colors px-2 py-1 rounded-md",
+        "flex items-center font-medium transition-colors px-2 py-1 rounded-md whitespace-nowrap",
         active 
           ? "text-[#cc0c1a] dark:text-[#cc0c1a]" 
           : "text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a]"
@@ -130,15 +132,19 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
     { name: "Downloads", href: "/downloads", icon: Download },
   ];
   
-  // Add admin dashboard link
-  const adminDashboardLink = {
-    name: "Admin Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard
-  };
+  // Admin links definition
+  // Define predefined admin pages
+  const predefinedAdminLinks = [
+    { name: "Admin Dashboard", href: "/admin", icon: LayoutDashboard },
+    { name: "Users", href: "/admin/users", icon: Users },
+    { name: "Actions", href: "/admin/actions", icon: ActivitySquare },
+    { name: "Permissions", href: "/admin/permissions", icon: Shield },
+    { name: "Downloads", href: "/admin/downloads", icon: Download },
+    { name: "Licensing", href: "/admin/licensing", icon: FileText },
+  ];
   
   // Convert admin nav items to links format
-  const adminLinks = adminNavItems.map(item => ({
+  const dynamicAdminLinks = adminNavItems.map(item => ({
     name: item.title,
     href: item.route,
     icon: getIconComponent(item.icon)
@@ -149,8 +155,23 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
   
   // Add admin links if user is admin
   if (isAdmin) {
-    links = [...regularLinks, adminDashboardLink, ...adminLinks];
+    // Combine predefined and dynamic admin links, but avoid duplicates
+    const allAdminLinks = [...predefinedAdminLinks];
+    
+    // Only add dynamic links if they don't already exist in predefined links
+    dynamicAdminLinks.forEach(dynamicLink => {
+      const exists = allAdminLinks.some(link => link.href === dynamicLink.href);
+      if (!exists) {
+        allAdminLinks.push(dynamicLink);
+      }
+    });
+    
+    links = [...regularLinks, ...allAdminLinks];
   }
+  
+  // Group links by section
+  const resourceLinks = regularLinks;
+  const adminLinks = isAdmin ? links.filter(link => link.href.startsWith('/admin')) : [];
 
   return (
     <div className={cn(
@@ -158,20 +179,39 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
       "bg-white/70 dark:bg-gray-900/70",
       className
     )}>
-      <div className="flex items-center justify-start space-x-4 py-2 px-6 md:px-12 lg:px-24 overflow-x-auto">
-        {loading ? (
-          <div className="text-sm text-muted-foreground">Loading navigation...</div>
-        ) : (
-          links.map((link) => (
+      <div className="flex items-center justify-between py-2 px-6 md:px-12 lg:px-24 overflow-x-auto">
+        <div className="flex items-center space-x-4 overflow-x-auto">
+          {/* Resource links */}
+          {resourceLinks.map((link) => (
             <SecondaryNavLink 
               key={link.name} 
               name={link.name} 
               href={link.href} 
               icon={link.icon}
               active={location.pathname === link.href || 
-                     (link.href !== "/" && location.pathname.startsWith(link.href))}
+                    (link.href !== "/" && location.pathname.startsWith(link.href))}
             />
-          ))
+          ))}
+        </div>
+        
+        {/* Admin links section */}
+        {isAdmin && (
+          <div className="flex items-center space-x-4 overflow-x-auto">
+            {loading ? (
+              <div className="text-sm text-muted-foreground">Loading admin...</div>
+            ) : (
+              adminLinks.map((link) => (
+                <SecondaryNavLink 
+                  key={link.name} 
+                  name={link.name} 
+                  href={link.href} 
+                  icon={link.icon}
+                  active={location.pathname === link.href || 
+                        (link.href !== "/" && location.pathname.startsWith(link.href))}
+                />
+              ))
+            )}
+          </div>
         )}
       </div>
     </div>
