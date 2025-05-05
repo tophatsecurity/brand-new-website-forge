@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Lock, Database, Images } from "lucide-react";
@@ -66,8 +67,7 @@ const HeroSection = () => {
           
           <div className="lg:w-1/2 mt-10 lg:mt-0 animate-fade-in" style={{ animationDelay: "200ms" }}>
             <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#cc0c1a] to-[#222] rounded-lg opacity-20 blur"></div>
-              <div className="relative bg-white rounded-lg p-6 shadow-lg">
+              <div className="border-2 border-[#cc0c1a] rounded-lg p-6 bg-white shadow-lg">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-semibold flex items-center">
                     <Images className="w-5 h-5 mr-2 text-[#cc0c1a]" />

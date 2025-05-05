@@ -56,7 +56,7 @@ const SecondLook = () => {
               </TabsTrigger>
               <TabsTrigger value="sbom" className="flex items-center gap-2">
                 <FileCheck className="h-4 w-4" />
-                <span>SBOM Platform</span>
+                <span>XBOM Platform</span>
               </TabsTrigger>
             </TabsList>
             
@@ -89,11 +89,11 @@ const SecondLook = () => {
                     <div className="bg-white p-2 rounded-full mb-6">
                       <img 
                         src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
-                        alt="SecondLook SBOM Platform" 
+                        alt="SecondLook XBOM Platform" 
                         className="h-40 md:h-48"
                       />
                     </div>
-                    <h3 className="text-2xl font-bold mb-2">SecondLook SBOM Platform</h3>
+                    <h3 className="text-2xl font-bold mb-2">SecondLook XBOM Platform</h3>
                     <p className="text-center text-muted-foreground">
                       Comprehensive bill of materials intelligence for software, hardware, and firmware
                     </p>

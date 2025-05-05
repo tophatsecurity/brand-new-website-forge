@@ -133,7 +133,7 @@ const SecondLookSection = () => {
 
         <div className="text-center mb-16 animate-slide-up opacity-0" style={{ animationDelay: '1300ms' }}>
           <Badge className="mb-4">BOM Intelligence</Badge>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">SecondLook SBOM Platform</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">SecondLook XBOM Platform</h2>
           <div className="w-20 h-1 bg-primary mx-auto mb-6"></div>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             A comprehensive bill of materials intelligence platform for software, hardware, and firmware components
@@ -149,7 +149,7 @@ const SecondLookSection = () => {
               come from third-party suppliers. Without proper visibility, these components represent a significant security risk.
             </p>
             <p className="text-muted-foreground">
-              The SecondLook SBOM Platform provides comprehensive visibility across all components in your 
+              The SecondLook XBOM Platform provides comprehensive visibility across all components in your 
               supply chain, helping you identify and mitigate risks before they impact your business.
             </p>
           </div>

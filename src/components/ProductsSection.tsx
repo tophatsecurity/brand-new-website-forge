@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Lock, Search, Radio, Server, Database, FileCheck, Eye } from "lucide-react";
@@ -40,9 +41,9 @@ const ProductsSection = () => {
           link: "/ddx"
         },
         {
-          title: "SecondLook SBOM",
+          title: "SecondLook XBOM",
           description: "Comprehensive Bill of Materials Intelligence for software, hardware, and firmware components.",
-          longDescription: "SecondLook SBOM platform provides detailed analysis and risk assessment for Software, Hardware, and Firmware Bills of Materials, ensuring complete transparency in your supply chain components.",
+          longDescription: "SecondLook XBOM platform provides detailed analysis and risk assessment for Software, Hardware, and Firmware Bills of Materials, ensuring complete transparency in your supply chain components.",
           icon: <FileCheck className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/secondlook"
