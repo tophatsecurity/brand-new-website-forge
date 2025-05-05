@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from "react-router-dom";
-import { FileText, Download, LucideIcon, LicenseIcon, BadgeHelp } from 'lucide-react';
+import { FileText, Download, LucideIcon, BadgeHelp } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 type SecondaryNavLinkProps = {
