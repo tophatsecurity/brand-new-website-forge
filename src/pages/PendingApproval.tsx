@@ -1,19 +1,57 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 
 const PendingApproval = () => {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
+
+  const handleSelfApprove = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      // Self-approve the user by updating user_metadata
+      const { error } = await supabase.auth.updateUser({
+        data: { approved: true }
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: 'Account approved',
+        description: 'Your account has been successfully approved.',
+      });
+      
+      // Redirect to home page after approval
+      setTimeout(() => navigate('/'), 1500);
+    } catch (error) {
+      console.error('Error approving account:', error);
+      toast({
+        title: 'Error approving account',
+        description: 'Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Check if user is admin based on user_metadata
+  const isAdmin = user?.user_metadata?.role === 'admin';
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -28,6 +66,24 @@ const PendingApproval = () => {
             <p className="mb-6">
               For urgent assistance or to expedite the approval process, please contact our support team.
             </p>
+            
+            {/* Add self-approval button for admins */}
+            {isAdmin && (
+              <div className="mb-4">
+                <Button 
+                  onClick={handleSelfApprove} 
+                  variant="default" 
+                  className="bg-green-600 hover:bg-green-700 mb-4"
+                  disabled={loading}
+                >
+                  {loading ? 'Processing...' : 'Self-Approve (Admin Only)'}
+                </Button>
+                <p className="text-sm text-gray-600">
+                  As an admin, you can approve your own account.
+                </p>
+              </div>
+            )}
+            
             <Button onClick={handleSignOut} variant="outline">Sign Out</Button>
           </div>
         </div>
