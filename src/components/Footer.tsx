@@ -27,8 +27,10 @@ const Footer = () => {
               className="h-14 mb-4"
             />
             <div className="mb-3">
-              <span className="block text-2xl font-bold text-white">THS</span>
-              <span className="block text-lg font-bold text-[#cc0c1a]">|WEB</span>
+              <span className="text-2xl font-bold">
+                <span className="text-white">THS</span>
+                <span className="text-[#cc0c1a]">|WEB</span>
+              </span>
             </div>
             <p className="text-white/80 mb-6">
               Protecting businesses from emerging cyber threats with cutting-edge security solutions.

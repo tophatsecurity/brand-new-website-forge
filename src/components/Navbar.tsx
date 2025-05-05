@@ -40,10 +40,10 @@ const Navbar = () => {
               alt="TopHat Security Logo"
               className="h-14 md:h-16 mr-3"
             />
-            <div>
-              <span className="block text-2xl font-bold text-[#222]">THS</span>
-              <span className="block text-lg font-bold text-[#cc0c1a]">|WEB</span>
-            </div>
+            <span className="text-2xl font-bold">
+              <span className="text-[#222]">THS</span>
+              <span className="text-[#cc0c1a]">|WEB</span>
+            </span>
           </Link>
         </div>
 
