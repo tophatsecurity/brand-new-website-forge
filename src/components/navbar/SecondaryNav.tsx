@@ -114,8 +114,12 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
       }
     };
     
-    fetchAdminNavItems();
-  }, [toast]);
+    if (isAdmin) {
+      fetchAdminNavItems();
+    } else {
+      setLoading(false);
+    }
+  }, [toast, isAdmin]);
   
   // Define regular links
   const regularLinks = [
@@ -137,9 +141,7 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
   return (
     <div className={cn(
       "w-full backdrop-blur-md border-b transition-all duration-300",
-      scrolled => scrolled
-        ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-md"
-        : "bg-white/70 dark:bg-gray-900/70",
+      "bg-white/70 dark:bg-gray-900/70",
       className
     )}>
       <div className="flex items-center justify-start space-x-4 py-2 px-6 md:px-12 lg:px-24 overflow-x-auto">

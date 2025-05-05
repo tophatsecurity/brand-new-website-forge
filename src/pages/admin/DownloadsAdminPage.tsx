@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { useAuth } from '@/contexts/AuthContext';
+import { Navigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { 
   Table, 
   TableBody, 
@@ -12,461 +12,437 @@ import {
   TableHead, 
   TableHeader, 
   TableRow 
-} from '@/components/ui/table';
-import {
+} from "@/components/ui/table";
+import { 
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
+  DialogClose
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Delete, DownloadCloud, Edit, Plus } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
+import { format, parseISO } from 'date-fns';
+import { Trash, PencilIcon, Plus } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-const productTypes = [
-  "Virtual Machine",
-  "Physical Hardware",
-  "Appliance",
-  "SEEKCAP",
-  "DDX",
-  "ParaGuard",
-];
-
-const downloadFormSchema = z.object({
-  product_name: z.string().min(1, { message: "Product name is required" }),
-  product_type: z.string().min(1, { message: "Product type is required" }),
-  version: z.string().min(1, { message: "Version is required" }),
-  file_url: z.string().url({ message: "Valid URL is required" }),
-  description: z.string().optional(),
-  is_latest: z.boolean().default(false),
-  release_date: z.string().optional(),
-});
-
-type DownloadFormValues = z.infer<typeof downloadFormSchema>;
+type Download = {
+  id: string;
+  product_name: string;
+  product_type: string;
+  version: string;
+  release_date: string;
+  description: string | null;
+  file_url: string;
+  is_latest: boolean;
+};
 
 const DownloadsAdminPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [downloads, setDownloads] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const [editingDownload, setEditingDownload] = useState<Download | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    product_name: '',
+    product_type: '',
+    version: '',
+    release_date: new Date().toISOString().split('T')[0],
+    description: '',
+    file_url: '',
+    is_latest: false
+  });
+  
+  // Redirect non-admin users
+  if (!user || user.user_metadata?.role !== 'admin') {
+    return <Navigate to="/" />;
+  }
 
-  const form = useForm<DownloadFormValues>({
-    resolver: zodResolver(downloadFormSchema),
-    defaultValues: {
-      product_name: "",
-      product_type: "",
-      version: "",
-      file_url: "",
-      description: "",
-      is_latest: false,
-      release_date: new Date().toISOString().split('T')[0],
-    },
+  // Fetch downloads data
+  const { data: downloads, isLoading, error } = useQuery({
+    queryKey: ['admin-downloads'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_downloads')
+        .select('*')
+        .order('release_date', { ascending: false });
+        
+      if (error) throw error;
+      return data as Download[];
+    }
   });
 
-  useEffect(() => {
-    fetchDownloads();
-  }, []);
-
-  const fetchDownloads = async () => {
-    setLoading(true);
+  // Set as latest version
+  const handleSetLatest = async (id: string, productName: string, productType: string) => {
     try {
-      const { data, error } = await supabase
-        .from("product_downloads")
-        .select("*")
-        .order("product_name")
-        .order("product_type")
-        .order("release_date", { ascending: false });
-
-      if (error) {
-        throw error;
-      }
-
-      setDownloads(data || []);
-    } catch (error: any) {
-      console.error("Error fetching downloads:", error);
+      // First, set all versions of this product to not latest
+      const { error: updateError } = await supabase
+        .from('product_downloads')
+        .update({ is_latest: false })
+        .eq('product_name', productName)
+        .eq('product_type', productType);
+      
+      if (updateError) throw updateError;
+      
+      // Then set this specific version as latest
+      const { error: setLatestError } = await supabase
+        .from('product_downloads')
+        .update({ is_latest: true })
+        .eq('id', id);
+      
+      if (setLatestError) throw setLatestError;
+      
       toast({
-        title: "Error loading downloads",
-        description: error.message,
-        variant: "destructive",
+        title: "Success",
+        description: "Latest version updated successfully",
       });
-    } finally {
-      setLoading(false);
+      
+      queryClient.invalidateQueries({ queryKey: ['admin-downloads'] });
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.message,
+        variant: "destructive"
+      });
     }
   };
 
-  const handleSubmit = async (values: DownloadFormValues) => {
+  // Handle form submission for create/edit
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
     try {
-      let operation;
-      
-      if (editId) {
+      if (editingDownload) {
         // Update existing download
-        operation = supabase
-          .from("product_downloads")
-          .update(values)
-          .eq("id", editId);
+        const { error } = await supabase
+          .from('product_downloads')
+          .update({
+            product_name: formData.product_name,
+            product_type: formData.product_type,
+            version: formData.version,
+            release_date: formData.release_date,
+            description: formData.description,
+            file_url: formData.file_url,
+            is_latest: formData.is_latest
+          })
+          .eq('id', editingDownload.id);
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Success",
+          description: "Download updated successfully",
+        });
       } else {
         // Create new download
-        operation = supabase
-          .from("product_downloads")
-          .insert([values]);
+        // Fix: We need to provide all required fields with correct types
+        const { error } = await supabase
+          .from('product_downloads')
+          .insert({
+            product_name: formData.product_name,
+            product_type: formData.product_type,
+            version: formData.version,
+            release_date: formData.release_date,
+            description: formData.description,
+            file_url: formData.file_url,
+            is_latest: formData.is_latest
+          });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Success",
+          description: "Download created successfully",
+        });
       }
       
-      const { error } = await operation;
+      // Reset form and close dialog
+      setFormData({
+        product_name: '',
+        product_type: '',
+        version: '',
+        release_date: new Date().toISOString().split('T')[0],
+        description: '',
+        file_url: '',
+        is_latest: false
+      });
+      setEditingDownload(null);
+      setIsDialogOpen(false);
+      
+      // Refresh data
+      queryClient.invalidateQueries({ queryKey: ['admin-downloads'] });
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handle delete
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    
+    try {
+      const { error } = await supabase
+        .from('product_downloads')
+        .delete()
+        .eq('id', deleteId);
       
       if (error) throw error;
       
       toast({
-        title: editId ? "Download updated" : "Download created",
-        description: `Successfully ${editId ? "updated" : "added"} ${values.product_name} ${values.version}`,
+        title: "Success",
+        description: "Download deleted successfully",
       });
       
-      fetchDownloads();
-      handleDialogClose();
-    } catch (error: any) {
-      console.error("Error saving download:", error);
+      setIsDeleteDialogOpen(false);
+      setDeleteId(null);
+      
+      // Refresh data
+      queryClient.invalidateQueries({ queryKey: ['admin-downloads'] });
+    } catch (err: any) {
       toast({
-        title: "Error saving download",
-        description: error.message,
-        variant: "destructive",
+        title: "Error",
+        description: err.message,
+        variant: "destructive"
       });
     }
   };
 
-  const handleEdit = (download: any) => {
-    setEditId(download.id);
-    form.reset({
+  // Handle edit click
+  const handleEdit = (download: Download) => {
+    setEditingDownload(download);
+    setFormData({
       product_name: download.product_name,
       product_type: download.product_type,
       version: download.version,
+      release_date: new Date(download.release_date).toISOString().split('T')[0],
+      description: download.description || '',
       file_url: download.file_url,
-      description: download.description || "",
-      is_latest: download.is_latest,
-      release_date: download.release_date ? new Date(download.release_date).toISOString().split('T')[0] : "",
+      is_latest: download.is_latest
     });
-    setOpenDialog(true);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this download?")) {
-      try {
-        const { error } = await supabase
-          .from("product_downloads")
-          .delete()
-          .eq("id", id);
-          
-        if (error) throw error;
-        
-        toast({
-          title: "Download deleted",
-          description: "The download has been removed successfully",
-        });
-        
-        fetchDownloads();
-      } catch (error: any) {
-        console.error("Error deleting download:", error);
-        toast({
-          title: "Error deleting download",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
-  const handleDialogClose = () => {
-    setOpenDialog(false);
-    setEditId(null);
-    form.reset();
-  };
-
-  const handleDialogOpen = () => {
-    form.reset({
-      product_name: "",
-      product_type: "",
-      version: "",
-      file_url: "",
-      description: "",
-      is_latest: false,
-      release_date: new Date().toISOString().split('T')[0],
-    });
-    setEditId(null);
-    setOpenDialog(true);
+    setIsDialogOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="pt-40 pb-16 px-4">
+      <div className="pt-32 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold">Manage Downloads</h1>
-            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={handleDialogOpen} className="flex items-center">
-                  <Plus className="mr-2 h-4 w-4" /> Add Download
+                <Button className="flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Add Download
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
-                  <DialogTitle>{editId ? "Edit Download" : "Add New Download"}</DialogTitle>
-                  <DialogDescription>
-                    {editId 
-                      ? "Update the details for this product download." 
-                      : "Add a new product download to the system."}
-                  </DialogDescription>
+                  <DialogTitle>
+                    {editingDownload ? "Edit Download" : "Add New Download"}
+                  </DialogTitle>
                 </DialogHeader>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="product_name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Product Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="Enter product name" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="product_name">Product Name</Label>
+                      <Input 
+                        id="product_name"
+                        value={formData.product_name}
+                        onChange={(e) => setFormData({...formData, product_name: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="product_type">Product Type</Label>
+                      <Input 
+                        id="product_type"
+                        value={formData.product_type}
+                        onChange={(e) => setFormData({...formData, product_type: e.target.value})}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="version">Version</Label>
+                      <Input 
+                        id="version"
+                        value={formData.version}
+                        onChange={(e) => setFormData({...formData, version: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="release_date">Release Date</Label>
+                      <Input 
+                        id="release_date"
+                        type="date"
+                        value={formData.release_date}
+                        onChange={(e) => setFormData({...formData, release_date: e.target.value})}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="file_url">File URL</Label>
+                    <Input 
+                      id="file_url"
+                      value={formData.file_url}
+                      onChange={(e) => setFormData({...formData, file_url: e.target.value})}
+                      required
                     />
-                    
-                    <FormField
-                      control={form.control}
-                      name="product_type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Product Type</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select product type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {productTypes.map((type) => (
-                                <SelectItem key={type} value={type}>
-                                  {type}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea 
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({...formData, description: e.target.value})}
+                      rows={3}
                     />
-                    
-                    <FormField
-                      control={form.control}
-                      name="version"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Version</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="e.g. 1.0.0" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="is_latest"
+                      checked={formData.is_latest}
+                      onCheckedChange={(checked) => setFormData({...formData, is_latest: checked as boolean})}
                     />
-                    
-                    <FormField
-                      control={form.control}
-                      name="file_url"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Download URL</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="https://..." />
-                          </FormControl>
-                          <FormDescription>
-                            Direct download link to the file
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              {...field} 
-                              placeholder="Enter a brief description of this release" 
-                              rows={3}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="release_date"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Release Date</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="is_latest"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel>Latest Version</FormLabel>
-                            <FormDescription>
-                              Mark this as the latest version of the product
-                            </FormDescription>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <DialogFooter>
-                      <Button type="button" variant="outline" onClick={handleDialogClose}>
-                        Cancel
-                      </Button>
-                      <Button type="submit">
-                        {editId ? "Save Changes" : "Add Download"}
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                </Form>
+                    <Label htmlFor="is_latest">Mark as latest version</Label>
+                  </div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button type="button" variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button type="submit">
+                      {editingDownload ? "Update" : "Add"} Download
+                    </Button>
+                  </DialogFooter>
+                </form>
               </DialogContent>
             </Dialog>
           </div>
-          
+
           <div className="bg-card rounded-lg shadow-md p-6">
-            {loading ? (
-              <div className="py-8 text-center">Loading downloads...</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Version</TableHead>
+                    <TableHead>Release Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Version</TableHead>
-                      <TableHead>Released</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableCell colSpan={6} className="text-center py-8">
+                        Loading downloads...
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {downloads.map((dl) => (
-                      <TableRow key={dl.id}>
-                        <TableCell>{dl.product_name}</TableCell>
+                  ) : error ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-8 text-red-500">
+                        Error loading downloads: {(error as Error).message}
+                      </TableCell>
+                    </TableRow>
+                  ) : downloads && downloads.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-8">
+                        No downloads found. Add your first download.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    downloads?.map((download) => (
+                      <TableRow key={download.id}>
+                        <TableCell>{download.product_name}</TableCell>
+                        <TableCell>{download.product_type}</TableCell>
+                        <TableCell>v{download.version}</TableCell>
+                        <TableCell>{format(parseISO(download.release_date), 'MMM dd, yyyy')}</TableCell>
                         <TableCell>
-                          <Badge>{dl.product_type}</Badge>
-                        </TableCell>
-                        <TableCell>{dl.version}</TableCell>
-                        <TableCell>
-                          {dl.release_date ? new Date(dl.release_date).toLocaleDateString() : ""}
-                        </TableCell>
-                        <TableCell className="max-w-xs truncate">
-                          {dl.description}
-                        </TableCell>
-                        <TableCell>
-                          {dl.is_latest && (
-                            <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">
-                              Latest
+                          {download.is_latest ? (
+                            <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Latest</Badge>
+                          ) : (
+                            <Badge variant="outline" className="hover:bg-gray-100">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-auto p-0 text-xs"
+                                onClick={() => handleSetLatest(download.id, download.product_name, download.product_type)}
+                              >
+                                Set as latest
+                              </Button>
                             </Badge>
                           )}
                         </TableCell>
                         <TableCell>
-                          <div className="flex space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleEdit(dl)}
+                          <div className="flex items-center gap-2">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleEdit(download)}
                             >
-                              <Edit className="h-4 w-4" />
+                              <PencilIcon className="h-4 w-4" />
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDelete(dl.id)}
-                              className="text-destructive hover:bg-destructive/10"
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="text-red-500"
+                              onClick={() => {
+                                setDeleteId(download.id);
+                                setIsDeleteDialogOpen(true);
+                              }}
                             >
-                              <Delete className="h-4 w-4" />
+                              <Trash className="h-4 w-4" />
                             </Button>
-                            <a
-                              href={dl.file_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-blue-600"
-                              >
-                                <DownloadCloud className="h-4 w-4" />
-                              </Button>
-                            </a>
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                {downloads.length === 0 && (
-                  <div className="text-center py-8">No downloads available.</div>
-                )}
-              </div>
-            )}
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p>Are you sure you want to delete this download? This action cannot be undone.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );

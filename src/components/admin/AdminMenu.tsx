@@ -76,6 +76,8 @@ const AdminMenu: React.FC<AdminMenuProps> = ({ isAdmin }) => {
       };
       
       fetchAdminNavItems();
+    } else {
+      setLoading(false);
     }
   }, [isAdmin, toast]);
 
@@ -93,22 +95,35 @@ const AdminMenu: React.FC<AdminMenuProps> = ({ isAdmin }) => {
               {loading ? (
                 <div className="p-2">Loading admin menu...</div>
               ) : (
-                adminNavItems.map((item) => {
-                  const Icon = getIconComponent(item.icon);
-                  return (
-                    <Link 
-                      key={item.id}
-                      to={item.route} 
-                      className="group grid grid-cols-4 items-center justify-start gap-1 rounded-md p-3 hover:bg-accent"
-                    >
-                      <Icon className="h-5 w-5" />
-                      <div className="col-span-3">
-                        <div className="font-medium mb-1">{item.title}</div>
-                        <p className="text-sm text-muted-foreground">{item.description}</p>
-                      </div>
-                    </Link>
-                  );
-                })
+                <>
+                  <Link 
+                    to="/admin" 
+                    className="group grid grid-cols-4 items-center justify-start gap-1 rounded-md p-3 hover:bg-accent"
+                  >
+                    <Settings className="h-5 w-5" />
+                    <div className="col-span-3">
+                      <div className="font-medium mb-1">Admin Dashboard</div>
+                      <p className="text-sm text-muted-foreground">Main admin dashboard</p>
+                    </div>
+                  </Link>
+                  
+                  {adminNavItems.map((item) => {
+                    const Icon = getIconComponent(item.icon);
+                    return (
+                      <Link 
+                        key={item.id}
+                        to={item.route} 
+                        className="group grid grid-cols-4 items-center justify-start gap-1 rounded-md p-3 hover:bg-accent"
+                      >
+                        <Icon className="h-5 w-5" />
+                        <div className="col-span-3">
+                          <div className="font-medium mb-1">{item.title}</div>
+                          <p className="text-sm text-muted-foreground">{item.description}</p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </>
               )}
             </div>
           </NavigationMenuContent>
