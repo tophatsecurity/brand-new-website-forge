@@ -31,6 +31,13 @@ import Licensing from "./pages/Licensing";
 import Downloads from "./pages/Downloads";
 import Support from "./pages/Support";
 
+// Admin Pages
+import UsersPage from "./pages/admin/UsersPage";
+import ActionsPage from "./pages/admin/ActionsPage";
+import PermissionsPage from "./pages/admin/PermissionsPage";
+import DownloadsAdminPage from "./pages/admin/DownloadsAdminPage";
+import LicensingAdminPage from "./pages/admin/LicensingAdminPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -86,6 +93,33 @@ const App = () => (
               <Route path="/support" element={
                 <ProtectedRoute>
                   <Support />
+                </ProtectedRoute>
+              } />
+              
+              {/* Admin routes */}
+              <Route path="/admin/users" element={
+                <ProtectedRoute>
+                  <UsersPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/actions" element={
+                <ProtectedRoute>
+                  <ActionsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/permissions" element={
+                <ProtectedRoute>
+                  <PermissionsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/downloads" element={
+                <ProtectedRoute>
+                  <DownloadsAdminPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/licensing" element={
+                <ProtectedRoute>
+                  <LicensingAdminPage />
                 </ProtectedRoute>
               } />
               

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { User, LogOut } from 'lucide-react';
 import { NavLink, getNavLinks } from './NavLinks';
+import AdminMenu from '@/components/admin/AdminMenu';
 
 interface DesktopNavProps {
   user: any;
@@ -24,6 +25,10 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ user, signOut }) => {
       {navLinks.map((link) => (
         <NavLink key={link.name} name={link.name} href={link.href} />
       ))}
+
+      {user?.user_metadata?.approved && 
+        <AdminMenu isAdmin={user?.user_metadata?.role === 'admin'} />
+      }
 
       {/* Authentication Buttons */}
       {user ? (

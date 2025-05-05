@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, User } from 'lucide-react';
+import { Menu, X, LogOut, User, Users, FileText, Shield, Download, Settings } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NavLink, getNavLinks } from './NavLinks';
@@ -21,6 +21,8 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
     navigate('/');
     setIsOpen(false);
   };
+
+  const isAdmin = user?.user_metadata?.role === 'admin';
 
   return (
     <div className="md:hidden">
@@ -47,6 +49,50 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
               onClick={() => setIsOpen(false)}
             />
           ))}
+
+          {/* Admin section for mobile */}
+          {isAdmin && user?.user_metadata?.approved && (
+            <>
+              <div className="pt-2 pb-1 font-semibold text-gray-500 dark:text-gray-400">
+                Admin
+              </div>
+              <Link
+                to="/admin/users"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <Users className="h-4 w-4 mr-2" /> Users
+              </Link>
+              <Link
+                to="/admin/actions"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <Settings className="h-4 w-4 mr-2" /> Actions
+              </Link>
+              <Link
+                to="/admin/permissions"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <Shield className="h-4 w-4 mr-2" /> Permissions
+              </Link>
+              <Link
+                to="/admin/downloads"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <Download className="h-4 w-4 mr-2" /> Downloads
+              </Link>
+              <Link
+                to="/admin/licensing"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <FileText className="h-4 w-4 mr-2" /> Licensing
+              </Link>
+            </>
+          )}
 
           {user ? (
             <>
