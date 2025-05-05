@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from "react-router-dom";
-import { FileText, Download, Settings } from 'lucide-react';
+import { FileText, Download } from 'lucide-react';
 
 type NavLinkProps = {
   name: string;
@@ -20,7 +20,6 @@ export const NavLink: React.FC<NavLinkProps> = ({ name, href, onClick }) => {
       >
         {name === "Support" && <FileText className="h-4 w-4 mr-1" />}
         {name === "Downloads" && <Download className="h-4 w-4 mr-1" />}
-        {name === "Admin" && <Settings className="h-4 w-4 mr-1" />}
         {name}
       </Link>
     );
@@ -49,10 +48,8 @@ export const getNavLinks = (user: any) => {
     { name: "Contact", href: "/contact" }
   ];
 
-  // Add admin link if user is admin
-  if (user?.user_metadata?.role === 'admin') {
-    navLinks.push({ name: "Admin", href: "/admin" });
-  }
+  // We've moved the admin navigation to the secondary nav
+  // so we no longer need to add the admin link here
 
   return navLinks;
 };
