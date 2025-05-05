@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[#1c1e21] text-white">
+    <footer className="bg-[#1c1e21] text-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto pt-20 pb-12 px-6 md:px-12 lg:px-24">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div className="col-span-1 lg:col-span-1">
@@ -96,7 +97,7 @@ const Footer = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus-visible:ring-accent"
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus-visible:ring-accent dark:bg-gray-800/50 dark:border-gray-700"
               />
               <Button type="submit" className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
                 Subscribe

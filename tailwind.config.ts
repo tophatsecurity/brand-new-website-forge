@@ -20,9 +20,18 @@ export default {
 		},
 		extend: {
 			colors: {
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
+				border: {
+					DEFAULT: 'hsl(var(--border))',
+					dark: 'hsl(var(--border-dark))'
+				},
+				input: {
+					DEFAULT: 'hsl(var(--input))',
+					dark: 'hsl(var(--input-dark))'
+				},
+				ring: {
+					DEFAULT: 'hsl(var(--ring))',
+					dark: 'hsl(var(--ring-dark))'
+				},
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {

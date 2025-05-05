@@ -15,7 +15,7 @@ export const NavLink: React.FC<NavLinkProps> = ({ name, href, onClick }) => {
     return (
       <Link
         to={href}
-        className="text-foreground hover:text-[#cc0c1a] transition-colors duration-200 flex items-center"
+        className="text-foreground dark:text-gray-200 hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] transition-colors duration-200 flex items-center"
         onClick={onClick}
       >
         {name === "Support" && <FileText className="h-4 w-4 mr-1" />}
@@ -30,7 +30,7 @@ export const NavLink: React.FC<NavLinkProps> = ({ name, href, onClick }) => {
   return (
     <a
       href={href}
-      className="text-foreground hover:text-[#cc0c1a] transition-colors duration-200"
+      className="text-foreground dark:text-gray-200 hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] transition-colors duration-200"
       onClick={onClick}
     >
       {name}

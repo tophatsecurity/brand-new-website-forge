@@ -21,7 +21,7 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ user, signOut }) => {
   };
 
   return (
-    <div className="hidden md:flex items-center space-x-8">
+    <div className="flex items-center space-x-8">
       {navLinks.map((link) => (
         <NavLink key={link.name} name={link.name} href={link.href} />
       ))}

@@ -35,7 +35,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
 
       {/* Mobile Navigation Menu */}
       <div className={cn(
-        "md:hidden absolute left-0 right-0 bg-white shadow-lg transition-all duration-300 ease-in-out overflow-hidden",
+        "md:hidden absolute left-0 right-0 bg-white dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out overflow-hidden",
         isOpen ? "max-h-screen py-4" : "max-h-0"
       )}>
         <div className="flex flex-col space-y-4 px-6">
@@ -52,7 +52,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
             <>
               <Link
                 to="/profile"
-                className="text-foreground hover:text-[#cc0c1a] py-2"
+                className="text-foreground dark:text-gray-200 hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
                 onClick={() => setIsOpen(false)}
               >
                 My Account
@@ -73,7 +73,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
             <>
               <Link
                 to="/login"
-                className="text-foreground hover:text-[#cc0c1a] py-2"
+                className="text-foreground dark:text-gray-200 hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
                 onClick={() => setIsOpen(false)}
               >
                 Login
