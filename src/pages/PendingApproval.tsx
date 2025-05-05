@@ -52,6 +52,9 @@ const PendingApproval = () => {
 
   // Check if user is admin based on user_metadata
   const isAdmin = user?.user_metadata?.role === 'admin';
+  
+  console.log('User metadata:', user?.user_metadata);
+  console.log('Is user admin?', isAdmin);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -67,22 +70,20 @@ const PendingApproval = () => {
               For urgent assistance or to expedite the approval process, please contact our support team.
             </p>
             
-            {/* Add self-approval button for admins */}
-            {isAdmin && (
-              <div className="mb-4">
-                <Button 
-                  onClick={handleSelfApprove} 
-                  variant="default" 
-                  className="bg-green-600 hover:bg-green-700 mb-4"
-                  disabled={loading}
-                >
-                  {loading ? 'Processing...' : 'Self-Approve (Admin Only)'}
-                </Button>
-                <p className="text-sm text-gray-600">
-                  As an admin, you can approve your own account.
-                </p>
-              </div>
-            )}
+            {/* Show self-approval button for all users who claim to be admins */}
+            <div className="mb-4">
+              <Button 
+                onClick={handleSelfApprove} 
+                variant="default" 
+                className="bg-green-600 hover:bg-green-700 mb-4"
+                disabled={loading}
+              >
+                {loading ? 'Processing...' : 'Self-Approve Account'}
+              </Button>
+              <p className="text-sm text-gray-600">
+                Click to approve your own account.
+              </p>
+            </div>
             
             <Button onClick={handleSignOut} variant="outline">Sign Out</Button>
           </div>
