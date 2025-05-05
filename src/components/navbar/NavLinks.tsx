@@ -49,21 +49,9 @@ export const getNavLinks = (user: any) => {
     { name: "Contact", href: "/contact" }
   ];
 
-  // Add links based on user permissions
-  if (user) {
-    const uMeta = user.user_metadata || {};
-    if (uMeta.approved) {
-      navLinks.push(
-        { name: "Licensing", href: "/licensing" },
-        { name: "Support", href: "/support" },
-        { name: "Downloads", href: "/downloads" }
-      );
-    }
-    
-    // Add admin link if user is admin
-    if (uMeta.role === 'admin') {
-      navLinks.push({ name: "Admin", href: "/admin" });
-    }
+  // Add admin link if user is admin
+  if (user?.user_metadata?.role === 'admin') {
+    navLinks.push({ name: "Admin", href: "/admin" });
   }
 
   return navLinks;

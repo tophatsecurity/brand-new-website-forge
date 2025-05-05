@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, User, Users, FileText, Shield, Download, Settings } from 'lucide-react';
+import { Menu, X, LogOut, User, Users, FileText, Shield, Download, Settings, BadgeHelp } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NavLink, getNavLinks } from './NavLinks';
+import { Separator } from "@/components/ui/separator";
 
 interface MobileNavProps {
   user: any;
@@ -23,6 +24,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
   };
 
   const isAdmin = user?.user_metadata?.role === 'admin';
+  const isApproved = user?.user_metadata?.approved;
 
   return (
     <div className="md:hidden">
@@ -50,9 +52,41 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
             />
           ))}
 
-          {/* Admin section for mobile */}
-          {isAdmin && user?.user_metadata?.approved && (
+          {/* Resources section for approved users */}
+          {isApproved && (
             <>
+              <Separator className="my-2" />
+              <div className="pt-2 pb-1 font-semibold text-gray-500 dark:text-gray-400">
+                Resources
+              </div>
+              <Link
+                to="/licensing"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <FileText className="h-4 w-4 mr-2" /> Licensing
+              </Link>
+              <Link
+                to="/support"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <BadgeHelp className="h-4 w-4 mr-2" /> Support
+              </Link>
+              <Link
+                to="/downloads"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <Download className="h-4 w-4 mr-2" /> Downloads
+              </Link>
+            </>
+          )}
+
+          {/* Admin section for mobile */}
+          {isAdmin && (
+            <>
+              <Separator className="my-2" />
               <div className="pt-2 pb-1 font-semibold text-gray-500 dark:text-gray-400">
                 Admin
               </div>
@@ -96,6 +130,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
 
           {user ? (
             <>
+              <Separator className="my-2" />
               <Link
                 to="/profile"
                 className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
