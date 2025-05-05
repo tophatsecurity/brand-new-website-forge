@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -13,29 +13,78 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { format, parseISO } from 'date-fns';
+
+type License = {
+  id: string;
+  license_key: string;
+  product_name: string;
+  tier: {
+    name: string;
+  };
+  tier_name: string;
+  assigned_to: string | null;
+  expiry_date: string;
+  status: string;
+  seats: number;
+};
 
 const Licensing = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const [licenses, setLicenses] = useState<License[]>([]);
+  const [loading, setLoading] = useState(true);
   
-  // This would typically come from your backend
-  const dummyLicenses = [
-    {
-      id: 1,
-      product: "SEEKCAP Enterprise",
-      licenseKey: "SEEK-ENT-2024-XXXX",
-      status: "Active",
-      expiryDate: "2025-12-31",
-      seats: 100,
-    },
-    {
-      id: 2,
-      product: "DDX Professional",
-      licenseKey: "DDX-PRO-2024-XXXX",
-      status: "Active",
-      expiryDate: "2025-12-31",
-      seats: 50,
-    }
-  ];
+  useEffect(() => {
+    const fetchUserLicenses = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        // Only fetch licenses assigned to the current user's email
+        const { data, error } = await supabase
+          .from('product_licenses')
+          .select(`
+            id,
+            license_key,
+            product_name,
+            tier:license_tiers(name),
+            assigned_to,
+            seats,
+            expiry_date,
+            status
+          `)
+          .eq('assigned_to', user.email)
+          .eq('status', 'active');
+          
+        if (error) {
+          console.error('Error fetching licenses:', error);
+          toast({
+            title: "Error loading licenses",
+            description: error.message,
+            variant: "destructive"
+          });
+        } else {
+          // Process the data to make it easier to use in the UI
+          const processedData = data.map(license => ({
+            ...license,
+            tier_name: license.tier?.name || 'Unknown'
+          }));
+          setLicenses(processedData || []);
+        }
+      } catch (err) {
+        console.error('Exception fetching license data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUserLicenses();
+  }, [user, toast]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,7 +93,11 @@ const Licensing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold">License Management</h1>
-            <Button>Add New License</Button>
+            {user?.user_metadata?.role === 'admin' && (
+              <Button asChild>
+                <a href="/admin/licensing">Admin Licenses</a>
+              </Button>
+            )}
           </div>
 
           <div className="bg-card rounded-lg shadow-md p-6">
@@ -54,33 +107,47 @@ const Licensing = () => {
                   <TableRow>
                     <TableHead>Product</TableHead>
                     <TableHead>License Key</TableHead>
+                    <TableHead>Tier</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Expiry Date</TableHead>
                     <TableHead>Seats</TableHead>
-                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {dummyLicenses.map((license) => (
-                    <TableRow key={license.id}>
-                      <TableCell>{license.product}</TableCell>
-                      <TableCell>
-                        <code className="bg-muted px-2 py-1 rounded">
-                          {license.licenseKey}
-                        </code>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
-                          {license.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{license.expiryDate}</TableCell>
-                      <TableCell>{license.seats}</TableCell>
-                      <TableCell>
-                        <Button variant="outline" size="sm">Manage</Button>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-8">
+                        Loading your licenses...
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : licenses.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-8">
+                        No active licenses found. Contact the administrator to request a license.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    licenses.map((license) => (
+                      <TableRow key={license.id}>
+                        <TableCell>
+                          {license.product_name} {license.tier_name}
+                        </TableCell>
+                        <TableCell>
+                          <code className="bg-muted px-2 py-1 rounded text-xs">
+                            {license.license_key}
+                          </code>
+                        </TableCell>
+                        <TableCell>{license.tier_name}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
+                            Active
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{format(parseISO(license.expiry_date), 'MMM dd, yyyy')}</TableCell>
+                        <TableCell>{license.seats}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </div>

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from '@/contexts/AuthContext';
@@ -61,71 +61,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { format, addMonths } from 'date-fns';
-
-// Mock data for licenses
-const licensesMockData = [
-  { 
-    id: "1", 
-    key: "THS-PARA-2023-ABCD-1234", 
-    product: "ParaGuard", 
-    tier: "Enterprise", 
-    assignedTo: "acme-corp@example.com", 
-    expiryDate: addMonths(new Date(), 8).toISOString(), 
-    status: "active",
-    seats: 25,
-    created: "2025-01-15T00:00:00Z",
-    lastActive: "2025-05-01T14:23:00Z",
-  },
-  { 
-    id: "2", 
-    key: "THS-SEEK-2022-EFGH-5678", 
-    product: "SeekCap", 
-    tier: "Professional", 
-    assignedTo: "techsolutions@example.com", 
-    expiryDate: addMonths(new Date(), 1).toISOString(), 
-    status: "expiring-soon",
-    seats: 10,
-    created: "2024-05-20T00:00:00Z",
-    lastActive: "2025-04-28T09:15:00Z",
-  },
-  { 
-    id: "3", 
-    key: "THS-DDX-2023-IJKL-9012", 
-    product: "DDX", 
-    tier: "Standard", 
-    assignedTo: "infotech@example.com", 
-    expiryDate: addMonths(new Date(), -1).toISOString(), 
-    status: "expired",
-    seats: 5,
-    created: "2024-02-10T00:00:00Z",
-    lastActive: "2025-03-15T11:42:00Z",
-  },
-  { 
-    id: "4", 
-    key: "THS-SCND-2023-MNOP-3456", 
-    product: "SecondLook", 
-    tier: "Enterprise", 
-    assignedTo: "datacore@example.com", 
-    expiryDate: addMonths(new Date(), 16).toISOString(), 
-    status: "active",
-    seats: 50,
-    created: "2024-11-05T00:00:00Z",
-    lastActive: "2025-05-04T17:38:00Z",
-  },
-  { 
-    id: "5", 
-    key: "THS-PARA-2023-QRST-7890", 
-    product: "ParaGuard", 
-    tier: "Professional", 
-    assignedTo: null, 
-    expiryDate: addMonths(new Date(), 12).toISOString(), 
-    status: "unassigned",
-    seats: 15,
-    created: "2025-04-01T00:00:00Z",
-    lastActive: null,
-  },
-];
+import { format, addMonths, parseISO } from 'date-fns';
+import { supabase } from "@/integrations/supabase/client";
 
 type FormValues = {
   product: string;
@@ -135,12 +72,36 @@ type FormValues = {
   email: string;
 };
 
+type License = {
+  id: string;
+  license_key: string;
+  product_name: string;
+  tier: {
+    name: string;
+  };
+  assigned_to: string | null;
+  expiry_date: string;
+  status: string;
+  seats: number;
+  created_at: string;
+  last_active: string | null;
+};
+
+type LicenseTier = {
+  id: string;
+  name: string;
+  description: string;
+  max_seats: number;
+};
+
 const LicensingAdminPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-  const [licenses, setLicenses] = useState(licensesMockData);
+  const [licenses, setLicenses] = useState<License[]>([]);
+  const [tiers, setTiers] = useState<LicenseTier[]>([]);
   const [activeTab, setActiveTab] = useState("all");
+  const [loading, setLoading] = useState(true);
   
   const form = useForm<FormValues>({
     defaultValues: {
@@ -157,30 +118,126 @@ const LicensingAdminPage = () => {
     return <Navigate to="/" />;
   }
 
-  const onSubmit = (data: FormValues) => {
-    const randomKey = `THS-${data.product.slice(0, 4).toUpperCase()}-${new Date().getFullYear()}-${generateRandomString(4)}-${generateRandomString(4)}`;
-    
-    const newLicense = {
-      id: Math.random().toString(36).substring(2, 9),
-      key: randomKey,
-      product: data.product,
-      tier: data.tier,
-      assignedTo: data.email || null,
-      expiryDate: data.expiryDate.toISOString(),
-      status: data.email ? "active" : "unassigned",
-      seats: data.seats,
-      created: new Date().toISOString(),
-      lastActive: null,
+  useEffect(() => {
+    const fetchLicensesAndTiers = async () => {
+      setLoading(true);
+      try {
+        // Fetch licenses with tier details
+        const { data: licensesData, error: licensesError } = await supabase
+          .from('product_licenses')
+          .select(`
+            id,
+            license_key,
+            product_name,
+            tier_id,
+            tier:license_tiers(name),
+            assigned_to,
+            seats,
+            expiry_date,
+            status,
+            created_at,
+            last_active
+          `)
+          .order('created_at', { ascending: false });
+          
+        if (licensesError) {
+          console.error('Error fetching licenses:', licensesError);
+          toast({
+            title: "Error loading licenses",
+            description: licensesError.message,
+            variant: "destructive"
+          });
+        } else {
+          setLicenses(licensesData || []);
+        }
+        
+        // Fetch license tiers
+        const { data: tiersData, error: tiersError } = await supabase
+          .from('license_tiers')
+          .select('*')
+          .order('max_seats', { ascending: true });
+          
+        if (tiersError) {
+          console.error('Error fetching license tiers:', tiersError);
+        } else {
+          setTiers(tiersData || []);
+        }
+      } catch (err) {
+        console.error('Exception fetching license data:', err);
+      } finally {
+        setLoading(false);
+      }
     };
     
-    setLicenses([newLicense, ...licenses]);
-    setOpen(false);
-    form.reset();
+    fetchLicensesAndTiers();
+  }, [toast]);
+
+  const onSubmit = async (data: FormValues) => {
+    const randomKey = `THS-${data.product.slice(0, 4).toUpperCase()}-${new Date().getFullYear()}-${generateRandomString(4)}-${generateRandomString(4)}`;
+    const tierId = tiers.find(t => t.name === data.tier)?.id;
     
-    toast({
-      title: "License created",
-      description: `Created new ${data.product} license with key: ${randomKey}`,
-    });
+    if (!tierId) {
+      toast({
+        title: "Error creating license",
+        description: "Selected tier not found",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      const { data: newLicense, error } = await supabase
+        .from('product_licenses')
+        .insert({
+          license_key: randomKey,
+          product_name: data.product,
+          tier_id: tierId,
+          assigned_to: data.email || null,
+          expiry_date: data.expiryDate.toISOString(),
+          status: data.email ? "active" : "unassigned",
+          seats: data.seats,
+        })
+        .select(`
+          id,
+          license_key,
+          product_name,
+          tier_id,
+          tier:license_tiers(name),
+          assigned_to,
+          seats,
+          expiry_date,
+          status,
+          created_at,
+          last_active
+        `)
+        .single();
+        
+      if (error) {
+        console.error('Error creating license:', error);
+        toast({
+          title: "Error creating license",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else if (newLicense) {
+        // Add the new license to the state
+        setLicenses([newLicense, ...licenses]);
+        setOpen(false);
+        form.reset();
+        
+        toast({
+          title: "License created",
+          description: `Created new ${data.product} license with key: ${randomKey}`,
+        });
+      }
+    } catch (err) {
+      console.error('Exception creating license:', err);
+      toast({
+        title: "Error creating license",
+        description: "An unexpected error occurred",
+        variant: "destructive"
+      });
+    }
   };
 
   const generateRandomString = (length: number) => {
@@ -290,9 +347,11 @@ const LicensingAdminPage = () => {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="Standard">Standard</SelectItem>
-                                <SelectItem value="Professional">Professional</SelectItem>
-                                <SelectItem value="Enterprise">Enterprise</SelectItem>
+                                {tiers.map(tier => (
+                                  <SelectItem key={tier.id} value={tier.name}>
+                                    {tier.name} ({tier.max_seats} seats)
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -358,13 +417,13 @@ const LicensingAdminPage = () => {
                         </FormItem>
                       )}
                     />
+
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                      <Button type="submit">Create License</Button>
+                    </DialogFooter>
                   </form>
                 </Form>
-                
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                  <Button onClick={form.handleSubmit(onSubmit)}>Create License</Button>
-                </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>
@@ -418,7 +477,13 @@ const LicensingAdminPage = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredLicenses.length === 0 ? (
+                      {loading ? (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-8">
+                            Loading licenses...
+                          </TableCell>
+                        </TableRow>
+                      ) : filteredLicenses.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={8} className="text-center py-8">
                             No licenses found. Create a new license to get started.
@@ -429,26 +494,26 @@ const LicensingAdminPage = () => {
                           <TableRow key={license.id}>
                             <TableCell className="font-mono text-xs">
                               <div className="flex items-center gap-1">
-                                {license.key}
+                                {license.license_key}
                                 <Button 
                                   variant="ghost" 
                                   size="icon" 
                                   className="h-6 w-6"
-                                  onClick={() => handleCopyKey(license.key)}
+                                  onClick={() => handleCopyKey(license.license_key)}
                                 >
                                   <Copy className="h-3 w-3" />
                                 </Button>
                               </div>
                             </TableCell>
-                            <TableCell>{license.product}</TableCell>
-                            <TableCell>{license.tier}</TableCell>
+                            <TableCell>{license.product_name}</TableCell>
+                            <TableCell>{license.tier?.name}</TableCell>
                             <TableCell>
-                              {license.assignedTo || (
+                              {license.assigned_to || (
                                 <span className="text-muted-foreground italic">Unassigned</span>
                               )}
                             </TableCell>
                             <TableCell>{license.seats}</TableCell>
-                            <TableCell>{format(new Date(license.expiryDate), 'MMM dd, yyyy')}</TableCell>
+                            <TableCell>{format(parseISO(license.expiry_date), 'MMM dd, yyyy')}</TableCell>
                             <TableCell>{getStatusBadge(license.status)}</TableCell>
                             <TableCell className="text-right">
                               <DropdownMenu>
@@ -458,7 +523,7 @@ const LicensingAdminPage = () => {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => handleCopyKey(license.key)}>
+                                  <DropdownMenuItem onClick={() => handleCopyKey(license.license_key)}>
                                     <Copy className="mr-2 h-4 w-4" />
                                     <span>Copy Key</span>
                                   </DropdownMenuItem>
