@@ -33,7 +33,7 @@ import {
   AlertCircle,
   UserCheck,
   UserX,
-  LockReset,
+  KeyRound,
   UserCog,
   MoreHorizontal
 } from 'lucide-react';
@@ -108,7 +108,7 @@ const UserActions = ({
           </DropdownMenuItem>
           
           <DropdownMenuItem onClick={() => onResetPassword(user.id, user.email)}>
-            <LockReset className="h-4 w-4 mr-2" />
+            <KeyRound className="h-4 w-4 mr-2" />
             Reset Password
           </DropdownMenuItem>
           

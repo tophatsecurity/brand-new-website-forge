@@ -177,12 +177,18 @@ const UserManagement = () => {
 
   const handleDisableUser = async (userId: string, isDisabled: boolean) => {
     try {
-      // If disabling, ban until far future date, otherwise set to null to enable
-      const banUntil = isDisabled ? '2100-01-01' : null;
+      let userAttributes: any = {};
       
-      const { error } = await supabase.auth.admin.updateUserById(userId, {
-        banned_until: banUntil
-      });
+      if (isDisabled) {
+        // Set a future date to effectively ban the user
+        const futureDate = new Date();
+        futureDate.setFullYear(2100);
+        userAttributes.ban_duration = 'forever';
+      } else {
+        // To unban, we don't set a ban_duration
+      }
+      
+      const { error } = await supabase.auth.admin.updateUserById(userId, userAttributes);
       
       if (error) throw error;
       

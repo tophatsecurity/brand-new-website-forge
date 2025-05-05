@@ -53,9 +53,11 @@ const HeroSection = () => {
               Safeguarding your AI systems and securing your entire digital supply chain with specialized solutions for today's complex threat landscape.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8 py-6 text-lg">
-                Get a free assessment
-              </Button>
+              <Link to="/contact">
+                <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8 py-6 text-lg">
+                  Get a free assessment
+                </Button>
+              </Link>
               <Link to="/products">
                 <Button variant="outline" className="group px-8 py-6 text-lg border-[#222] text-[#222] hover:bg-[#222] hover:text-white">
                   Our solutions 
