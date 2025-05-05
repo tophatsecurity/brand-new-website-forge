@@ -3,17 +3,15 @@ import React, { useState } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from "react-router-dom";
-import { Shield, User, Download, FileText, BadgeHelp } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useForm } from "react-hook-form";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Navigate } from "react-router-dom";
+
+// Import our new components
+import PermissionsTabs from './permissions/PermissionsTabs';
+import RolesList from './permissions/RolesList';
+import PermissionMatrix from './permissions/PermissionMatrix';
+import CreateRoleForm from './permissions/CreateRoleForm';
 
 const roles = [
   { id: "admin", name: "Administrator", description: "Full system access" },
@@ -51,13 +49,6 @@ const PermissionsPage = () => {
     }), {})
   );
   
-  const form = useForm<FormValues>({
-    defaultValues: {
-      roleName: "",
-      roleDescription: "",
-    },
-  });
-  
   // Redirect non-admin users
   if (!user || user.user_metadata?.role !== 'admin') {
     return <Navigate to="/" />;
@@ -91,7 +82,6 @@ const PermissionsPage = () => {
       title: "Role created",
       description: `Created new role: ${data.roleName}`,
     });
-    form.reset();
   };
 
   return (
@@ -104,158 +94,30 @@ const PermissionsPage = () => {
             <h1 className="text-3xl font-bold">Permission Management</h1>
           </div>
           
-          <div className="flex mb-6 space-x-4">
-            <Button 
-              variant={activeTab === "roles" ? "default" : "outline"}
-              onClick={() => setActiveTab("roles")}
-            >
-              Roles
-            </Button>
-            <Button 
-              variant={activeTab === "matrix" ? "default" : "outline"}
-              onClick={() => setActiveTab("matrix")}
-            >
-              Permission Matrix
-            </Button>
-            <Button 
-              variant={activeTab === "create" ? "default" : "outline"}
-              onClick={() => setActiveTab("create")}
-            >
-              Create New Role
-            </Button>
-          </div>
+          <PermissionsTabs activeTab={activeTab} onTabChange={setActiveTab} />
           
           {activeTab === "roles" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {roles.map(role => (
-                <Card key={role.id}>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg flex items-center">
-                      <User className="h-4 w-4 mr-2" />
-                      {role.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4">{role.description}</p>
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">Permissions:</p>
-                      <ul className="text-sm pl-5 list-disc space-y-1">
-                        {permissions
-                          .filter(p => rolePermissions[role.id]?.includes(p.id))
-                          .map(p => (
-                            <li key={p.id}>{p.name}</li>
-                          ))}
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <RolesList 
+              roles={roles} 
+              permissions={permissions} 
+              rolePermissions={rolePermissions} 
+            />
           )}
           
           {activeTab === "matrix" && (
-            <div className="bg-card rounded-lg shadow-md p-6 overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[250px]">Permission</TableHead>
-                    {roles.map(role => (
-                      <TableHead key={role.id} className="text-center">{role.name}</TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {permissions.map(permission => (
-                    <TableRow key={permission.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex flex-col">
-                          <span>{permission.name}</span>
-                          <span className="text-xs text-muted-foreground">{permission.category}</span>
-                        </div>
-                      </TableCell>
-                      {roles.map(role => (
-                        <TableCell key={role.id} className="text-center">
-                          <Switch
-                            checked={rolePermissions[role.id]?.includes(permission.id)}
-                            onCheckedChange={() => handlePermissionToggle(role.id, permission.id)}
-                          />
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+            <PermissionMatrix 
+              roles={roles} 
+              permissions={permissions} 
+              rolePermissions={rolePermissions}
+              onPermissionToggle={handlePermissionToggle}
+            />
           )}
           
           {activeTab === "create" && (
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader>
-                <CardTitle>Create New Role</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="roleName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Role Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter role name" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            This is the display name for the role.
-                          </FormDescription>
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="roleDescription"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter role description" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            A brief description of this role's purpose.
-                          </FormDescription>
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <div>
-                      <h3 className="text-sm font-medium mb-3">Default Permissions</h3>
-                      <div className="space-y-3">
-                        {Object.entries(permissions.reduce((acc, p) => {
-                          acc[p.category] = acc[p.category] || [];
-                          acc[p.category].push(p);
-                          return acc;
-                        }, {} as Record<string, typeof permissions>)).map(([category, perms]) => (
-                          <div key={category} className="border rounded-md p-3">
-                            <h4 className="font-medium mb-2 text-sm">{category}</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                              {perms.map(p => (
-                                <div key={p.id} className="flex items-center space-x-2">
-                                  <Switch id={`new-role-${p.id}`} />
-                                  <Label htmlFor={`new-role-${p.id}`}>{p.name}</Label>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <Button type="submit">Create Role</Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
+            <CreateRoleForm 
+              permissions={permissions}
+              onSubmit={onSubmit}
+            />
           )}
         </div>
       </div>
