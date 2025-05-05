@@ -31,6 +31,7 @@ const ProtectedRoute = ({
 
   // Check if user is an admin (if required)
   if (requireAdmin && user.user_metadata?.role !== 'admin') {
+    console.log("Access denied: User is not an admin", user.user_metadata);
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
