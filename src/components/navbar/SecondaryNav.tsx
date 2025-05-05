@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from "react-router-dom";
-import { FileText, Download, LucideIcon, BadgeHelp, Users, Shield, Settings, Wrench, Key } from 'lucide-react';
+import { FileText, Download, LucideIcon, BadgeHelp, Users, Shield, Settings, Wrench, Key, Database } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 type SecondaryNavLinkProps = {
@@ -45,16 +45,12 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
         <SecondaryNavLink name="Support" href="/support" icon={BadgeHelp} />
         <SecondaryNavLink name="Downloads" href="/downloads" icon={Download} />
         
-        {isAdmin && (
-          <>
-            <div className="h-4 mx-2 border-r border-muted-foreground/30" aria-hidden="true" />
-            <SecondaryNavLink name="Users" href="/admin/users" icon={Users} />
-            <SecondaryNavLink name="Actions" href="/admin/actions" icon={Wrench} />
-            <SecondaryNavLink name="Permissions" href="/admin/permissions" icon={Shield} />
-            <SecondaryNavLink name="Downloads Admin" href="/admin/downloads" icon={Download} />
-            <SecondaryNavLink name="Licensing Admin" href="/admin/licensing" icon={Key} />
-          </>
-        )}
+        {/* Admin pages - these will be accessible based on ProtectedRoute settings */}
+        <SecondaryNavLink name="Users" href="/admin/users" icon={Users} />
+        <SecondaryNavLink name="Actions" href="/admin/actions" icon={Wrench} />
+        <SecondaryNavLink name="Permissions" href="/admin/permissions" icon={Shield} />
+        <SecondaryNavLink name="Downloads Admin" href="/admin/downloads" icon={Database} />
+        <SecondaryNavLink name="Licensing Admin" href="/admin/licensing" icon={Key} />
       </div>
     </div>
   );
