@@ -116,9 +116,22 @@ const DownloadsAdminPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [downloads, setDownloads] = useState(downloadsMockData);
+  const [currentDownload, setCurrentDownload] = useState<any>(null);
   
   const form = useForm<FormValues>({
+    defaultValues: {
+      product: "",
+      type: "",
+      version: "",
+      platform: "",
+      visibility: "public",
+      fileUrl: "",
+    },
+  });
+  
+  const editForm = useForm<FormValues>({
     defaultValues: {
       product: "",
       type: "",
@@ -156,6 +169,46 @@ const DownloadsAdminPage = () => {
     toast({
       title: "Download added",
       description: `Added ${data.product} version ${data.version} to downloads.`,
+    });
+  };
+
+  const handleEdit = (download: any) => {
+    setCurrentDownload(download);
+    editForm.reset({
+      product: download.product,
+      type: download.type,
+      version: download.version,
+      platform: download.platform,
+      visibility: download.visibility,
+      fileUrl: download.fileUrl,
+    });
+    setEditOpen(true);
+  };
+
+  const onEditSubmit = (data: FormValues) => {
+    const updatedDownloads = downloads.map(d => {
+      if (d.id === currentDownload.id) {
+        return {
+          ...d,
+          product: data.product,
+          type: data.type,
+          version: data.version,
+          platform: data.platform,
+          visibility: data.visibility,
+          fileUrl: data.fileUrl,
+          updated_at: new Date().toISOString()
+        };
+      }
+      return d;
+    });
+    
+    setDownloads(updatedDownloads);
+    setEditOpen(false);
+    editForm.reset();
+    
+    toast({
+      title: "Download updated",
+      description: `Updated ${data.product} version ${data.version}.`,
     });
   };
 
@@ -315,12 +368,15 @@ const DownloadsAdminPage = () => {
                           <FormLabel>File URL</FormLabel>
                           <FormControl>
                             <div className="flex space-x-2">
-                              <Input placeholder="Enter file URL or upload" {...field} className="flex-1" />
+                              <Input placeholder="Enter file URL or local path (e.g. /files/product.zip)" {...field} className="flex-1" />
                               <Button type="button" variant="outline" className="shrink-0">
                                 <Upload className="h-4 w-4 mr-1" /> Browse
                               </Button>
                             </div>
                           </FormControl>
+                          <FormDescription>
+                            Enter a full URL or a path relative to the web server root (e.g. /files/download.zip)
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -364,6 +420,181 @@ const DownloadsAdminPage = () => {
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
                   <Button onClick={form.handleSubmit(onSubmit)}>Add Download</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Edit Dialog */}
+            <Dialog open={editOpen} onOpenChange={setEditOpen}>
+              <DialogContent className="sm:max-w-[540px]">
+                <DialogHeader>
+                  <DialogTitle>Edit Download</DialogTitle>
+                  <DialogDescription>
+                    Update download details and file location.
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <Form {...editForm}>
+                  <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4 py-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={editForm.control}
+                        name="product"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Product</FormLabel>
+                            <Select 
+                              onValueChange={field.onChange} 
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select product" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="SeekCap">SeekCap</SelectItem>
+                                <SelectItem value="DDX">DDX</SelectItem>
+                                <SelectItem value="ParaGuard">ParaGuard</SelectItem>
+                                <SelectItem value="SecondLook">SecondLook</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={editForm.control}
+                        name="type"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Type</FormLabel>
+                            <Select 
+                              onValueChange={field.onChange} 
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="Software">Software</SelectItem>
+                                <SelectItem value="Documentation">Documentation</SelectItem>
+                                <SelectItem value="Updates">Updates</SelectItem>
+                                <SelectItem value="Tools">Tools</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={editForm.control}
+                        name="version"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Version</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g. 2.1.3" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={editForm.control}
+                        name="platform"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Platform</FormLabel>
+                            <Select 
+                              onValueChange={field.onChange} 
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select platform" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="Windows">Windows</SelectItem>
+                                <SelectItem value="MacOS">MacOS</SelectItem>
+                                <SelectItem value="Linux">Linux</SelectItem>
+                                <SelectItem value="All">All</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <FormField
+                      control={editForm.control}
+                      name="fileUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>File URL</FormLabel>
+                          <FormControl>
+                            <div className="flex space-x-2">
+                              <Input placeholder="Enter file URL or local path (e.g. /files/product.zip)" {...field} className="flex-1" />
+                              <Button type="button" variant="outline" className="shrink-0">
+                                <Upload className="h-4 w-4 mr-1" /> Browse
+                              </Button>
+                            </div>
+                          </FormControl>
+                          <FormDescription>
+                            Enter a full URL or a path relative to the web server root (e.g. /files/download.zip)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={editForm.control}
+                      name="visibility"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center justify-between">
+                            <div className="space-y-0.5">
+                              <FormLabel>Visibility</FormLabel>
+                              <FormDescription>
+                                Controls who can download this file
+                              </FormDescription>
+                            </div>
+                            <Select 
+                              onValueChange={field.onChange} 
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="w-[150px]">
+                                  <SelectValue />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="public">Public</SelectItem>
+                                <SelectItem value="customers">Customers Only</SelectItem>
+                                <SelectItem value="hidden">Hidden</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </form>
+                </Form>
+                
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+                  <Button onClick={editForm.handleSubmit(onEditSubmit)}>Update Download</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -411,7 +642,11 @@ const DownloadsAdminPage = () => {
                             <Button variant="ghost" size="icon">
                               <Eye className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="icon">
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => handleEdit(download)}
+                            >
                               <Pencil className="h-4 w-4" />
                             </Button>
                             <Button 
