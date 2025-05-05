@@ -5,9 +5,14 @@ import { useAuth } from '@/contexts/AuthContext';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireApproval?: boolean;
+  requireAdmin?: boolean;
 }
 
-const ProtectedRoute = ({ children, requireApproval = true }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ 
+  children, 
+  requireApproval = true, 
+  requireAdmin = false 
+}: ProtectedRouteProps) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -22,6 +27,11 @@ const ProtectedRoute = ({ children, requireApproval = true }: ProtectedRouteProp
   // Check if user is approved (if required)
   if (requireApproval && user.user_metadata?.approved !== true) {
     return <Navigate to="/pending-approval" state={{ from: location }} replace />;
+  }
+
+  // Check if user is an admin (if required)
+  if (requireAdmin && user.user_metadata?.role !== 'admin') {
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

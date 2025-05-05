@@ -71,7 +71,7 @@ const App = () => (
               
               {/* Protected routes requiring authentication and approval */}
               <Route path="/admin" element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAdmin={true}>
                   <Admin />
                 </ProtectedRoute>
               } />
@@ -98,27 +98,27 @@ const App = () => (
               
               {/* Admin routes */}
               <Route path="/admin/users" element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAdmin={true}>
                   <UsersPage />
                 </ProtectedRoute>
               } />
               <Route path="/admin/actions" element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAdmin={true}>
                   <ActionsPage />
                 </ProtectedRoute>
               } />
               <Route path="/admin/permissions" element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAdmin={true}>
                   <PermissionsPage />
                 </ProtectedRoute>
               } />
               <Route path="/admin/downloads" element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAdmin={true}>
                   <DownloadsAdminPage />
                 </ProtectedRoute>
               } />
               <Route path="/admin/licensing" element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAdmin={true}>
                   <LicensingAdminPage />
                 </ProtectedRoute>
               } />

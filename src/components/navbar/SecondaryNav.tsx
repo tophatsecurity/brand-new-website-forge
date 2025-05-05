@@ -47,7 +47,7 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
         
         {isAdmin && (
           <>
-            {/* Admin links are now displayed in the same row, not in a separate group */}
+            <div className="h-4 mx-2 border-r border-muted-foreground/30" aria-hidden="true" />
             <SecondaryNavLink name="Users" href="/admin/users" icon={Users} />
             <SecondaryNavLink name="Actions" href="/admin/actions" icon={Wrench} />
             <SecondaryNavLink name="Permissions" href="/admin/permissions" icon={Shield} />
