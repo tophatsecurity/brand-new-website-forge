@@ -11,9 +11,9 @@ const ParaGuardHero = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-12">
           <div className="w-full md:w-1/2">
             <Badge variant="outline" className="bg-primary/10 text-primary mb-4">AI Security</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">ParaGuard</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">ParaGuard AI Security Platform</h1>
             <p className="text-xl text-gray-300 mb-8">
-              AI security detection & response for AI Edge and Hyperscale environments.
+              Comprehensive AI security platform from AI Hardware to Model security.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/contact">
