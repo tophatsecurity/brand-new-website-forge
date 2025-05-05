@@ -48,8 +48,6 @@ export const getNavLinks = (user: any) => {
     { name: "Contact", href: "/contact" }
   ];
 
-  // We've moved the admin navigation to the secondary nav
-  // so we no longer need to add the admin link here
-
+  // No need for admin link in the main navigation anymore
   return navLinks;
 };

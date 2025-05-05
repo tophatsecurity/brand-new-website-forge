@@ -39,7 +39,8 @@ const getIconComponent = (iconName: string): LucideIcon => {
     'BadgeHelp': BadgeHelp,
     'Wrench': Wrench,
     'Database': Database,
-    'Key': Key
+    'Key': Key,
+    'LayoutDashboard': LayoutDashboard
   };
   
   return iconMap[iconName] || FileText;  // Default to FileText if icon not found
@@ -122,7 +123,7 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
     }
   }, [toast, isAdmin]);
   
-  // Define regular links
+  // Define regular links for approved users
   const regularLinks = [
     { name: "Licensing", href: "/licensing", icon: FileText },
     { name: "Support", href: "/support", icon: BadgeHelp },
@@ -167,7 +168,8 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
               name={link.name} 
               href={link.href} 
               icon={link.icon}
-              active={location.pathname === link.href}
+              active={location.pathname === link.href || 
+                     (link.href !== "/" && location.pathname.startsWith(link.href))}
             />
           ))
         )}

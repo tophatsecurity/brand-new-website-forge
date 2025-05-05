@@ -1,20 +1,59 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, User, Users, FileText, Shield, Download, Settings, BadgeHelp, LayoutDashboard } from 'lucide-react';
-import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, LogOut, User } from 'lucide-react';
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NavLink, getNavLinks } from './NavLinks';
 import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/integrations/supabase/client";
+
+// Import all required icons
+import { 
+  Users, 
+  FileText, 
+  Shield, 
+  Download, 
+  Settings, 
+  BadgeHelp, 
+  LayoutDashboard 
+} from 'lucide-react';
 
 interface MobileNavProps {
   user: any;
   signOut: () => Promise<void>;
 }
 
+// Helper to convert icon string to component
+const getIconComponent = (iconName: string) => {
+  const iconMap: Record<string, React.ReactNode> = {
+    'Users': <Users className="h-4 w-4 mr-2" />,
+    'Settings': <Settings className="h-4 w-4 mr-2" />,
+    'Shield': <Shield className="h-4 w-4 mr-2" />,
+    'Download': <Download className="h-4 w-4 mr-2" />,
+    'FileText': <FileText className="h-4 w-4 mr-2" />,
+    'BadgeHelp': <BadgeHelp className="h-4 w-4 mr-2" />,
+    'LayoutDashboard': <LayoutDashboard className="h-4 w-4 mr-2" />
+  };
+  
+  return iconMap[iconName] || <FileText className="h-4 w-4 mr-2" />;
+};
+
+type AdminNavItem = {
+  id: string;
+  title: string;
+  icon: string;
+  description: string;
+  route: string;
+  display_order: number;
+}
+
 const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [adminNavItems, setAdminNavItems] = useState<AdminNavItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
   const navLinks = getNavLinks(user);
   
   const handleSignOut = async () => {
@@ -25,6 +64,33 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
 
   const isAdmin = user?.user_metadata?.role === 'admin';
   const isApproved = user?.user_metadata?.approved;
+
+  React.useEffect(() => {
+    const fetchAdminNavItems = async () => {
+      if (isAdmin) {
+        try {
+          const { data, error } = await supabase
+            .from('admin_navigation')
+            .select('*')
+            .order('display_order', { ascending: true });
+            
+          if (error) {
+            console.error('Error fetching admin navigation:', error);
+          } else {
+            setAdminNavItems(data || []);
+          }
+        } catch (err) {
+          console.error('Exception fetching admin navigation:', err);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+    
+    fetchAdminNavItems();
+  }, [isAdmin]);
 
   return (
     <div className="md:hidden">
@@ -39,7 +105,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
 
       {/* Mobile Navigation Menu */}
       <div className={cn(
-        "md:hidden absolute left-0 right-0 bg-white dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out overflow-hidden",
+        "md:hidden absolute left-0 right-0 bg-white dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out overflow-hidden z-50",
         isOpen ? "max-h-screen py-4" : "max-h-0"
       )}>
         <div className="flex flex-col space-y-4 px-6">
@@ -84,54 +150,41 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
           )}
 
           {/* Admin section for mobile */}
-          {isAdmin && (
+          {isAdmin && !loading && (
             <>
               <Separator className="my-2" />
               <div className="pt-2 pb-1 font-semibold text-gray-500 dark:text-gray-400">
                 Admin
               </div>
+              
               <Link
                 to="/admin"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                className={cn(
+                  "font-medium py-2 flex items-center",
+                  location.pathname === '/admin'
+                    ? "text-[#cc0c1a] dark:text-[#cc0c1a]"
+                    : "text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a]"
+                )}
                 onClick={() => setIsOpen(false)}
               >
                 <LayoutDashboard className="h-4 w-4 mr-2" /> Admin Dashboard
               </Link>
-              <Link
-                to="/admin/users"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <Users className="h-4 w-4 mr-2" /> Users
-              </Link>
-              <Link
-                to="/admin/actions"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <Settings className="h-4 w-4 mr-2" /> Actions
-              </Link>
-              <Link
-                to="/admin/permissions"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <Shield className="h-4 w-4 mr-2" /> Permissions
-              </Link>
-              <Link
-                to="/admin/downloads"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <Download className="h-4 w-4 mr-2" /> Downloads
-              </Link>
-              <Link
-                to="/admin/licensing"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <FileText className="h-4 w-4 mr-2" /> Licensing
-              </Link>
+              
+              {adminNavItems.map((item) => (
+                <Link
+                  key={item.id}
+                  to={item.route}
+                  className={cn(
+                    "font-medium py-2 flex items-center",
+                    location.pathname === item.route
+                      ? "text-[#cc0c1a] dark:text-[#cc0c1a]"
+                      : "text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a]"
+                  )}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {getIconComponent(item.icon)} {item.title}
+                </Link>
+              ))}
             </>
           )}
 
@@ -148,10 +201,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
               <Button
                 variant="outline"
                 className="justify-start px-2"
-                onClick={() => {
-                  handleSignOut();
-                  setIsOpen(false);
-                }}
+                onClick={handleSignOut}
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
