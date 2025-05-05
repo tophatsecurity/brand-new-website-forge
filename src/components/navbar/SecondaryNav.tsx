@@ -13,7 +13,7 @@ type SecondaryNavLinkProps = {
   active?: boolean;
 };
 
-// Import our icons directly from lucide-react
+// Import all icons from lucide-react
 import { 
   Users, 
   Settings, 
