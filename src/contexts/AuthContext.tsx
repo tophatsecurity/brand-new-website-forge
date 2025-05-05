@@ -10,6 +10,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error: any, data: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
+  updateUserRole: (userId: string, role: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,6 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Session from getSession:", session);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -28,6 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
+        console.log("Auth state changed:", session);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -60,13 +63,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  // Function to update user role
+  const updateUserRole = async (userId: string, role: string) => {
+    const { error } = await supabase.auth.admin.updateUserById(userId, {
+      user_metadata: { role }
+    });
+    return { error };
+  };
+
   const value = {
     session,
     user,
     signIn,
     signUp,
     signOut,
-    loading
+    loading,
+    updateUserRole
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

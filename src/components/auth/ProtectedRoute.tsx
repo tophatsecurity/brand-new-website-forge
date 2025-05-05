@@ -24,6 +24,10 @@ const ProtectedRoute = ({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Debug user and metadata
+  console.log("User in ProtectedRoute:", user);
+  console.log("User metadata in ProtectedRoute:", user.user_metadata);
+
   // Check if user is approved (if required)
   if (requireApproval && user.user_metadata?.approved !== true) {
     return <Navigate to="/pending-approval" state={{ from: location }} replace />;
