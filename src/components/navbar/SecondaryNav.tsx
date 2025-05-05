@@ -40,18 +40,19 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
       "w-full bg-muted/50 border-b py-1 px-6 md:px-12 lg:px-24",
       className
     )}>
-      <div className="flex items-center justify-end space-x-4">
+      <div className="flex items-center justify-start space-x-4 overflow-x-auto">
         <SecondaryNavLink name="Licensing" href="/licensing" icon={FileText} />
         <SecondaryNavLink name="Support" href="/support" icon={BadgeHelp} />
         <SecondaryNavLink name="Downloads" href="/downloads" icon={Download} />
         
         {isAdmin && (
           <>
+            {/* Admin links are now displayed in the same row, not in a separate group */}
             <SecondaryNavLink name="Users" href="/admin/users" icon={Users} />
             <SecondaryNavLink name="Actions" href="/admin/actions" icon={Wrench} />
             <SecondaryNavLink name="Permissions" href="/admin/permissions" icon={Shield} />
-            <SecondaryNavLink name="Admin Downloads" href="/admin/downloads" icon={Download} />
-            <SecondaryNavLink name="Admin Licensing" href="/admin/licensing" icon={Key} />
+            <SecondaryNavLink name="Downloads Admin" href="/admin/downloads" icon={Download} />
+            <SecondaryNavLink name="Licensing Admin" href="/admin/licensing" icon={Key} />
           </>
         )}
       </div>
