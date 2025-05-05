@@ -49,10 +49,10 @@ const SecondaryNavLink: React.FC<SecondaryNavLinkProps> = ({ name, href, icon: I
     <Link
       to={href}
       className={cn(
-        "flex items-center text-sm font-medium transition-colors px-2 py-1 rounded-md",
+        "flex items-center font-medium transition-colors px-2 py-1 rounded-md",
         active 
-          ? "text-foreground bg-muted/80" 
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+          ? "text-[#cc0c1a] dark:text-[#cc0c1a]" 
+          : "text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a]"
       )}
     >
       <Icon className="h-4 w-4 mr-1" />
@@ -136,10 +136,13 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
 
   return (
     <div className={cn(
-      "w-full bg-muted/50 border-b py-2 px-6 md:px-12 lg:px-24",
+      "w-full backdrop-blur-md border-b transition-all duration-300",
+      scrolled => scrolled
+        ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-md"
+        : "bg-white/70 dark:bg-gray-900/70",
       className
     )}>
-      <div className="flex items-center justify-start space-x-2 overflow-x-auto">
+      <div className="flex items-center justify-start space-x-4 py-2 px-6 md:px-12 lg:px-24 overflow-x-auto">
         {loading ? (
           <div className="text-sm text-muted-foreground">Loading navigation...</div>
         ) : (

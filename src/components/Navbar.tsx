@@ -67,7 +67,7 @@ const Navbar = () => {
       </nav>
       
       {/* Secondary Navigation Bar */}
-      {user && <SecondaryNav user={user} />}
+      {user && <SecondaryNav user={user} className={scrolled ? "shadow-sm" : ""} />}
     </header>
   );
 };
