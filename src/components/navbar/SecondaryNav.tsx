@@ -23,7 +23,8 @@ import {
   BadgeHelp, 
   Wrench, 
   Database, 
-  Key 
+  Key,
+  LayoutDashboard
 } from 'lucide-react';
 
 // Helper to convert icon string to Lucide icon component
@@ -128,6 +129,13 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
     { name: "Downloads", href: "/downloads", icon: Download },
   ];
   
+  // Add admin dashboard link
+  const adminDashboardLink = {
+    name: "Admin Dashboard",
+    href: "/admin",
+    icon: LayoutDashboard
+  };
+  
   // Convert admin nav items to links format
   const adminLinks = adminNavItems.map(item => ({
     name: item.title,
@@ -135,8 +143,13 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
     icon: getIconComponent(item.icon)
   }));
 
-  // Include admin links only if user is admin
-  const links = isAdmin ? [...regularLinks, ...adminLinks] : regularLinks;
+  // Create final links array
+  let links = regularLinks;
+  
+  // Add admin links if user is admin
+  if (isAdmin) {
+    links = [...regularLinks, adminDashboardLink, ...adminLinks];
+  }
 
   return (
     <div className={cn(

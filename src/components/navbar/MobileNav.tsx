@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, User, Users, FileText, Shield, Download, Settings, BadgeHelp } from 'lucide-react';
+import { Menu, X, LogOut, User, Users, FileText, Shield, Download, Settings, BadgeHelp, LayoutDashboard } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NavLink, getNavLinks } from './NavLinks';
@@ -90,6 +90,13 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
               <div className="pt-2 pb-1 font-semibold text-gray-500 dark:text-gray-400">
                 Admin
               </div>
+              <Link
+                to="/admin"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <LayoutDashboard className="h-4 w-4 mr-2" /> Admin Dashboard
+              </Link>
               <Link
                 to="/admin/users"
                 className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
