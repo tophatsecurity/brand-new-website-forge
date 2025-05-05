@@ -17,10 +17,6 @@ const Index = () => {
       
       <div className="bg-gray-50">
         <div className="max-w-7xl mx-auto px-6 py-16">
-          <h2 className="text-3xl font-bold mb-6 text-center">Our Security Solutions</h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto text-center mb-10">
-            Explore our comprehensive suite of cybersecurity products designed to protect your organization
-          </p>
           <ProductCategories />
           <div className="text-center mt-10">
             <Link to="/products">
