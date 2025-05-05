@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -33,12 +34,32 @@ interface CreateRoleFormProps {
 }
 
 const CreateRoleForm: React.FC<CreateRoleFormProps> = ({ permissions, onSubmit }) => {
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+  
   const form = useForm<FormValues>({
     defaultValues: {
       roleName: "",
       roleDescription: "",
     },
   });
+
+  const handlePermissionToggle = (permissionId: string) => {
+    setSelectedPermissions(prev => {
+      if (prev.includes(permissionId)) {
+        return prev.filter(id => id !== permissionId);
+      } else {
+        return [...prev, permissionId];
+      }
+    });
+  };
+
+  const handleSubmit = (data: FormValues) => {
+    // Include the selected permissions with the form data
+    onSubmit({
+      ...data,
+      // Additional data could be passed here if needed
+    });
+  };
 
   const permissionsByCategory = permissions.reduce((acc, p) => {
     acc[p.category] = acc[p.category] || [];
@@ -53,7 +74,7 @@ const CreateRoleForm: React.FC<CreateRoleFormProps> = ({ permissions, onSubmit }
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="roleName"
@@ -77,7 +98,11 @@ const CreateRoleForm: React.FC<CreateRoleFormProps> = ({ permissions, onSubmit }
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter role description" {...field} />
+                    <Textarea 
+                      placeholder="Enter role description" 
+                      className="min-h-24"
+                      {...field} 
+                    />
                   </FormControl>
                   <FormDescription>
                     A brief description of this role's purpose.
@@ -87,7 +112,7 @@ const CreateRoleForm: React.FC<CreateRoleFormProps> = ({ permissions, onSubmit }
             />
             
             <div>
-              <h3 className="text-sm font-medium mb-3">Default Permissions</h3>
+              <h3 className="text-sm font-medium mb-3">Role Permissions</h3>
               <div className="space-y-3">
                 {Object.entries(permissionsByCategory).map(([category, perms]) => (
                   <div key={category} className="border rounded-md p-3">
@@ -95,7 +120,11 @@ const CreateRoleForm: React.FC<CreateRoleFormProps> = ({ permissions, onSubmit }
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {perms.map(p => (
                         <div key={p.id} className="flex items-center space-x-2">
-                          <Switch id={`new-role-${p.id}`} />
+                          <Switch 
+                            id={`new-role-${p.id}`}
+                            checked={selectedPermissions.includes(p.id)}
+                            onCheckedChange={() => handlePermissionToggle(p.id)}
+                          />
                           <Label htmlFor={`new-role-${p.id}`}>{p.name}</Label>
                         </div>
                       ))}
