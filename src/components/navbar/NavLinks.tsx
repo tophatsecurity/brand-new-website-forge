@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from "react-router-dom";
-import { FileText, Download, Settings, User } from 'lucide-react';
+import { FileText, Download, Settings } from 'lucide-react';
 
 type NavLinkProps = {
   name: string;
@@ -21,7 +21,6 @@ export const NavLink: React.FC<NavLinkProps> = ({ name, href, onClick }) => {
         {name === "Support" && <FileText className="h-4 w-4 mr-1" />}
         {name === "Downloads" && <Download className="h-4 w-4 mr-1" />}
         {name === "Admin" && <Settings className="h-4 w-4 mr-1" />}
-        {name === "Profile" && <User className="h-4 w-4 mr-1" />}
         {name}
       </Link>
     );
@@ -56,8 +55,7 @@ export const getNavLinks = (user: any) => {
     if (uMeta.approved) {
       navLinks.push(
         { name: "Support", href: "/support" },
-        { name: "Downloads", href: "/downloads" },
-        { name: "Profile", href: "/profile" }
+        { name: "Downloads", href: "/downloads" }
       );
     }
     
