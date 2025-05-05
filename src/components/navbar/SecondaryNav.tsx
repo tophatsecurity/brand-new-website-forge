@@ -132,9 +132,8 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
     { name: "Downloads", href: "/downloads", icon: Download },
   ];
   
-  // Admin links definition
-  // Define predefined admin pages
-  const predefinedAdminLinks = [
+  // Define all admin pages
+  const allAdminLinks = [
     { name: "Admin Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Users", href: "/admin/users", icon: Users },
     { name: "Actions", href: "/admin/actions", icon: ActivitySquare },
@@ -154,25 +153,21 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
   let links = regularLinks;
   
   // Add admin links if user is admin
+  let adminLinks: Array<{ name: string; href: string; icon: LucideIcon }> = [];
+  
   if (isAdmin) {
-    // Combine predefined and dynamic admin links, but avoid duplicates
-    const allAdminLinks = [...predefinedAdminLinks];
+    // Start with all predefined admin links
+    adminLinks = [...allAdminLinks];
     
-    // Only add dynamic links if they don't already exist in predefined links
+    // Add dynamic links that don't already exist in predefined links
     dynamicAdminLinks.forEach(dynamicLink => {
-      const exists = allAdminLinks.some(link => link.href === dynamicLink.href);
+      const exists = adminLinks.some(link => link.href === dynamicLink.href);
       if (!exists) {
-        allAdminLinks.push(dynamicLink);
+        adminLinks.push(dynamicLink);
       }
     });
-    
-    links = [...regularLinks, ...allAdminLinks];
   }
   
-  // Group links by section
-  const resourceLinks = regularLinks;
-  const adminLinks = isAdmin ? links.filter(link => link.href.startsWith('/admin')) : [];
-
   return (
     <div className={cn(
       "w-full backdrop-blur-md border-b transition-all duration-300",
@@ -182,7 +177,7 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
       <div className="flex items-center justify-between py-2 px-6 md:px-12 lg:px-24 overflow-x-auto">
         <div className="flex items-center space-x-4 overflow-x-auto">
           {/* Resource links */}
-          {resourceLinks.map((link) => (
+          {regularLinks.map((link) => (
             <SecondaryNavLink 
               key={link.name} 
               name={link.name} 

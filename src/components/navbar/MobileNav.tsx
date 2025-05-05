@@ -94,8 +94,8 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
     fetchAdminNavItems();
   }, [isAdmin]);
 
-  // Define predefined admin pages
-  const predefinedAdminLinks = [
+  // Define all admin pages
+  const allAdminItems = [
     { name: "Admin Dashboard", route: "/admin", icon: "LayoutDashboard" },
     { name: "Users", route: "/admin/users", icon: "Users" },
     { name: "Actions", route: "/admin/actions", icon: "ActivitySquare" },
@@ -103,11 +103,8 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
     { name: "Downloads", route: "/admin/downloads", icon: "Download" },
     { name: "Licensing", route: "/admin/licensing", icon: "FileText" },
   ];
-
-  // Combine predefined and dynamic admin links, but avoid duplicates
-  const allAdminItems = [...predefinedAdminLinks];
   
-  // Only add dynamic links if they don't already exist in predefined links
+  // Add dynamic links that don't already exist in predefined links
   adminNavItems.forEach(dynamicItem => {
     const exists = allAdminItems.some(item => item.route === dynamicItem.route);
     if (!exists) {
@@ -177,7 +174,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
           )}
 
           {/* Admin section for mobile */}
-          {isAdmin && !loading && (
+          {isAdmin && (
             <>
               <Separator className="my-2" />
               <div className="pt-2 pb-1 font-semibold text-gray-500 dark:text-gray-400">
