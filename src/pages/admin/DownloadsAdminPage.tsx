@@ -1,10 +1,10 @@
 
-import React, { useState } from 'react';
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect } from 'react';
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
 import { 
   Table, 
   TableBody, 
@@ -12,8 +12,8 @@ import {
   TableHead, 
   TableHeader, 
   TableRow 
-} from "@/components/ui/table";
-import { 
+} from '@/components/ui/table';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { 
+import {
   Form,
   FormControl,
   FormDescription,
@@ -31,8 +31,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { 
   Select,
   SelectContent,
@@ -40,342 +38,279 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Delete, DownloadCloud, Edit, Plus } from 'lucide-react';
+import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
-import { Database, Pencil, Plus, Trash, Upload, Eye, FileUp, Download } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { format } from 'date-fns';
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-// Mock data for downloads
-const downloadsMockData = [
-  { 
-    id: "1", 
-    product: "SeekCap", 
-    type: "Software", 
-    version: "2.1.3", 
-    releaseDate: "2025-04-15T00:00:00Z", 
-    visibility: "public",
-    fileUrl: "/downloads/seekcap-2.1.3.zip",
-    fileSize: "42.5 MB",
-    platform: "Windows",
-    lastDownloaded: "2025-05-01T14:23:00Z",
-    downloadCount: 145
-  },
-  { 
-    id: "2", 
-    product: "DDX", 
-    type: "Documentation", 
-    version: "3.0.0", 
-    releaseDate: "2025-04-01T00:00:00Z", 
-    visibility: "customers",
-    fileUrl: "/downloads/ddx-docs-3.0.0.pdf",
-    fileSize: "8.2 MB",
-    platform: "All",
-    lastDownloaded: "2025-05-03T09:15:00Z",
-    downloadCount: 87
-  },
-  { 
-    id: "3", 
-    product: "ParaGuard", 
-    type: "Software", 
-    version: "1.5.2", 
-    releaseDate: "2025-03-20T00:00:00Z", 
-    visibility: "hidden",
-    fileUrl: "/downloads/paraguard-1.5.2.zip",
-    fileSize: "36.8 MB",
-    platform: "Linux",
-    lastDownloaded: "2025-04-28T11:42:00Z",
-    downloadCount: 64
-  },
-  { 
-    id: "4", 
-    product: "SecondLook", 
-    type: "Updates", 
-    version: "2.3.1", 
-    releaseDate: "2025-02-10T00:00:00Z", 
-    visibility: "public",
-    fileUrl: "/downloads/secondlook-2.3.1-patch.zip",
-    fileSize: "18.3 MB",
-    platform: "MacOS",
-    lastDownloaded: "2025-05-04T17:38:00Z",
-    downloadCount: 211
-  },
+const productTypes = [
+  "Virtual Machine",
+  "Physical Hardware",
+  "Appliance",
+  "SEEKCAP",
+  "DDX",
+  "ParaGuard",
 ];
 
-type FormValues = {
-  product: string;
-  type: string;
-  version: string;
-  platform: string;
-  visibility: string;
-  fileUrl: string;
-};
+const downloadFormSchema = z.object({
+  product_name: z.string().min(1, { message: "Product name is required" }),
+  product_type: z.string().min(1, { message: "Product type is required" }),
+  version: z.string().min(1, { message: "Version is required" }),
+  file_url: z.string().url({ message: "Valid URL is required" }),
+  description: z.string().optional(),
+  is_latest: z.boolean().default(false),
+  release_date: z.string().optional(),
+});
+
+type DownloadFormValues = z.infer<typeof downloadFormSchema>;
 
 const DownloadsAdminPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
-  const [downloads, setDownloads] = useState(downloadsMockData);
-  const [currentDownload, setCurrentDownload] = useState<any>(null);
-  
-  const form = useForm<FormValues>({
+  const [downloads, setDownloads] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+
+  const form = useForm<DownloadFormValues>({
+    resolver: zodResolver(downloadFormSchema),
     defaultValues: {
-      product: "",
-      type: "",
+      product_name: "",
+      product_type: "",
       version: "",
-      platform: "",
-      visibility: "public",
-      fileUrl: "",
+      file_url: "",
+      description: "",
+      is_latest: false,
+      release_date: new Date().toISOString().split('T')[0],
     },
   });
-  
-  const editForm = useForm<FormValues>({
-    defaultValues: {
-      product: "",
-      type: "",
-      version: "",
-      platform: "",
-      visibility: "public",
-      fileUrl: "",
-    },
-  });
-  
-  // Redirect non-admin users
-  if (!user || user.user_metadata?.role !== 'admin') {
-    return <Navigate to="/" />;
-  }
 
-  const onSubmit = (data: FormValues) => {
-    const newDownload = {
-      id: Math.random().toString(36).substring(2, 9),
-      product: data.product,
-      type: data.type,
-      version: data.version,
-      releaseDate: new Date().toISOString(),
-      visibility: data.visibility,
-      fileUrl: data.fileUrl,
-      fileSize: "0 MB", // Would be calculated from actual file
-      platform: data.platform,
-      lastDownloaded: "",
-      downloadCount: 0
-    };
-    
-    setDownloads([newDownload, ...downloads]);
-    setOpen(false);
-    form.reset();
-    
-    toast({
-      title: "Download added",
-      description: `Added ${data.product} version ${data.version} to downloads.`,
-    });
-  };
+  useEffect(() => {
+    fetchDownloads();
+  }, []);
 
-  const handleEdit = (download: any) => {
-    setCurrentDownload(download);
-    editForm.reset({
-      product: download.product,
-      type: download.type,
-      version: download.version,
-      platform: download.platform,
-      visibility: download.visibility,
-      fileUrl: download.fileUrl,
-    });
-    setEditOpen(true);
-  };
+  const fetchDownloads = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("product_downloads")
+        .select("*")
+        .order("product_name")
+        .order("product_type")
+        .order("release_date", { ascending: false });
 
-  const onEditSubmit = (data: FormValues) => {
-    const updatedDownloads = downloads.map(d => {
-      if (d.id === currentDownload.id) {
-        return {
-          ...d,
-          product: data.product,
-          type: data.type,
-          version: data.version,
-          platform: data.platform,
-          visibility: data.visibility,
-          fileUrl: data.fileUrl,
-          updated_at: new Date().toISOString()
-        };
+      if (error) {
+        throw error;
       }
-      return d;
-    });
-    
-    setDownloads(updatedDownloads);
-    setEditOpen(false);
-    editForm.reset();
-    
-    toast({
-      title: "Download updated",
-      description: `Updated ${data.product} version ${data.version}.`,
-    });
-  };
 
-  const handleDelete = (id: string) => {
-    setDownloads(downloads.filter(d => d.id !== id));
-    toast({
-      title: "Download removed",
-      description: "The download has been removed.",
-    });
-  };
-
-  const getVisibilityBadge = (visibility: string) => {
-    switch(visibility) {
-      case 'public':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Public</Badge>;
-      case 'customers':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Customers</Badge>;
-      case 'hidden':
-        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">Hidden</Badge>;
-      default:
-        return <Badge variant="outline">{visibility}</Badge>;
+      setDownloads(data || []);
+    } catch (error: any) {
+      console.error("Error fetching downloads:", error);
+      toast({
+        title: "Error loading downloads",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleSubmit = async (values: DownloadFormValues) => {
+    try {
+      let operation;
+      
+      if (editId) {
+        // Update existing download
+        operation = supabase
+          .from("product_downloads")
+          .update(values)
+          .eq("id", editId);
+      } else {
+        // Create new download
+        operation = supabase
+          .from("product_downloads")
+          .insert([values]);
+      }
+      
+      const { error } = await operation;
+      
+      if (error) throw error;
+      
+      toast({
+        title: editId ? "Download updated" : "Download created",
+        description: `Successfully ${editId ? "updated" : "added"} ${values.product_name} ${values.version}`,
+      });
+      
+      fetchDownloads();
+      handleDialogClose();
+    } catch (error: any) {
+      console.error("Error saving download:", error);
+      toast({
+        title: "Error saving download",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEdit = (download: any) => {
+    setEditId(download.id);
+    form.reset({
+      product_name: download.product_name,
+      product_type: download.product_type,
+      version: download.version,
+      file_url: download.file_url,
+      description: download.description || "",
+      is_latest: download.is_latest,
+      release_date: download.release_date ? new Date(download.release_date).toISOString().split('T')[0] : "",
+    });
+    setOpenDialog(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this download?")) {
+      try {
+        const { error } = await supabase
+          .from("product_downloads")
+          .delete()
+          .eq("id", id);
+          
+        if (error) throw error;
+        
+        toast({
+          title: "Download deleted",
+          description: "The download has been removed successfully",
+        });
+        
+        fetchDownloads();
+      } catch (error: any) {
+        console.error("Error deleting download:", error);
+        toast({
+          title: "Error deleting download",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+    setEditId(null);
+    form.reset();
+  };
+
+  const handleDialogOpen = () => {
+    form.reset({
+      product_name: "",
+      product_type: "",
+      version: "",
+      file_url: "",
+      description: "",
+      is_latest: false,
+      release_date: new Date().toISOString().split('T')[0],
+    });
+    setEditId(null);
+    setOpenDialog(true);
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <div className="pt-32 pb-16 px-4">
+      <div className="pt-40 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center">
-              <Database className="mr-2 h-6 w-6" />
-              <h1 className="text-3xl font-bold">Downloads Management</h1>
-            </div>
-            
-            <Dialog open={open} onOpenChange={setOpen}>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Manage Downloads</h1>
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
               <DialogTrigger asChild>
-                <Button className="flex items-center">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add New Download
+                <Button onClick={handleDialogOpen} className="flex items-center">
+                  <Plus className="mr-2 h-4 w-4" /> Add Download
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[540px]">
+              <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
-                  <DialogTitle>Add New Download</DialogTitle>
+                  <DialogTitle>{editId ? "Edit Download" : "Add New Download"}</DialogTitle>
                   <DialogDescription>
-                    Upload or link to a new downloadable file for your products.
+                    {editId 
+                      ? "Update the details for this product download." 
+                      : "Add a new product download to the system."}
                   </DialogDescription>
                 </DialogHeader>
-                
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="product"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Product</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select product" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="SeekCap">SeekCap</SelectItem>
-                                <SelectItem value="DDX">DDX</SelectItem>
-                                <SelectItem value="ParaGuard">ParaGuard</SelectItem>
-                                <SelectItem value="SecondLook">SecondLook</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Type</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select type" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Software">Software</SelectItem>
-                                <SelectItem value="Documentation">Documentation</SelectItem>
-                                <SelectItem value="Updates">Updates</SelectItem>
-                                <SelectItem value="Tools">Tools</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="version"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Version</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g. 2.1.3" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="platform"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Platform</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select platform" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Windows">Windows</SelectItem>
-                                <SelectItem value="MacOS">MacOS</SelectItem>
-                                <SelectItem value="Linux">Linux</SelectItem>
-                                <SelectItem value="All">All</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="product_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Product Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="Enter product name" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     
                     <FormField
                       control={form.control}
-                      name="fileUrl"
+                      name="product_type"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>File URL</FormLabel>
+                          <FormLabel>Product Type</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select product type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {productTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="version"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Version</FormLabel>
                           <FormControl>
-                            <div className="flex space-x-2">
-                              <Input placeholder="Enter file URL or local path (e.g. /files/product.zip)" {...field} className="flex-1" />
-                              <Button type="button" variant="outline" className="shrink-0">
-                                <Upload className="h-4 w-4 mr-1" /> Browse
-                              </Button>
-                            </div>
+                            <Input {...field} placeholder="e.g. 1.0.0" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="file_url"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Download URL</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="https://..." />
                           </FormControl>
                           <FormDescription>
-                            Enter a full URL or a path relative to the web server root (e.g. /files/download.zip)
+                            Direct download link to the file
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -384,286 +319,151 @@ const DownloadsAdminPage = () => {
                     
                     <FormField
                       control={form.control}
-                      name="visibility"
+                      name="description"
                       render={({ field }) => (
                         <FormItem>
-                          <div className="flex items-center justify-between">
-                            <div className="space-y-0.5">
-                              <FormLabel>Visibility</FormLabel>
-                              <FormDescription>
-                                Controls who can download this file
-                              </FormDescription>
-                            </div>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger className="w-[150px]">
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="public">Public</SelectItem>
-                                <SelectItem value="customers">Customers Only</SelectItem>
-                                <SelectItem value="hidden">Hidden</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </form>
-                </Form>
-                
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                  <Button onClick={form.handleSubmit(onSubmit)}>Add Download</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-
-            {/* Edit Dialog */}
-            <Dialog open={editOpen} onOpenChange={setEditOpen}>
-              <DialogContent className="sm:max-w-[540px]">
-                <DialogHeader>
-                  <DialogTitle>Edit Download</DialogTitle>
-                  <DialogDescription>
-                    Update download details and file location.
-                  </DialogDescription>
-                </DialogHeader>
-                
-                <Form {...editForm}>
-                  <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={editForm.control}
-                        name="product"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Product</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select product" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="SeekCap">SeekCap</SelectItem>
-                                <SelectItem value="DDX">DDX</SelectItem>
-                                <SelectItem value="ParaGuard">ParaGuard</SelectItem>
-                                <SelectItem value="SecondLook">SecondLook</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={editForm.control}
-                        name="type"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Type</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select type" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Software">Software</SelectItem>
-                                <SelectItem value="Documentation">Documentation</SelectItem>
-                                <SelectItem value="Updates">Updates</SelectItem>
-                                <SelectItem value="Tools">Tools</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={editForm.control}
-                        name="version"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Version</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g. 2.1.3" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={editForm.control}
-                        name="platform"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Platform</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select platform" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Windows">Windows</SelectItem>
-                                <SelectItem value="MacOS">MacOS</SelectItem>
-                                <SelectItem value="Linux">Linux</SelectItem>
-                                <SelectItem value="All">All</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <FormField
-                      control={editForm.control}
-                      name="fileUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>File URL</FormLabel>
+                          <FormLabel>Description</FormLabel>
                           <FormControl>
-                            <div className="flex space-x-2">
-                              <Input placeholder="Enter file URL or local path (e.g. /files/product.zip)" {...field} className="flex-1" />
-                              <Button type="button" variant="outline" className="shrink-0">
-                                <Upload className="h-4 w-4 mr-1" /> Browse
-                              </Button>
-                            </div>
+                            <Textarea 
+                              {...field} 
+                              placeholder="Enter a brief description of this release" 
+                              rows={3}
+                            />
                           </FormControl>
-                          <FormDescription>
-                            Enter a full URL or a path relative to the web server root (e.g. /files/download.zip)
-                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                     
                     <FormField
-                      control={editForm.control}
-                      name="visibility"
+                      control={form.control}
+                      name="release_date"
                       render={({ field }) => (
                         <FormItem>
-                          <div className="flex items-center justify-between">
-                            <div className="space-y-0.5">
-                              <FormLabel>Visibility</FormLabel>
-                              <FormDescription>
-                                Controls who can download this file
-                              </FormDescription>
-                            </div>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger className="w-[150px]">
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="public">Public</SelectItem>
-                                <SelectItem value="customers">Customers Only</SelectItem>
-                                <SelectItem value="hidden">Hidden</SelectItem>
-                              </SelectContent>
-                            </Select>
+                          <FormLabel>Release Date</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="is_latest"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>Latest Version</FormLabel>
+                            <FormDescription>
+                              Mark this as the latest version of the product
+                            </FormDescription>
                           </div>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+                    
+                    <DialogFooter>
+                      <Button type="button" variant="outline" onClick={handleDialogClose}>
+                        Cancel
+                      </Button>
+                      <Button type="submit">
+                        {editId ? "Save Changes" : "Add Download"}
+                      </Button>
+                    </DialogFooter>
                   </form>
                 </Form>
-                
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
-                  <Button onClick={editForm.handleSubmit(onEditSubmit)}>Update Download</Button>
-                </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>
           
           <div className="bg-card rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold mb-4">Product Downloads</h2>
-            <p className="text-muted-foreground mb-6">
-              Manage product downloads available to your users.
-            </p>
-            
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[150px]">Product</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Version</TableHead>
-                    <TableHead>Release Date</TableHead>
-                    <TableHead>Platform</TableHead>
-                    <TableHead>Visibility</TableHead>
-                    <TableHead className="text-right">Downloads</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {downloads.length === 0 ? (
+            {loading ? (
+              <div className="py-8 text-center">Loading downloads...</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8">
-                        No downloads available. Add your first download.
-                      </TableCell>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Version</TableHead>
+                      <TableHead>Released</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ) : (
-                    downloads.map((download) => (
-                      <TableRow key={download.id}>
-                        <TableCell className="font-medium">{download.product}</TableCell>
-                        <TableCell>{download.type}</TableCell>
-                        <TableCell>{download.version}</TableCell>
-                        <TableCell>{format(new Date(download.releaseDate), 'MMM dd, yyyy')}</TableCell>
-                        <TableCell>{download.platform}</TableCell>
-                        <TableCell>{getVisibilityBadge(download.visibility)}</TableCell>
-                        <TableCell className="text-right">{download.downloadCount}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button variant="ghost" size="icon">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => handleEdit(download)}
+                  </TableHeader>
+                  <TableBody>
+                    {downloads.map((dl) => (
+                      <TableRow key={dl.id}>
+                        <TableCell>{dl.product_name}</TableCell>
+                        <TableCell>
+                          <Badge>{dl.product_type}</Badge>
+                        </TableCell>
+                        <TableCell>{dl.version}</TableCell>
+                        <TableCell>
+                          {dl.release_date ? new Date(dl.release_date).toLocaleDateString() : ""}
+                        </TableCell>
+                        <TableCell className="max-w-xs truncate">
+                          {dl.description}
+                        </TableCell>
+                        <TableCell>
+                          {dl.is_latest && (
+                            <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">
+                              Latest
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEdit(dl)}
                             >
-                              <Pencil className="h-4 w-4" />
+                              <Edit className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => handleDelete(download.id)}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDelete(dl.id)}
+                              className="text-destructive hover:bg-destructive/10"
                             >
-                              <Trash className="h-4 w-4" />
+                              <Delete className="h-4 w-4" />
                             </Button>
+                            <a
+                              href={dl.file_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-blue-600"
+                              >
+                                <DownloadCloud className="h-4 w-4" />
+                              </Button>
+                            </a>
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+                    ))}
+                  </TableBody>
+                </Table>
+                {downloads.length === 0 && (
+                  <div className="text-center py-8">No downloads available.</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
