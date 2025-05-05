@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -75,8 +76,8 @@ const Navbar = () => {
               className="h-14 md:h-16 mr-3"
             />
             <div>
-              <span className="block text-2xl font-bold text-[#222]">TOPHAT</span>
-              <span className="block text-lg font-bold text-[#cc0c1a]">SECURITY</span>
+              <span className="block text-2xl font-bold text-[#222]">THS</span>
+              <span className="block text-lg font-bold text-[#cc0c1a]">|WEB</span>
             </div>
           </Link>
         </div>

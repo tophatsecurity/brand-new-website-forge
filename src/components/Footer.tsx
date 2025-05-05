@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,8 +27,8 @@ const Footer = () => {
               className="h-14 mb-4"
             />
             <div className="mb-3">
-              <span className="block text-2xl font-bold text-white">TOPHAT</span>
-              <span className="block text-lg font-bold text-[#cc0c1a]">SECURITY</span>
+              <span className="block text-2xl font-bold text-white">THS</span>
+              <span className="block text-lg font-bold text-[#cc0c1a]">|WEB</span>
             </div>
             <p className="text-white/80 mb-6">
               Protecting businesses from emerging cyber threats with cutting-edge security solutions.
@@ -106,7 +105,7 @@ const Footer = () => {
         
         <div className="border-t border-white/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-white/70 text-sm mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} Tophat Security. All rights reserved.
+            &copy; {new Date().getFullYear()} THS|WEB. All rights reserved.
           </p>
           <div className="flex space-x-6 text-sm">
             <a href="#" className="text-white/70 hover:text-[#cc0c1a] transition-colors">Privacy Policy</a>
