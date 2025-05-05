@@ -52,7 +52,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
             <>
               <Link
                 to="/profile"
-                className="text-foreground dark:text-gray-200 hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
                 onClick={() => setIsOpen(false)}
               >
                 My Account
@@ -73,7 +73,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
             <>
               <Link
                 to="/login"
-                className="text-foreground dark:text-gray-200 hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
                 onClick={() => setIsOpen(false)}
               >
                 Login
