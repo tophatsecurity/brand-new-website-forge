@@ -44,8 +44,9 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
   // Debug user metadata to see what's available
   console.log("User metadata in SecondaryNav:", user.user_metadata);
   
-  // Explicitly check if role is admin
-  const isAdmin = user?.user_metadata?.role === 'admin';
+  // For testing purposes, temporarily force admin to true
+  // IMPORTANT: This is just for debugging, remove this in production
+  const isAdmin = true; // user?.user_metadata?.role === 'admin';
   console.log("Is admin:", isAdmin);
   
   // Define regular and admin links
@@ -63,8 +64,8 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
     { name: "Licensing Admin", href: "/admin/licensing", icon: Key },
   ];
 
-  // We'll always show all links for now during debugging
-  const links = isAdmin ? [...regularLinks, ...adminLinks] : regularLinks;
+  // Include admin links for all users temporarily for debugging
+  const links = [...regularLinks, ...adminLinks];
 
   return (
     <div className={cn(

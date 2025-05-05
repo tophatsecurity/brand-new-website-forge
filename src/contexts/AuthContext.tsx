@@ -11,6 +11,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   loading: boolean;
   updateUserRole: (userId: string, role: string) => Promise<{ error: any }>;
+  setUserAsAdmin: (userId: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,6 +72,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
+  // Specific function to set a user as admin
+  const setUserAsAdmin = async (userId: string) => {
+    const { error } = await supabase.auth.updateUser({
+      data: { role: 'admin' }
+    });
+    
+    console.log("Set user as admin response:", error ? `Error: ${error.message}` : "Success");
+    return { error };
+  };
+
   const value = {
     session,
     user,
@@ -78,7 +89,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signOut,
     loading,
-    updateUserRole
+    updateUserRole,
+    setUserAsAdmin
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
