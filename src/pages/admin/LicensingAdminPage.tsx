@@ -291,7 +291,10 @@ const LicensingAdminPage = () => {
             
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
-                <Button className="flex items-center">Create License</Button>
+                <Button className="flex items-center">
+                  <Key className="mr-2 h-4 w-4" />
+                  Create License
+                </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[540px]">
                 <DialogHeader>
@@ -420,7 +423,10 @@ const LicensingAdminPage = () => {
 
                     <DialogFooter>
                       <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                      <Button type="submit">Create License</Button>
+                      <Button type="submit">
+                        <Key className="mr-2 h-4 w-4" />
+                        Generate License Key
+                      </Button>
                     </DialogFooter>
                   </form>
                 </Form>
