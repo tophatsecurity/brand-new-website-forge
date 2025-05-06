@@ -9,32 +9,12 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { 
-  Copy, 
-  MoreHorizontal, 
-  Calendar, 
-  PauseCircle,
-  User,
-  Clock,
-  AlertCircle,
-  CheckCircle,
-  Package,
-  Gift
-} from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import LicenseStatusBadge from './LicenseStatusBadge';
+import LicenseFeatureDisplay from './LicenseFeatureDisplay';
+import LicenseActionMenu from './LicenseActionMenu';
+import LicenseKeyCell from './LicenseKeyCell';
+import LicenseEmptyState from './LicenseEmptyState';
+import { User, Calendar } from "lucide-react";
 
 type License = {
   id: string;
@@ -60,72 +40,7 @@ type LicenseTableProps = {
 };
 
 const LicenseTable: React.FC<LicenseTableProps> = ({ licenses, loading, onCopyKey }) => {
-  const getStatusBadge = (status: string) => {
-    switch(status) {
-      case 'active':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Active</Badge>;
-      case 'expiring-soon':
-        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Expiring Soon</Badge>;
-      case 'expired':
-        return <Badge className="bg-red-100 text-red-800 border-red-200">Expired</Badge>;
-      case 'unassigned':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Unassigned</Badge>;
-      case 'suspended':
-        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">Suspended</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
-
-  const renderFeatureIcons = (license: License) => {
-    if (!license.features || license.features.length === 0) return null;
-    
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex items-center text-muted-foreground">
-              <Package className="h-4 w-4 mr-1" />
-              <span>{license.features.length}</span>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <strong>Features:</strong>
-            <ul className="mt-1 text-xs">
-              {license.features.map(feature => (
-                <li key={feature}>{feature.replace('_', ' ')}</li>
-              ))}
-            </ul>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  };
-  
-  const renderAddonIcons = (license: License) => {
-    if (!license.addons || license.addons.length === 0) return null;
-    
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex items-center text-muted-foreground ml-2">
-              <Gift className="h-4 w-4 mr-1" />
-              <span>{license.addons.length}</span>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <strong>Add-ons:</strong>
-            <ul className="mt-1 text-xs">
-              {license.addons.map(addon => (
-                <li key={addon}>{addon.replace('_', ' ')}</li>
-              ))}
-            </ul>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  };
+  const colSpan = 9; // Total number of columns in the table
 
   return (
     <div className="overflow-x-auto">
@@ -144,74 +59,51 @@ const LicenseTable: React.FC<LicenseTableProps> = ({ licenses, loading, onCopyKe
           </TableRow>
         </TableHeader>
         <TableBody>
-          {loading ? (
-            <TableRow>
-              <TableCell colSpan={9} className="text-center py-8">
-                Loading licenses...
-              </TableCell>
-            </TableRow>
-          ) : licenses.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={9} className="text-center py-8">
-                No licenses found. Create a new license to get started.
-              </TableCell>
-            </TableRow>
+          {loading || licenses.length === 0 ? (
+            <LicenseEmptyState loading={loading} colSpan={colSpan} />
           ) : (
             licenses.map((license) => (
               <TableRow key={license.id}>
                 <TableCell className="font-mono text-xs">
-                  <div className="flex items-center gap-1">
-                    {license.license_key}
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-6 w-6"
-                      onClick={() => onCopyKey(license.license_key)}
-                    >
-                      <Copy className="h-3 w-3" />
-                    </Button>
-                  </div>
+                  <LicenseKeyCell 
+                    licenseKey={license.license_key}
+                    onCopyKey={onCopyKey}
+                  />
                 </TableCell>
                 <TableCell>{license.product_name}</TableCell>
                 <TableCell>{license.tier?.name}</TableCell>
                 <TableCell>
-                  {license.assigned_to || (
+                  {license.assigned_to ? (
+                    <div className="flex items-center">
+                      <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                      {license.assigned_to}
+                    </div>
+                  ) : (
                     <span className="text-muted-foreground italic">Unassigned</span>
                   )}
                 </TableCell>
                 <TableCell>{license.seats}</TableCell>
-                <TableCell>{format(parseISO(license.expiry_date), 'MMM dd, yyyy')}</TableCell>
-                <TableCell>{getStatusBadge(license.status)}</TableCell>
                 <TableCell>
                   <div className="flex items-center">
-                    {renderFeatureIcons(license)}
-                    {renderAddonIcons(license)}
+                    <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {format(parseISO(license.expiry_date), 'MMM dd, yyyy')}
                   </div>
                 </TableCell>
+                <TableCell>
+                  <LicenseStatusBadge status={license.status} />
+                </TableCell>
+                <TableCell>
+                  <LicenseFeatureDisplay 
+                    features={license.features} 
+                    addons={license.addons} 
+                  />
+                </TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onCopyKey(license.license_key)}>
-                        <Copy className="mr-2 h-4 w-4" />
-                        <span>Copy Key</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Calendar className="mr-2 h-4 w-4" />
-                        <span>Extend License</span>
-                      </DropdownMenuItem>
-                      {license.status === "active" && (
-                        <DropdownMenuItem>
-                          <PauseCircle className="mr-2 h-4 w-4" />
-                          <span>Suspend License</span>
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <LicenseActionMenu 
+                    licenseKey={license.license_key}
+                    status={license.status}
+                    onCopyKey={onCopyKey}
+                  />
                 </TableCell>
               </TableRow>
             ))
