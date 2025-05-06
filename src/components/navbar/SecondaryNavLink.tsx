@@ -8,9 +8,16 @@ type SecondaryNavLinkProps = {
   href: string;
   icon: React.ComponentType<any>;
   active?: boolean;
+  className?: string;
 };
 
-const SecondaryNavLink: React.FC<SecondaryNavLinkProps> = ({ name, href, icon: Icon, active }) => {
+const SecondaryNavLink: React.FC<SecondaryNavLinkProps> = ({ 
+  name, 
+  href, 
+  icon: Icon, 
+  active,
+  className
+}) => {
   return (
     <Link
       to={href}
@@ -18,7 +25,8 @@ const SecondaryNavLink: React.FC<SecondaryNavLinkProps> = ({ name, href, icon: I
         "flex items-center font-medium transition-colors px-4 py-2 rounded-md whitespace-nowrap",
         active 
           ? "text-[#cc0c1a] dark:text-[#cc0c1a]" 
-          : "text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a]"
+          : "text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a]",
+        className
       )}
     >
       <Icon className="h-4 w-4 mr-3" />

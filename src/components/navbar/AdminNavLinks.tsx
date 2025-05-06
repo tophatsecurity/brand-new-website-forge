@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { useLocation } from "react-router-dom";
-import SecondaryNavLink from './SecondaryNavLink';
-import { useAdminNavigation, AdminNavLink } from '@/hooks/useAdminNavigation';
+import NavLinkGroup from './NavLinkGroup';
+import { useAdminNavigation } from '@/hooks/useAdminNavigation';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,7 +11,6 @@ interface AdminNavLinksProps {
 }
 
 const AdminNavLinks: React.FC<AdminNavLinksProps> = ({ isAdmin, className }) => {
-  const location = useLocation();
   const { toast } = useToast();
   const [navVisible, setNavVisible] = useState<boolean>(false);
   
@@ -52,22 +50,13 @@ const AdminNavLinks: React.FC<AdminNavLinksProps> = ({ isAdmin, className }) => 
   }
 
   return (
-    <div className={`flex items-center space-x-8 overflow-x-auto ${className}`}>
+    <>
       {loading ? (
         <div className="text-sm text-muted-foreground">Loading admin...</div>
       ) : (
-        adminLinks.map((link: AdminNavLink) => (
-          <SecondaryNavLink 
-            key={link.name} 
-            name={link.name} 
-            href={link.href} 
-            icon={link.icon}
-            active={location.pathname === link.href || 
-                  (link.href !== "/" && location.pathname.startsWith(link.href))}
-          />
-        ))
+        <NavLinkGroup links={adminLinks} className={className} />
       )}
-    </div>
+    </>
   );
 };
 
