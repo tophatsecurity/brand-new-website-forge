@@ -11,7 +11,7 @@ import AdminNav from './navbar/AdminNav';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
