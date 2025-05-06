@@ -9,13 +9,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { User, LogOut, Settings, Shield } from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
-const UserNavMenu = () => {
+interface UserNavMenuWithRolesProps {
+  selectedRole: string | null;
+  onRoleChange: (role: string) => void;
+}
+
+const UserNavMenuWithRoles = ({ selectedRole, onRoleChange }: UserNavMenuWithRolesProps) => {
   const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
@@ -49,9 +55,21 @@ const UserNavMenu = () => {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        
+        {isAdmin && (
+          <>
+            <DropdownMenuLabel>View as</DropdownMenuLabel>
+            <DropdownMenuRadioGroup value={selectedRole || undefined} onValueChange={onRoleChange}>
+              <DropdownMenuRadioItem value="admin">Admin</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="user">User</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        
         <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/profile')}>
           <User className="mr-2 h-4 w-4" />
           Profile
@@ -76,4 +94,4 @@ const UserNavMenu = () => {
   );
 };
 
-export default UserNavMenu;
+export default UserNavMenuWithRoles;
