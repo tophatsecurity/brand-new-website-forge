@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export type UserSettings = {
   id?: string;
-  user_id?: string;
+  user_id: string; // Changed from optional to required
   theme: string;
   display_density: string;
   notifications_enabled: boolean;
@@ -14,6 +14,7 @@ export type UserSettings = {
 
 export const useUserSettings = (userId?: string) => {
   const [settings, setSettings] = useState<UserSettings>({
+    user_id: userId || '', // Initialize with userId or empty string
     theme: 'system',
     display_density: 'comfortable',
     notifications_enabled: true,

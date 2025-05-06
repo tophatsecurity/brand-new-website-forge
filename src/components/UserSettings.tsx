@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { useUserSettings, UserSettings } from '@/hooks/useUserSettings';
+import { useUserSettings } from '@/hooks/useUserSettings';
+import { type UserSettings as UserSettingsType } from '@/hooks/useUserSettings'; // Use type-only import with alias
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -17,12 +18,12 @@ interface UserSettingsProps {
 const UserSettings: React.FC<UserSettingsProps> = ({ userId }) => {
   const { settings, loading, updateUserSettings } = useUserSettings(userId);
 
-  const form = useForm<UserSettings>({
+  const form = useForm<UserSettingsType>({
     defaultValues: settings,
     values: settings,
   });
 
-  const onSubmit = async (data: UserSettings) => {
+  const onSubmit = async (data: UserSettingsType) => {
     await updateUserSettings(data);
   };
 
