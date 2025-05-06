@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -105,7 +104,7 @@ const LicensingAdminPage = () => {
       <Navbar />
       <div className="pt-32 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-wrap md:flex-nowrap justify-between items-center gap-4 mb-8">
             <div className="flex items-center">
               <Key className="mr-2 h-6 w-6" />
               <h1 className="text-3xl font-bold">License Management</h1>
@@ -113,7 +112,7 @@ const LicensingAdminPage = () => {
             
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
-                <Button className="flex items-center">
+                <Button className="flex items-center shrink-0">
                   <Key className="mr-2 h-4 w-4" />
                   Create License
                 </Button>

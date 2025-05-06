@@ -20,9 +20,9 @@ const AdminNav: React.FC<AdminNavProps> = ({ user, className }) => {
       "bg-gray-100/90 dark:bg-gray-800/90",
       className
     )}>
-      <div className="flex items-center justify-between py-3 px-6 md:px-12 lg:px-24 overflow-x-auto">
+      <div className="flex items-center justify-start py-3 px-6 md:px-12 lg:px-24 overflow-x-auto">
         <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 mr-4">Admin:</div>
-        <AdminNavLinks className="flex-grow" />
+        <AdminNavLinks className="flex-1" />
       </div>
     </div>
   );
