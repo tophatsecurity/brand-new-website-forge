@@ -1,21 +1,23 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, User, Users, Shield, Key } from 'lucide-react';
+import { 
+  Menu, 
+  X, 
+  LogOut, 
+  User, 
+  Users, 
+  Shield, 
+  Key, 
+  FileText, 
+  BadgeHelp, 
+  Download, 
+  LayoutDashboard 
+} from 'lucide-react';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NavLink, getNavLinks } from './NavLinks';
 import { Separator } from "@/components/ui/separator";
-
-// Import all required icons
-import { 
-  FileText, 
-  BadgeHelp, 
-  Download,
-  LayoutDashboard,
-  Users,
-  Shield,
-  Key
-} from 'lucide-react';
 
 interface MobileNavProps {
   user: any;
