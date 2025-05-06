@@ -8,7 +8,6 @@ import MobileNav from './navbar/MobileNav';
 import ThemeToggle from './ThemeToggle';
 import SecondaryNav from './navbar/SecondaryNav';
 import AdminNav from './navbar/AdminNav';
-import RoleSwitcher from './navbar/RoleSwitcher';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -16,13 +15,15 @@ const Navbar = () => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
   useEffect(() => {
-    // Set default role when user loads
+    // Set default role when user loads or changes
     if (user) {
       if (isAdmin) {
         setSelectedRole('admin');
       } else {
         setSelectedRole('user');
       }
+    } else {
+      setSelectedRole(null);
     }
   }, [user, isAdmin]);
 

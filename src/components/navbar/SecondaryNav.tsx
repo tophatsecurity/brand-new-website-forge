@@ -31,11 +31,12 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({
       className
     )}>
       <div className="flex items-center py-2 px-6 md:px-12 lg:px-24 overflow-x-auto">
-        {isAdmin ? (
+        {isAdmin && (
           <div className="mr-4">
             <RoleSwitcher selectedRole={selectedRole} onRoleChange={onRoleChange} />
           </div>
-        ) : (
+        )}
+        {(!isAdmin || (isAdmin && selectedRole === 'user')) && (
           <div className="text-sm font-semibold text-foreground/70 dark:text-foreground/70 mr-4">
             Features:
           </div>
