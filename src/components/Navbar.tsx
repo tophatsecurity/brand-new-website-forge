@@ -8,7 +8,7 @@ import MobileNav from './navbar/MobileNav';
 import ThemeToggle from './ThemeToggle';
 import SecondaryNav from './navbar/SecondaryNav';
 import AdminNav from './navbar/AdminNav';
-import UserNavMenuWithRoles from './navbar/UserNavMenuWithRoles';
+import UserNavMenuWithRoles from './UserNavMenuWithRoles';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
