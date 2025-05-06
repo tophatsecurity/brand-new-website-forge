@@ -66,7 +66,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Role Switcher for Admins */}
+          {/* Role Switcher for Admins - Desktop only */}
           {user && isAdmin && (
             <div className="hidden md:flex mr-4">
               <RoleSwitcher selectedRole={selectedRole} onRoleChange={setSelectedRole} />
@@ -89,7 +89,13 @@ const Navbar = () => {
       
       {/* Secondary Navigation Bar (for user functions) - show for both regular users and admins viewing as users */}
       {user && (selectedRole === 'user' || !isAdmin) && (
-        <SecondaryNav user={user} className={cn(scrolled ? "shadow-sm" : "", "z-40")} />
+        <SecondaryNav 
+          user={user} 
+          className={cn(scrolled ? "shadow-sm" : "", "z-40")} 
+          isAdmin={isAdmin} 
+          selectedRole={selectedRole} 
+          onRoleChange={setSelectedRole}
+        />
       )}
       
       {/* Admin Navigation Bar (for admin functions) */}
