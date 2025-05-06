@@ -8,10 +8,23 @@ import MobileNav from './navbar/MobileNav';
 import ThemeToggle from './ThemeToggle';
 import SecondaryNav from './navbar/SecondaryNav';
 import AdminNav from './navbar/AdminNav';
+import RoleSwitcher from './navbar/RoleSwitcher';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const { user, signOut, isAdmin } = useAuth();
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Set default role when user loads
+    if (user) {
+      if (isAdmin) {
+        setSelectedRole('admin');
+      } else {
+        setSelectedRole('user');
+      }
+    }
+  }, [user, isAdmin]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,6 +66,13 @@ const Navbar = () => {
             </Link>
           </div>
 
+          {/* Role Switcher for Admins */}
+          {user && isAdmin && (
+            <div className="hidden md:flex mr-4">
+              <RoleSwitcher selectedRole={selectedRole} onRoleChange={setSelectedRole} />
+            </div>
+          )}
+
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
             <DesktopNav user={user} signOut={signOut} />
@@ -62,16 +82,18 @@ const Navbar = () => {
           {/* Mobile Navigation */}
           <div className="md:hidden flex items-center">
             <ThemeToggle className="mr-2" />
-            <MobileNav user={user} signOut={signOut} />
+            <MobileNav user={user} signOut={signOut} isAdmin={isAdmin} selectedRole={selectedRole} onRoleChange={setSelectedRole} />
           </div>
         </div>
       </nav>
       
-      {/* Secondary Navigation Bar (for user functions) */}
-      {user && <SecondaryNav user={user} className={cn(scrolled ? "shadow-sm" : "", "z-40")} />}
+      {/* Secondary Navigation Bar (for user functions) - show for both regular users and admins viewing as users */}
+      {user && (selectedRole === 'user' || !isAdmin) && (
+        <SecondaryNav user={user} className={cn(scrolled ? "shadow-sm" : "", "z-40")} />
+      )}
       
       {/* Admin Navigation Bar (for admin functions) */}
-      {user && isAdmin && (
+      {user && isAdmin && selectedRole === 'admin' && (
         <AdminNav user={user} className={cn(scrolled ? "shadow-sm" : "", "z-30")} />
       )}
     </header>

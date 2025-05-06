@@ -19,13 +19,23 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NavLink, getNavLinks } from './NavLinks';
 import { Separator } from "@/components/ui/separator";
+import RoleSwitcher from './RoleSwitcher';
 
 interface MobileNavProps {
   user: any;
   signOut: () => Promise<void>;
+  isAdmin?: boolean;
+  selectedRole?: string | null;
+  onRoleChange?: (role: string) => void;
 }
 
-const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
+const MobileNav: React.FC<MobileNavProps> = ({ 
+  user, 
+  signOut, 
+  isAdmin = false, 
+  selectedRole = null, 
+  onRoleChange = () => {} 
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,7 +47,6 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
     setIsOpen(false);
   };
 
-  const isAdmin = user?.user_metadata?.role === 'admin';
   const isApproved = user?.user_metadata?.approved;
 
   return (
@@ -57,6 +66,13 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
         isOpen ? "max-h-screen py-4" : "max-h-0"
       )}>
         <div className="flex flex-col space-y-4 px-6">
+          {/* Role Switcher for Admins */}
+          {user && isAdmin && (
+            <div className="py-2">
+              <RoleSwitcher selectedRole={selectedRole} onRoleChange={onRoleChange} />
+            </div>
+          )}
+          
           {/* Primary navigation links */}
           {navLinks.map((link) => (
             <NavLink 
@@ -68,7 +84,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
           ))}
 
           {/* User resources section for approved users */}
-          {isApproved && (
+          {isApproved && (selectedRole === 'user' || !isAdmin) && (
             <>
               <Separator className="my-2" />
               <div className="pt-2 pb-1 font-semibold text-gray-500 dark:text-gray-400">
@@ -99,7 +115,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
           )}
 
           {/* Admin sections for mobile */}
-          {isAdmin && (
+          {isAdmin && selectedRole === 'admin' && (
             <>
               <Separator className="my-2" />
               <div className="pt-2 pb-1 font-semibold text-gray-500 dark:text-gray-400">
