@@ -94,6 +94,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
+            <DesktopNav user={user} signOut={signOut} />
             {user && isAdmin && (
               <div className="mr-4">
                 <RoleSwitcher selectedRole={selectedRole} onRoleChange={setSelectedRole} />
