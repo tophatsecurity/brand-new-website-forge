@@ -64,7 +64,7 @@ const LicensingAdminPage = () => {
             tiers={tiers} 
           />
           
-          <div className="bg-card rounded-lg shadow-md p-6">
+          <div className="bg-card rounded-lg shadow-md p-6 relative z-0">
             <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
               <LicenseFilters 
                 activeTab={activeTab}
