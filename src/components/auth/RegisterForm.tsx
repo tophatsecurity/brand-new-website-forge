@@ -31,9 +31,11 @@ const RegisterForm = () => {
     setLoading(true);
 
     try {
+      // Set the user role to 'user' explicitly when signing up
       const { data, error } = await signUp(email, password);
       
       if (error) {
+        console.error("Registration error:", error);
         toast({
           title: 'Registration Failed',
           description: error.message,
@@ -47,9 +49,10 @@ const RegisterForm = () => {
         navigate('/login');
       }
     } catch (error: any) {
+      console.error("Exception during registration:", error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: error.message || 'An unexpected error occurred',
         variant: 'destructive',
       });
     } finally {
