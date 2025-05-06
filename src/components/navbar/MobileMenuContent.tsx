@@ -27,7 +27,7 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
   onClose
 }) => {
   const navigate = useNavigate();
-  const navLinks = getNavLinks(user);
+  const navLinks = getNavLinks();
   
   const handleSignOut = async () => {
     await signOut();

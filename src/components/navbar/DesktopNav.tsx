@@ -23,7 +23,7 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
   onRoleChange = () => {}
 }) => {
   const navigate = useNavigate();
-  const navLinks = getNavLinks(user);
+  const navLinks = getNavLinks();
   
   return (
     <div className="hidden md:flex items-center space-x-4">
