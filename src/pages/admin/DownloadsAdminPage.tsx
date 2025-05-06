@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   Table, 
@@ -48,6 +47,7 @@ const DownloadsAdminPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const location = useLocation();
   const [editingDownload, setEditingDownload] = useState<Download | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -235,6 +235,8 @@ const DownloadsAdminPage = () => {
     setIsDialogOpen(true);
   };
 
+  const showButtonInPage = location.pathname !== '/admin/downloads';
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -243,12 +245,14 @@ const DownloadsAdminPage = () => {
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold">Manage Downloads</h1>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add Download
-                </Button>
-              </DialogTrigger>
+              {showButtonInPage && (
+                <DialogTrigger asChild>
+                  <Button className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Download
+                  </Button>
+                </DialogTrigger>
+              )}
               <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                   <DialogTitle>
