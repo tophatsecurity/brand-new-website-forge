@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,6 +14,9 @@ const Navbar = () => {
   const { user, signOut, isAdmin } = useAuth();
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const isMobile = useIsMobile();
+  const [isOverlapping, setIsOverlapping] = useState(false);
+  const logoRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Set default role when user loads or changes
@@ -44,6 +47,30 @@ const Navbar = () => {
     };
   }, []);
 
+  // Check for overlap between logo and navbar
+  useEffect(() => {
+    const checkOverlap = () => {
+      if (logoRef.current && navRef.current) {
+        const logoRect = logoRef.current.getBoundingClientRect();
+        const navRect = navRef.current.getBoundingClientRect();
+        
+        // Check if logo width plus some padding is greater than available space
+        const containerWidth = document.querySelector('nav')?.clientWidth || window.innerWidth;
+        const combined = logoRect.width + navRect.width + 24; // 24px for padding
+        
+        setIsOverlapping(combined > containerWidth);
+      }
+    };
+    
+    checkOverlap();
+    
+    // Recheck on resize
+    window.addEventListener('resize', checkOverlap);
+    return () => {
+      window.removeEventListener('resize', checkOverlap);
+    };
+  }, []);
+
   const handleRoleChange = (role: string) => {
     setSelectedRole(role);
     console.log("Role changed to:", role);
@@ -57,10 +84,12 @@ const Navbar = () => {
           ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-md" 
           : "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md"
       )}>
-        <div className={cn("flex flex-col md:flex-row md:items-center md:justify-between", 
-          isMobile ? "space-y-4" : "")}>
+        <div className={cn(
+          "flex flex-col md:flex-row md:items-center md:justify-between", 
+          (isMobile || isOverlapping) ? "space-y-4" : ""
+        )}>
           {/* Logo */}
-          <div className="flex items-center justify-between">
+          <div ref={logoRef} className="flex items-center justify-between">
             <Link to="/" className="flex items-center">
               <img
                 src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png"
@@ -74,7 +103,7 @@ const Navbar = () => {
             </Link>
             
             {/* Mobile Navigation - Only show toggle button next to logo on mobile */}
-            {isMobile && (
+            {(isMobile || isOverlapping) && (
               <MobileNav 
                 user={user}
                 signOut={signOut}
@@ -86,15 +115,17 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Navigation - show as normal on desktop */}
-          <DesktopNav 
-            user={user}
-            signOut={signOut}
-            isAdmin={isAdmin}
-            selectedRole={selectedRole}
-            onRoleChange={handleRoleChange}
-          />
+          <div ref={navRef} className={cn(!isOverlapping && "hidden md:block")}>
+            <DesktopNav 
+              user={user}
+              signOut={signOut}
+              isAdmin={isAdmin}
+              selectedRole={selectedRole}
+              onRoleChange={handleRoleChange}
+            />
+          </div>
           
-          {/* When on mobile, MobileNav is now placed next to the logo */}
+          {/* When on mobile or overlapping, MobileNav is placed next to the logo */}
         </div>
       </nav>
 
