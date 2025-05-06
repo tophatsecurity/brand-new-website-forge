@@ -39,13 +39,6 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
 
   return (
     <div className="flex flex-col space-y-4 px-6">
-      {/* Role Switcher for Admins */}
-      {user && isAdmin && (
-        <div className="py-2">
-          <RoleSwitcher selectedRole={selectedRole} onRoleChange={onRoleChange} />
-        </div>
-      )}
-      
       {/* Primary navigation links */}
       {navLinks.map((link) => (
         <NavLink 
@@ -55,6 +48,13 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
           onClick={onClose}
         />
       ))}
+
+      {/* Role Switcher for Admins */}
+      {user && isAdmin && isApproved && (
+        <div className="py-2">
+          <RoleSwitcher selectedRole={selectedRole} onRoleChange={onRoleChange} />
+        </div>
+      )}
 
       {/* User resources section for approved users */}
       {isApproved && (selectedRole === 'user' || !isAdmin) && (
