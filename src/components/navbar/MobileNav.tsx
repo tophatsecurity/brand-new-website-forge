@@ -12,7 +12,8 @@ import {
   FileText, 
   BadgeHelp, 
   Download, 
-  LayoutDashboard 
+  LayoutDashboard,
+  ActivitySquare
 } from 'lucide-react';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -56,6 +57,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
         isOpen ? "max-h-screen py-4" : "max-h-0"
       )}>
         <div className="flex flex-col space-y-4 px-6">
+          {/* Primary navigation links */}
           {navLinks.map((link) => (
             <NavLink 
               key={link.name}
@@ -65,7 +67,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
             />
           ))}
 
-          {/* Resources section for approved users */}
+          {/* User resources section for approved users */}
           {isApproved && (
             <>
               <Separator className="my-2" />
@@ -118,6 +120,13 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
                 <Users className="h-4 w-4 mr-2" /> Users
               </Link>
               <Link
+                to="/admin/actions"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <ActivitySquare className="h-4 w-4 mr-2" /> Actions
+              </Link>
+              <Link
                 to="/admin/permissions"
                 className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
                 onClick={() => setIsOpen(false)}
@@ -130,6 +139,13 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
                 onClick={() => setIsOpen(false)}
               >
                 <Key className="h-4 w-4 mr-2" /> Licensing
+              </Link>
+              <Link
+                to="/admin/downloads"
+                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <Download className="h-4 w-4 mr-2" /> Downloads
               </Link>
             </>
           )}

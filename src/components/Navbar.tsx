@@ -7,6 +7,7 @@ import DesktopNav from './navbar/DesktopNav';
 import MobileNav from './navbar/MobileNav';
 import ThemeToggle from './ThemeToggle';
 import SecondaryNav from './navbar/SecondaryNav';
+import AdminNav from './navbar/AdminNav';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -66,8 +67,13 @@ const Navbar = () => {
         </div>
       </nav>
       
-      {/* Secondary Navigation Bar */}
+      {/* Secondary Navigation Bar (for user functions) */}
       {user && <SecondaryNav user={user} className={scrolled ? "shadow-sm" : ""} />}
+      
+      {/* Admin Navigation Bar (for admin functions) */}
+      {user && user.user_metadata?.role === 'admin' && (
+        <AdminNav user={user} className={scrolled ? "shadow-sm" : ""} />
+      )}
     </header>
   );
 };
