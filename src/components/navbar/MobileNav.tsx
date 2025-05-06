@@ -6,14 +6,13 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NavLink, getNavLinks } from './NavLinks';
 import { Separator } from "@/components/ui/separator";
-import { useAdminNavigation } from '@/hooks/useAdminNavigation';
-import { getIconComponent } from './IconRegistry';
 
 // Import all required icons
 import { 
   FileText, 
   BadgeHelp, 
-  Download
+  Download,
+  LayoutDashboard
 } from 'lucide-react';
 
 interface MobileNavProps {
@@ -35,9 +34,6 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
 
   const isAdmin = user?.user_metadata?.role === 'admin';
   const isApproved = user?.user_metadata?.approved;
-  
-  // Use the shared admin navigation hook
-  const { adminLinks } = useAdminNavigation(isAdmin);
 
   return (
     <div className="md:hidden">
@@ -96,29 +92,22 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
             </>
           )}
 
-          {/* Admin section for mobile */}
+          {/* Admin section for mobile - Now just shows a link to Admin Dashboard */}
           {isAdmin && (
             <>
               <Separator className="my-2" />
-              <div className="pt-2 pb-1 font-semibold text-gray-500 dark:text-gray-400">
-                Admin
-              </div>
-              
-              {adminLinks.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={cn(
-                    "font-medium py-2 flex items-center",
-                    location.pathname === item.href
-                      ? "text-[#cc0c1a] dark:text-[#cc0c1a]"
-                      : "text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a]"
-                  )}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <item.icon className="h-4 w-4 mr-2" /> {item.name}
-                </Link>
-              ))}
+              <Link
+                to="/admin"
+                className={cn(
+                  "font-medium py-2 flex items-center",
+                  location.pathname.startsWith('/admin')
+                    ? "text-[#cc0c1a] dark:text-[#cc0c1a]"
+                    : "text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a]"
+                )}
+                onClick={() => setIsOpen(false)}
+              >
+                <LayoutDashboard className="h-4 w-4 mr-2" /> Admin Dashboard
+              </Link>
             </>
           )}
 
