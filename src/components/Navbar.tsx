@@ -3,20 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import ThemeToggle from './ThemeToggle';
-import UserNavMenu from './UserNavMenu';
-import { getNavLinks } from './navbar/NavLinks';
 import DesktopNav from './navbar/DesktopNav';
 import MobileNav from './navbar/MobileNav';
 import AdminNav from './navbar/AdminNav';
 import SecondaryNav from './navbar/SecondaryNav';
-import { Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const { user, signOut, isAdmin } = useAuth();
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Set default role when user loads or changes
