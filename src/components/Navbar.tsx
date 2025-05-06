@@ -42,6 +42,27 @@ const Navbar = () => {
     };
   }, []);
 
+  // Show appropriate navigation based on role
+  const renderNavigation = () => {
+    if (!user) return null;
+    
+    if (isAdmin && selectedRole === 'admin') {
+      return (
+        <AdminNav user={user} className={cn(scrolled ? "shadow-sm" : "", "z-30")} />
+      );
+    } else {
+      return (
+        <SecondaryNav 
+          user={user} 
+          className={cn(scrolled ? "shadow-sm" : "", "z-40")} 
+          isAdmin={isAdmin} 
+          selectedRole={selectedRole} 
+          onRoleChange={setSelectedRole}
+        />
+      );
+    }
+  };
+
   return (
     <header className="fixed top-0 w-full z-50">
       <nav className={cn(
@@ -82,26 +103,19 @@ const Navbar = () => {
           {/* Mobile Navigation */}
           <div className="md:hidden flex items-center">
             <ThemeToggle className="mr-2" />
-            <MobileNav user={user} signOut={signOut} isAdmin={isAdmin} selectedRole={selectedRole} onRoleChange={setSelectedRole} />
+            <MobileNav 
+              user={user} 
+              signOut={signOut} 
+              isAdmin={isAdmin} 
+              selectedRole={selectedRole} 
+              onRoleChange={setSelectedRole} 
+            />
           </div>
         </div>
       </nav>
       
-      {/* Secondary Navigation Bar (for user functions) - show for both regular users and admins viewing as users */}
-      {user && (selectedRole === 'user' || !isAdmin) && (
-        <SecondaryNav 
-          user={user} 
-          className={cn(scrolled ? "shadow-sm" : "", "z-40")} 
-          isAdmin={isAdmin} 
-          selectedRole={selectedRole} 
-          onRoleChange={setSelectedRole}
-        />
-      )}
-      
-      {/* Admin Navigation Bar (for admin functions) */}
-      {user && isAdmin && selectedRole === 'admin' && (
-        <AdminNav user={user} className={cn(scrolled ? "shadow-sm" : "", "z-30")} />
-      )}
+      {/* Conditionally render navigation based on role */}
+      {renderNavigation()}
     </header>
   );
 };
