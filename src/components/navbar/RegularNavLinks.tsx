@@ -18,7 +18,7 @@ const RegularNavLinks: React.FC<RegularNavLinksProps> = ({ className }) => {
   const location = useLocation();
   
   // Define regular links for approved users
-  const regularLinks: RegularLink[] = [
+  const regularLinks = [
     { name: "Licensing", href: "/licensing", icon: FileText },
     { name: "Support", href: "/support", icon: BadgeHelp },
     { name: "Downloads", href: "/downloads", icon: Download },

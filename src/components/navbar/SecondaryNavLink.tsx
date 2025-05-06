@@ -1,13 +1,12 @@
 
 import React from 'react';
 import { Link, useLocation } from "react-router-dom";
-import { LucideIcon } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 type SecondaryNavLinkProps = {
   name: string;
   href: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<any>;
   active?: boolean;
 };
 

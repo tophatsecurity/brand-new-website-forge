@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { LucideIcon } from 'lucide-react';
 import { getIconComponent } from '@/components/navbar/IconRegistry';
 
 type AdminNavItem = {
@@ -17,7 +16,7 @@ type AdminNavItem = {
 export type AdminNavLink = {
   name: string;
   href: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<any>;
 }
 
 export const useAdminNavigation = (isAdmin: boolean) => {

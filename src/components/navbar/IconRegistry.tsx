@@ -1,5 +1,5 @@
 
-import { LucideIcon } from 'lucide-react';
+import React from 'react';
 import { 
   Users, 
   Settings, 
@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 // Map string names to actual imported icon components
-const iconMap: Record<string, LucideIcon> = {
+const iconMap: Record<string, React.ComponentType<any>> = {
   'Users': Users,
   'Settings': Settings,
   'Shield': Shield,
@@ -30,7 +30,7 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 // Helper to convert icon string to Lucide icon component
-export const getIconComponent = (iconName: string): LucideIcon => {
+export const getIconComponent = (iconName: string): React.ComponentType<any> => {
   return iconMap[iconName] || FileText;  // Default to FileText if icon not found
 };
 
