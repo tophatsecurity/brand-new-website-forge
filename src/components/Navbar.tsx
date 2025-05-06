@@ -58,8 +58,7 @@ const Navbar = () => {
         const containerWidth = document.querySelector('nav')?.clientWidth || window.innerWidth;
         const combined = logoRect.width + navRect.width + 24; // 24px for padding
         
-        // Always set to true on mobile for consistent vertical layout
-        setIsOverlapping(isMobile || combined > containerWidth);
+        setIsOverlapping(combined > containerWidth);
       }
     };
     
@@ -70,7 +69,7 @@ const Navbar = () => {
     return () => {
       window.removeEventListener('resize', checkOverlap);
     };
-  }, [isMobile]);
+  }, []);
 
   const handleRoleChange = (role: string) => {
     setSelectedRole(role);
@@ -85,7 +84,10 @@ const Navbar = () => {
           ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-md" 
           : "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md"
       )}>
-        <div className="flex flex-col space-y-4">
+        <div className={cn(
+          "flex flex-col md:flex-row md:items-center md:justify-between", 
+          (isMobile || isOverlapping) ? "space-y-4" : ""
+        )}>
           {/* Logo */}
           <div ref={logoRef} className="flex items-center justify-between">
             <Link to="/" className="flex items-center">
@@ -100,8 +102,8 @@ const Navbar = () => {
               </span>
             </Link>
             
-            {/* Mobile Navigation toggle button */}
-            {isMobile && (
+            {/* Mobile Navigation - Only show toggle button next to logo on mobile */}
+            {(isMobile || isOverlapping) && (
               <MobileNav 
                 user={user}
                 signOut={signOut}
@@ -112,18 +114,18 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Navigation section - always below logo */}
-          <div ref={navRef} className="w-full flex justify-end">
-            {!isMobile && (
-              <DesktopNav 
-                user={user}
-                signOut={signOut}
-                isAdmin={isAdmin}
-                selectedRole={selectedRole}
-                onRoleChange={handleRoleChange}
-              />
-            )}
+          {/* Desktop Navigation - show as normal on desktop */}
+          <div ref={navRef} className={cn(!isOverlapping && "hidden md:block")}>
+            <DesktopNav 
+              user={user}
+              signOut={signOut}
+              isAdmin={isAdmin}
+              selectedRole={selectedRole}
+              onRoleChange={handleRoleChange}
+            />
           </div>
+          
+          {/* When on mobile or overlapping, MobileNav is placed next to the logo */}
         </div>
       </nav>
 

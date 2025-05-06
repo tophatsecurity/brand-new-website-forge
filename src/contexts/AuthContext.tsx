@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 type AppRole = 'admin' | 'user' | 'moderator';
 
@@ -34,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userRoles, setUserRoles] = useState<AppRole[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -82,7 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUserRoles(data || []);
         setIsAdmin((data || []).includes('admin'));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Exception fetching user roles:", err);
       setUserRoles([]);
       setIsAdmin(false);
