@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import AdminRoute from "@/components/auth/AdminRoute";
 
 import Index from "./pages/Index";
 import Products from "./pages/Products";
@@ -71,9 +72,9 @@ const App = () => (
               
               {/* Protected routes requiring authentication and approval */}
               <Route path="/admin" element={
-                <ProtectedRoute requireAdmin={true}>
+                <AdminRoute>
                   <Admin />
-                </ProtectedRoute>
+                </AdminRoute>
               } />
               <Route path="/profile" element={
                 <ProtectedRoute>
@@ -98,29 +99,29 @@ const App = () => (
               
               {/* Admin routes */}
               <Route path="/admin/users" element={
-                <ProtectedRoute requireAdmin={true}>
+                <AdminRoute>
                   <UsersPage />
-                </ProtectedRoute>
+                </AdminRoute>
               } />
               <Route path="/admin/actions" element={
-                <ProtectedRoute requireAdmin={true}>
+                <AdminRoute>
                   <ActionsPage />
-                </ProtectedRoute>
+                </AdminRoute>
               } />
               <Route path="/admin/permissions" element={
-                <ProtectedRoute requireAdmin={true}>
+                <AdminRoute>
                   <PermissionsPage />
-                </ProtectedRoute>
+                </AdminRoute>
               } />
               <Route path="/admin/downloads" element={
-                <ProtectedRoute requireAdmin={true}>
+                <AdminRoute>
                   <DownloadsAdminPage />
-                </ProtectedRoute>
+                </AdminRoute>
               } />
               <Route path="/admin/licensing" element={
-                <ProtectedRoute requireAdmin={true}>
+                <AdminRoute>
                   <LicensingAdminPage />
-                </ProtectedRoute>
+                </AdminRoute>
               } />
               
               {/* 404 route */}

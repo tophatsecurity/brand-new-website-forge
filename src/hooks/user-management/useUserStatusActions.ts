@@ -64,11 +64,52 @@ export const useUserStatusActions = (fetchUsers: () => Promise<void>) => {
 
   const handleUpdateRole = async (userId: string, role: string) => {
     try {
-      const { error } = await supabase.auth.admin.updateUserById(userId, {
+      // First update auth metadata
+      const { error: authError } = await supabase.auth.admin.updateUserById(userId, {
         user_metadata: { role }
       });
       
-      if (error) throw error;
+      if (authError) throw authError;
+      
+      // Then update the user_roles table
+      if (role === 'admin') {
+        // Get the user's email first
+        const { data: userData, error: userError } = await supabase.auth.admin.getUserById(userId);
+        
+        if (userError) throw userError;
+        
+        const userEmail = userData.user?.email;
+        
+        if (!userEmail) {
+          throw new Error('User email not found');
+        }
+        
+        // Promote user to admin using our custom function
+        const { error: promoteError } = await supabase.rpc('promote_to_admin', { 
+          user_email: userEmail 
+        });
+        
+        if (promoteError) throw promoteError;
+      } else {
+        // For other roles, remove admin role if exists and add the new role
+        const { error: deleteError } = await supabase
+          .from('user_roles')
+          .delete()
+          .eq('user_id', userId)
+          .eq('role', 'admin');
+          
+        if (deleteError) throw deleteError;
+        
+        // Insert the new role
+        const { error: insertError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: userId,
+            role: role
+          });
+          
+        if (insertError) throw insertError;
+      }
       
       toast({
         title: 'User role updated',

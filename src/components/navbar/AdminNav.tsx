@@ -7,6 +7,7 @@ import { useAdminNavigation } from '@/hooks/useAdminNavigation';
 import { Button } from '@/components/ui/button';
 import { Plus, Download, Key } from 'lucide-react';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AdminNavProps {
   user: any;
@@ -14,12 +15,13 @@ interface AdminNavProps {
 }
 
 const AdminNav: React.FC<AdminNavProps> = ({ user, className }) => {
+  const { isAdmin } = useAuth();
+  
   // Only show the admin nav to admin users
-  if (!user || user.user_metadata?.role !== 'admin') {
+  if (!isAdmin) {
     return null;
   }
   
-  const isAdmin = user.user_metadata?.role === 'admin';
   const { adminLinks } = useAdminNavigation(isAdmin);
   const location = useLocation();
   
