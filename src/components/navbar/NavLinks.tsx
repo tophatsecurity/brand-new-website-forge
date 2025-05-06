@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Link } from "react-router-dom";
-import { FileText, Download } from 'lucide-react';
 
 type NavLinkProps = {
   name: string;
@@ -10,35 +9,20 @@ type NavLinkProps = {
 };
 
 export const NavLink: React.FC<NavLinkProps> = ({ name, href, onClick }) => {
-  // Determine if it should be a React Router link or regular anchor
-  if (href.startsWith('/') && !href.includes('#')) {
-    return (
-      <Link
-        to={href}
-        className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] transition-colors duration-200 flex items-center"
-        onClick={onClick}
-      >
-        {name === "Support" && <FileText className="h-4 w-4 mr-1" />}
-        {name === "Downloads" && <Download className="h-4 w-4 mr-1" />}
-        {name}
-      </Link>
-    );
-  }
-  
   return (
-    <a
-      href={href}
+    <Link
+      to={href}
       className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] transition-colors duration-200"
       onClick={onClick}
     >
       {name}
-    </a>
+    </Link>
   );
 };
 
-export const getNavLinks = (user: any) => {
-  // Base navigation links without admin link
-  const navLinks = [
+export const getNavLinks = () => {
+  // Base navigation links
+  return [
     { name: "Home", href: "/" },
     { name: "Products", href: "/products" },
     { name: "Services", href: "/services" },
@@ -47,6 +31,4 @@ export const getNavLinks = (user: any) => {
     { name: "Careers", href: "/careers" },
     { name: "Contact", href: "/contact" }
   ];
-
-  return navLinks;
 };
