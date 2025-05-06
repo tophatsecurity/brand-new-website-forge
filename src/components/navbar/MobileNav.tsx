@@ -5,6 +5,7 @@ import { Menu, X } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import MobileMenuContent from './mobile/MobileMenuContent';
 import ThemeToggle from '@/components/ThemeToggle';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MobileNavProps {
   user: any;
@@ -22,6 +23,7 @@ const MobileNav: React.FC<MobileNavProps> = ({
   onRoleChange = () => {} 
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleClose = () => setIsOpen(false);
   
@@ -39,7 +41,9 @@ const MobileNav: React.FC<MobileNavProps> = ({
 
       {/* Mobile Navigation Menu */}
       <div className={cn(
-        "md:hidden fixed left-0 right-0 top-[76px] bg-white dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out overflow-hidden z-50",
+        "md:hidden fixed left-0 right-0 bg-white dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out overflow-hidden z-50",
+        // Position differently based on mobile state
+        isMobile ? "top-[84px]" : "top-[76px]",
         isOpen ? "max-h-screen py-4" : "max-h-0"
       )}>
         {isOpen && (
