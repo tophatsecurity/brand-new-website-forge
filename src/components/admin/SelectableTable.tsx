@@ -31,6 +31,7 @@ interface SelectableTableProps<T extends { id: string }> {
   loading?: boolean;
   emptyState?: React.ReactNode;
   isProcessingBulkAction?: boolean;
+  onRowClick?: (item: T) => void;
 }
 
 function SelectableTable<T extends { id: string }>({
@@ -41,6 +42,7 @@ function SelectableTable<T extends { id: string }>({
   loading = false,
   emptyState,
   isProcessingBulkAction = false,
+  onRowClick,
 }: SelectableTableProps<T>) {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
@@ -52,7 +54,10 @@ function SelectableTable<T extends { id: string }>({
     }
   };
 
-  const handleSelectRow = (id: string) => {
+  const handleSelectRow = (id: string, e: React.MouseEvent) => {
+    // Prevent row click when clicking on checkbox
+    e.stopPropagation();
+    
     if (selectedRows.includes(id)) {
       setSelectedRows(selectedRows.filter(rowId => rowId !== id));
     } else {
@@ -62,6 +67,8 @@ function SelectableTable<T extends { id: string }>({
 
   const handleBulkAction = (action: string) => {
     onBulkAction(action, selectedRows);
+    // Clear selection after action is performed
+    setSelectedRows([]);
   };
 
   return (
@@ -105,11 +112,14 @@ function SelectableTable<T extends { id: string }>({
               </TableRow>
             ) : (
               data.map((item) => (
-                <TableRow key={item.id} className={selectedRows.includes(item.id) ? "bg-accent/50" : undefined}>
-                  <TableCell>
+                <TableRow 
+                  key={item.id} 
+                  className={`${selectedRows.includes(item.id) ? "bg-accent/50" : ""} ${onRowClick ? "cursor-pointer hover:bg-muted/80" : ""}`}
+                  onClick={() => onRowClick && onRowClick(item)}
+                >
+                  <TableCell onClick={(e) => handleSelectRow(item.id, e)}>
                     <Checkbox
                       checked={selectedRows.includes(item.id)}
-                      onCheckedChange={() => handleSelectRow(item.id)}
                       aria-label={`Select row ${item.id}`}
                     />
                   </TableCell>

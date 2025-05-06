@@ -8,6 +8,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 interface BulkAction {
   value: string;
@@ -66,7 +67,14 @@ const BulkActionBar: React.FC<BulkActionBarProps> = ({
           disabled={!selectedAction || isProcessing}
           variant={actions.find(a => a.value === selectedAction)?.variant || 'default'}
         >
-          Apply
+          {isProcessing ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            'Apply'
+          )}
         </Button>
       </div>
     </div>

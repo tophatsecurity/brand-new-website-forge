@@ -18,23 +18,48 @@ export type FormValues = {
   seats: number;
   expiryDate: Date;
   email: string;
-  features: string[];  // Added support for multi-select features
-  addons: string[];    // Added support for multi-select addons
+  features: string[];  // Multi-select features
+  addons: string[];    // Multi-select addons
+};
+
+export type AvailableProduct = {
+  value: string;
+  label: string;
+};
+
+export type AvailableFeature = {
+  value: string;
+  label: string;
+};
+
+export type AvailableAddon = {
+  value: string;
+  label: string;
 };
 
 type UseLicenseFormProps = {
   tiers: LicenseTier[];
+  products?: AvailableProduct[];
+  features?: AvailableFeature[];
+  addons?: AvailableAddon[];
   onLicenseCreated: (newLicense: any) => void;
   onClose: () => void;
 };
 
-export const useLicenseForm = ({ tiers, onLicenseCreated, onClose }: UseLicenseFormProps) => {
+export const useLicenseForm = ({ 
+  tiers, 
+  products = [], 
+  features = [], 
+  addons = [],
+  onLicenseCreated, 
+  onClose 
+}: UseLicenseFormProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<FormValues>({
     defaultValues: {
-      product: "",
+      product: products[0]?.value || "",
       tier: "",
       seats: 1,
       expiryDate: addMonths(new Date(), 12),
@@ -57,7 +82,8 @@ export const useLicenseForm = ({ tiers, onLicenseCreated, onClose }: UseLicenseF
     setIsSubmitting(true);
     
     try {
-      const randomKey = `THS-${data.product.slice(0, 4).toUpperCase()}-${new Date().getFullYear()}-${generateRandomString(4)}-${generateRandomString(4)}`;
+      const productCode = data.product.slice(0, 4).toUpperCase();
+      const randomKey = `THS-${productCode}-${new Date().getFullYear()}-${generateRandomString(4)}-${generateRandomString(4)}`;
       const tierId = tiers.find(t => t.name === data.tier)?.id;
       
       if (!tierId) {
@@ -131,6 +157,9 @@ export const useLicenseForm = ({ tiers, onLicenseCreated, onClose }: UseLicenseF
   return {
     form,
     onSubmit,
-    isSubmitting
+    isSubmitting,
+    products,
+    features,
+    addons
   };
 };
