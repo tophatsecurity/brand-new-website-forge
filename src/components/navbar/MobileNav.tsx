@@ -28,7 +28,7 @@ const MobileNav: React.FC<MobileNavProps> = ({
   const handleClose = () => setIsOpen(false);
   
   return (
-    <div className="md:hidden flex items-center space-x-2">
+    <div className="flex items-center space-x-2">
       <ThemeToggle />
       <Button
         variant="ghost"
@@ -41,9 +41,9 @@ const MobileNav: React.FC<MobileNavProps> = ({
 
       {/* Mobile Navigation Menu */}
       <div className={cn(
-        "md:hidden fixed left-0 right-0 bg-white dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out overflow-hidden z-50",
-        // Position differently based on mobile state
-        isMobile ? "top-[84px]" : "top-[76px]",
+        "fixed left-0 right-0 bg-white dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out overflow-hidden z-50",
+        // Position below the logo + navbar section
+        "top-[120px]",
         isOpen ? "max-h-screen py-4" : "max-h-0"
       )}>
         {isOpen && (
