@@ -1,25 +1,9 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { 
-  Menu, 
-  X, 
-  LogOut, 
-  User, 
-  Users, 
-  Shield, 
-  Key, 
-  FileText, 
-  BadgeHelp, 
-  Download, 
-  LayoutDashboard,
-  ActivitySquare
-} from 'lucide-react';
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Menu, X } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { NavLink, getNavLinks } from './NavLinks';
-import { Separator } from "@/components/ui/separator";
-import RoleSwitcher from './RoleSwitcher';
+import MobileMenuContent from './mobile/MobileMenuContent';
 
 interface MobileNavProps {
   user: any;
@@ -37,17 +21,8 @@ const MobileNav: React.FC<MobileNavProps> = ({
   onRoleChange = () => {} 
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const navLinks = getNavLinks(user);
-  
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
-    setIsOpen(false);
-  };
 
-  const isApproved = user?.user_metadata?.approved;
+  const handleClose = () => setIsOpen(false);
 
   return (
     <div className="md:hidden">
@@ -65,147 +40,16 @@ const MobileNav: React.FC<MobileNavProps> = ({
         "md:hidden absolute left-0 right-0 bg-white dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out overflow-hidden z-50",
         isOpen ? "max-h-screen py-4" : "max-h-0"
       )}>
-        <div className="flex flex-col space-y-4 px-6">
-          {/* Role Switcher for Admins */}
-          {user && isAdmin && (
-            <div className="py-2">
-              <RoleSwitcher selectedRole={selectedRole} onRoleChange={onRoleChange} />
-            </div>
-          )}
-          
-          {/* Primary navigation links */}
-          {navLinks.map((link) => (
-            <NavLink 
-              key={link.name}
-              name={link.name}
-              href={link.href}
-              onClick={() => setIsOpen(false)}
-            />
-          ))}
-
-          {/* User resources section for approved users */}
-          {isApproved && (selectedRole === 'user' || !isAdmin) && (
-            <>
-              <Separator className="my-2" />
-              <div className="pt-2 pb-1 font-semibold text-gray-500 dark:text-gray-400">
-                Resources
-              </div>
-              <Link
-                to="/licensing"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <FileText className="h-4 w-4 mr-2" /> Licensing
-              </Link>
-              <Link
-                to="/support"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <BadgeHelp className="h-4 w-4 mr-2" /> Support
-              </Link>
-              <Link
-                to="/downloads"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <Download className="h-4 w-4 mr-2" /> Downloads
-              </Link>
-            </>
-          )}
-
-          {/* Admin sections for mobile */}
-          {isAdmin && selectedRole === 'admin' && (
-            <>
-              <Separator className="my-2" />
-              <div className="pt-2 pb-1 font-semibold text-gray-500 dark:text-gray-400">
-                Admin
-              </div>
-              <Link
-                to="/admin"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <LayoutDashboard className="h-4 w-4 mr-2" /> Dashboard
-              </Link>
-              <Link
-                to="/admin/users"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <Users className="h-4 w-4 mr-2" /> Users
-              </Link>
-              <Link
-                to="/admin/actions"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <ActivitySquare className="h-4 w-4 mr-2" /> Actions
-              </Link>
-              <Link
-                to="/admin/permissions"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <Shield className="h-4 w-4 mr-2" /> Permissions
-              </Link>
-              <Link
-                to="/admin/licensing"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <Key className="h-4 w-4 mr-2" /> Licensing
-              </Link>
-              <Link
-                to="/admin/downloads"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2 flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <Download className="h-4 w-4 mr-2" /> Downloads
-              </Link>
-            </>
-          )}
-
-          {user ? (
-            <>
-              <Separator className="my-2" />
-              <Link
-                to="/profile"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
-                onClick={() => setIsOpen(false)}
-              >
-                My Account
-              </Link>
-              <Button
-                variant="outline"
-                className="justify-start px-2"
-                onClick={handleSignOut}
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
-                onClick={() => setIsOpen(false)}
-              >
-                Login
-              </Link>
-              <Button
-                className="bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full"
-                onClick={() => {
-                  navigate('/register');
-                  setIsOpen(false);
-                }}
-              >
-                Register
-              </Button>
-            </>
-          )}
-        </div>
+        {isOpen && (
+          <MobileMenuContent
+            user={user}
+            signOut={signOut}
+            isAdmin={isAdmin}
+            selectedRole={selectedRole}
+            onRoleChange={onRoleChange}
+            onClose={handleClose}
+          />
+        )}
       </div>
     </div>
   );
