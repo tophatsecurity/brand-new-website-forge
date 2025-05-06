@@ -62,7 +62,7 @@ export const useUserStatusActions = (fetchUsers: () => Promise<void>) => {
     }
   };
 
-  const handleUpdateRole = async (userId: string, role: string) => {
+  const handleUpdateRole = async (userId: string, role: "admin" | "user" | "moderator") => {
     try {
       // First update auth metadata
       const { error: authError } = await supabase.auth.admin.updateUserById(userId, {
@@ -105,7 +105,7 @@ export const useUserStatusActions = (fetchUsers: () => Promise<void>) => {
           .from('user_roles')
           .insert({
             user_id: userId,
-            role: role
+            role
           });
           
         if (insertError) throw insertError;

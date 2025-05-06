@@ -3,15 +3,17 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
+type PermissionType = "downloads" | "support" | "admin";
+
 const permissionTypes = [
-  { key: "downloads", label: "Downloads" },
-  { key: "support", label: "Support" },
-  { key: "admin", label: "Admin" }
+  { key: "downloads" as PermissionType, label: "Downloads" },
+  { key: "support" as PermissionType, label: "Support" },
+  { key: "admin" as PermissionType, label: "Admin" }
 ];
 
 interface UserPermissionsProps {
   user: any;
-  onGrantPermission: (userId: string, permission: string) => Promise<void>;
+  onGrantPermission: (userId: string, permission: PermissionType) => Promise<void>;
   onRevokePermission: (permissionId: string) => Promise<void>;
 }
 
@@ -51,4 +53,3 @@ const UserPermissions = ({ user, onGrantPermission, onRevokePermission }: UserPe
 };
 
 export default UserPermissions;
-
