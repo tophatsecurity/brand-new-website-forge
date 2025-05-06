@@ -3,11 +3,11 @@ import React from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from 'lucide-react';
-import { NavLink, getNavLinks } from '../NavLinks';
+import { NavLink, getNavLinks } from './NavLinks';
 import { Separator } from "@/components/ui/separator";
-import MobileAdminLinks from './MobileAdminLinks';
-import MobileUserResources from './MobileUserResources';
-import RoleSwitcher from '../RoleSwitcher';
+import MobileAdminLinks from './mobile/MobileAdminLinks';
+import MobileUserResources from './mobile/MobileUserResources';
+import RoleSwitcher from './RoleSwitcher';
 
 interface MobileMenuContentProps {
   user: any;
