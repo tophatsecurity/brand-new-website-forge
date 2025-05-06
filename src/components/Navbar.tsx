@@ -11,7 +11,7 @@ import AdminNav from './navbar/AdminNav';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,8 +70,10 @@ const Navbar = () => {
       {/* Secondary Navigation Bar (for user functions) */}
       {user && <SecondaryNav user={user} className={cn(scrolled ? "shadow-sm" : "", "z-40")} />}
       
-      {/* Admin Navigation Bar (for admin functions) - now checks isAdmin instead of role metadata */}
-      {isAdmin && <AdminNav user={user} className={cn(scrolled ? "shadow-sm" : "", "z-30")} />}
+      {/* Admin Navigation Bar (for admin functions) */}
+      {user && user.user_metadata?.role === 'admin' && (
+        <AdminNav user={user} className={cn(scrolled ? "shadow-sm" : "", "z-30")} />
+      )}
     </header>
   );
 };

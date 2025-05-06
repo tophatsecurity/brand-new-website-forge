@@ -37,8 +37,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, signOut }) => {
     setIsOpen(false);
   };
 
-  // Use isAdmin from auth context via user metadata or another source
-  const isAdmin = user?.user_metadata?.role === 'admin' || user?.app_metadata?.roles?.includes('admin');
+  const isAdmin = user?.user_metadata?.role === 'admin';
   const isApproved = user?.user_metadata?.approved;
 
   return (
