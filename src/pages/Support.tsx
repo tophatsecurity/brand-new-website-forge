@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import AddArticleForm from "@/components/support/AddArticleForm";
+import { useAuth } from "@/contexts/AuthContext";
 
 type SupportDoc = {
   id: string;
@@ -16,6 +18,7 @@ type SupportDoc = {
   category: string;
   tags: string[];
   created_at: string;
+  author_name?: string;
 };
 
 const Support = () => {
@@ -23,6 +26,8 @@ const Support = () => {
   const [filtered, setFiltered] = useState<SupportDoc[]>([]);
   const [docs, setDocs] = useState<SupportDoc[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchDocs();
@@ -49,12 +54,44 @@ const Support = () => {
     setLoading(false);
   };
 
+  const toggleForm = () => {
+    setShowForm(!showForm);
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <div className="pt-32 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Support Center</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Support Center</h1>
+            {user?.user_metadata?.approved && (
+              <Button onClick={toggleForm} variant="outline" className="flex items-center gap-2">
+                {showForm ? (
+                  <>
+                    <ChevronUp size={16} />
+                    Hide Form
+                  </>
+                ) : (
+                  <>
+                    <Plus size={16} />
+                    Add Article
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+
+          {showForm && (
+            <Card className="mb-6 p-6 shadow">
+              <h2 className="text-xl font-semibold mb-4">Submit a New Support Article</h2>
+              <AddArticleForm onSuccess={() => {
+                fetchDocs();
+                setShowForm(false);
+              }} />
+            </Card>
+          )}
+
           <div className="mb-6 p-4 rounded-lg bg-card shadow">
             <div className="relative mb-2">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
@@ -84,8 +121,15 @@ const Support = () => {
                   </div>
                   <h2 className="text-xl font-bold mb-2">{doc.title}</h2>
                   <div className="line-clamp-3 mb-2">{doc.content.slice(0, 220)}{doc.content.length > 220 && "..."}</div>
-                  <div className="text-xs text-muted-foreground">
-                    Last updated: {doc.created_at ? new Date(doc.created_at).toLocaleDateString() : ""}
+                  <div className="flex justify-between items-center text-xs text-muted-foreground">
+                    <div>
+                      Last updated: {doc.created_at ? new Date(doc.created_at).toLocaleDateString() : ""}
+                    </div>
+                    {doc.author_name && (
+                      <div className="italic">
+                        By: {doc.author_name}
+                      </div>
+                    )}
                   </div>
                 </Card>
               ))}
