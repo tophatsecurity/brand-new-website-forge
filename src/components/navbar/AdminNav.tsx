@@ -2,6 +2,7 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 import AdminNavLinks from './AdminNavLinks';
+import { useAdminNavigation } from '@/hooks/useAdminNavigation';
 
 interface AdminNavProps {
   user: any;
@@ -14,15 +15,20 @@ const AdminNav: React.FC<AdminNavProps> = ({ user, className }) => {
     return null;
   }
   
+  const isAdmin = user.user_metadata?.role === 'admin';
+  const { adminLinks } = useAdminNavigation(isAdmin);
+  
   return (
     <div className={cn(
       "w-full border-b transition-all duration-300",
-      "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md",
+      "bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm",
       className
     )}>
-      <div className="flex items-center justify-start py-4 px-6 md:px-12 lg:px-24 overflow-x-auto">
-        <div className="text-sm font-semibold text-primary dark:text-primary mr-4">Admin:</div>
-        <AdminNavLinks className="flex-1" />
+      <div className="flex items-center py-2 px-6 md:px-12 lg:px-24 overflow-x-auto">
+        <div className="text-sm font-semibold text-foreground/70 dark:text-foreground/70 mr-4">
+          Admin:
+        </div>
+        <AdminNavLinks className="flex-1" links={adminLinks} />
       </div>
     </div>
   );

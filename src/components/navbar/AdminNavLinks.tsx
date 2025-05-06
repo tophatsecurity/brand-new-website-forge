@@ -1,26 +1,17 @@
 
 import React from 'react';
-import NavLinkGroup, { NavLink } from './NavLinkGroup';
-import { LayoutDashboard, Users, Shield, Key, Download, ActivitySquare } from 'lucide-react';
+import NavLinkGroup from './NavLinkGroup';
+import { type NavLink } from './NavLinkGroup';
 
 interface AdminNavLinksProps {
   className?: string;
+  links: NavLink[];
 }
 
-const AdminNavLinks: React.FC<AdminNavLinksProps> = ({ className }) => {
-  // Define admin links
-  const adminLinks: NavLink[] = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { name: "Users", href: "/admin/users", icon: Users },
-    { name: "Permissions", href: "/admin/permissions", icon: Shield },
-    { name: "Actions", href: "/admin/actions", icon: ActivitySquare },
-    { name: "Licensing", href: "/admin/licensing", icon: Key },
-    { name: "Downloads", href: "/admin/downloads", icon: Download },
-  ];
-
+const AdminNavLinks: React.FC<AdminNavLinksProps> = ({ className, links }) => {
   return (
     <div className={`${className} overflow-x-auto whitespace-nowrap pr-4`}>
-      <NavLinkGroup links={adminLinks} className="flex space-x-5" />
+      <NavLinkGroup links={links} className="flex" />
     </div>
   );
 };

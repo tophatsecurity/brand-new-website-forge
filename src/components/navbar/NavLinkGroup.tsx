@@ -23,7 +23,7 @@ const NavLinkGroup: React.FC<NavLinkGroupProps> = ({ links, className }) => {
   }
   
   return (
-    <div className={cn("flex items-center space-x-8 overflow-x-auto", className)}>
+    <div className={cn("flex items-center space-x-4 overflow-x-auto", className)}>
       {links.map((link) => (
         <SecondaryNavLink 
           key={link.name} 
