@@ -39,7 +39,7 @@ const MobileNav: React.FC<MobileNavProps> = ({
 
       {/* Mobile Navigation Menu */}
       <div className={cn(
-        "md:hidden fixed left-0 right-0 top-[72px] bg-white dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out overflow-hidden z-50",
+        "md:hidden fixed left-0 right-0 top-[76px] bg-white dark:bg-gray-900 shadow-lg transition-all duration-300 ease-in-out overflow-hidden z-50",
         isOpen ? "max-h-screen py-4" : "max-h-0"
       )}>
         {isOpen && (

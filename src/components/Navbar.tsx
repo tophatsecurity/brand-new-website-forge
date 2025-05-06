@@ -64,7 +64,7 @@ const Navbar = () => {
                 alt="TopHat Security Logo"
                 className="h-14 md:h-16 mr-3"
               />
-              <span className="text-2xl font-bold">
+              <span className="text-xl md:text-2xl font-bold whitespace-nowrap">
                 <span className="text-[#222] dark:text-white">TOPHAT</span>
                 <span className="text-[#cc0c1a]">|SECURITY</span>
               </span>
