@@ -11,7 +11,7 @@ import AdminNav from './navbar/AdminNav';
 import UserNavMenu from './UserNavMenu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Button } from './ui/button';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Shield, User } from 'lucide-react';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -75,6 +75,39 @@ const Navbar = () => {
     console.log("Role changed to:", role);
   };
 
+  // Role Switcher Component in the top bar
+  const TopBarRoleSwitcher = () => {
+    if (!user || !isAdmin) return null;
+    
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 gap-1 ml-2">
+            {selectedRole === 'admin' ? (
+              <Shield className="h-4 w-4" />
+            ) : (
+              <User className="h-4 w-4" />
+            )}
+            <span className="capitalize">{selectedRole}</span>
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-[180px]">
+          <DropdownMenuRadioGroup value={selectedRole || undefined} onValueChange={handleRoleChange}>
+            <DropdownMenuRadioItem value="admin" className="cursor-pointer">
+              <Shield className="mr-2 h-4 w-4" />
+              <span>Admin</span>
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="user" className="cursor-pointer">
+              <User className="mr-2 h-4 w-4" />
+              <span>User</span>
+            </DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
+
   return (
     <header className="fixed top-0 w-full z-50">
       <nav className={cn(
@@ -99,6 +132,11 @@ const Navbar = () => {
             </Link>
           </div>
 
+          {/* Role Switcher in Top Bar for Medium Screens and Up */}
+          <div className="hidden md:flex items-center">
+            <TopBarRoleSwitcher />
+          </div>
+
           {/* Desktop Navigation */}
           <DesktopNav 
             user={user} 
@@ -110,6 +148,7 @@ const Navbar = () => {
           
           {/* Mobile Navigation */}
           <div className="md:hidden flex items-center">
+            <TopBarRoleSwitcher />
             <ThemeToggle className="mr-2" />
             <MobileNav 
               user={user} 
