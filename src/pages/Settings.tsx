@@ -3,6 +3,7 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import MainLayout from '@/components/layouts/MainLayout';
 import UserSettings from '@/components/UserSettings';
+import AccountSettings from '@/components/AccountSettings';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Settings = () => {
@@ -24,11 +25,12 @@ const Settings = () => {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Settings</h1>
         
-        <Tabs defaultValue="account" className="w-full">
+        <Tabs defaultValue="appearance" className="w-full">
           <TabsList className="mb-8">
             <TabsTrigger value="account">Account</TabsTrigger>
             <TabsTrigger value="appearance">Appearance</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
+            <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
           
           <TabsContent value="account" className="space-y-4">
@@ -37,7 +39,7 @@ const Settings = () => {
               Manage your account details and preferences
             </p>
             
-            <UserSettings userId={user.id} />
+            <AccountSettings />
           </TabsContent>
           
           <TabsContent value="appearance" className="space-y-4">
@@ -56,6 +58,15 @@ const Settings = () => {
             </p>
             
             <UserSettings userId={user.id} />
+          </TabsContent>
+          
+          <TabsContent value="security" className="space-y-4">
+            <h2 className="text-xl font-semibold">Security Settings</h2>
+            <p className="text-muted-foreground mb-6">
+              Manage your security and account access
+            </p>
+            
+            <AccountSettings />
           </TabsContent>
         </Tabs>
       </div>

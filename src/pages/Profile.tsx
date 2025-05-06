@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
 import UserSettings from '@/components/UserSettings';
+import AccountSettings from '@/components/AccountSettings';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Profile = () => {
   const { user, setUserAsAdmin } = useAuth();
@@ -42,61 +44,55 @@ const Profile = () => {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">My Profile</h1>
         
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Account Information</CardTitle>
-            <CardDescription>
-              Your account details and preferences
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <p className="font-medium">Email</p>
-                <p className="text-muted-foreground">{user?.email}</p>
-              </div>
-              <div>
-                <p className="font-medium">Status</p>
-                <p className="text-muted-foreground">
-                  {user?.user_metadata?.approved ? 'Approved' : 'Pending Approval'}
-                </p>
-              </div>
-              <div>
-                <p className="font-medium">Role</p>
-                <p className="text-muted-foreground">
-                  {user?.user_metadata?.role || 'User'}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button variant="outline">Update Profile</Button>
-            <Button onClick={handleSetAdmin}>Make Admin (Test Only)</Button>
-          </CardFooter>
-        </Card>
-        
-        {/* User Settings Card */}
-        {user && <UserSettings userId={user.id} />}
-        
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Security</CardTitle>
-            <CardDescription>
-              Manage your password and security settings
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <p className="font-medium">Password</p>
-                <p className="text-muted-foreground">Last changed: Never</p>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button variant="outline">Change Password</Button>
-          </CardFooter>
-        </Card>
+        <Tabs defaultValue="account" className="mb-8">
+          <TabsList className="mb-4">
+            <TabsTrigger value="account">Account Info</TabsTrigger>
+            <TabsTrigger value="settings">Preferences</TabsTrigger>
+            <TabsTrigger value="security">Security</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="account">
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle>Account Information</CardTitle>
+                <CardDescription>
+                  Your account details and preferences
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <p className="font-medium">Email</p>
+                    <p className="text-muted-foreground">{user?.email}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">Status</p>
+                    <p className="text-muted-foreground">
+                      {user?.user_metadata?.approved ? 'Approved' : 'Pending Approval'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-medium">Role</p>
+                    <p className="text-muted-foreground">
+                      {user?.user_metadata?.role || 'User'}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-end">
+                <Button onClick={handleSetAdmin} variant="outline">Make Admin (Test Only)</Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="settings">
+            {user && <UserSettings userId={user.id} />}
+          </TabsContent>
+          
+          <TabsContent value="security">
+            <AccountSettings />
+          </TabsContent>
+        </Tabs>
       </div>
     </MainLayout>
   );
