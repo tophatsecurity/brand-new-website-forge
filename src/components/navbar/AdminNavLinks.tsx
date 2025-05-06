@@ -18,7 +18,11 @@ const AdminNavLinks: React.FC<AdminNavLinksProps> = ({ className }) => {
     { name: "Downloads", href: "/admin/downloads", icon: Download },
   ];
 
-  return <NavLinkGroup links={adminLinks} className={className} />;
+  return (
+    <div className={`${className} overflow-x-auto whitespace-nowrap pr-4`}>
+      <NavLinkGroup links={adminLinks} className="flex space-x-5" />
+    </div>
+  );
 };
 
 export default AdminNavLinks;
