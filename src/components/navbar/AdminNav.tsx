@@ -16,12 +16,6 @@ interface AdminNavProps {
 
 const AdminNav: React.FC<AdminNavProps> = ({ user, className }) => {
   const { isAdmin } = useAuth();
-  
-  // Only show the admin nav to admin users
-  if (!isAdmin) {
-    return null;
-  }
-  
   const { adminLinks } = useAdminNavigation(isAdmin);
   const location = useLocation();
   
