@@ -16,6 +16,8 @@ type License = {
   seats: number;
   created_at: string;
   last_active: string | null;
+  features: string[];
+  addons: string[];
 };
 
 type LicenseTier = {
@@ -48,6 +50,8 @@ export const useLicenses = () => {
             seats,
             expiry_date,
             status,
+            features,
+            addons,
             created_at,
             last_active
           `)
@@ -61,7 +65,14 @@ export const useLicenses = () => {
             variant: "destructive"
           });
         } else {
-          setLicenses(licensesData || []);
+          // Ensure features and addons are arrays
+          const processedLicenses = licensesData?.map(license => ({
+            ...license,
+            features: Array.isArray(license.features) ? license.features : [],
+            addons: Array.isArray(license.addons) ? license.addons : []
+          })) || [];
+          
+          setLicenses(processedLicenses);
         }
         
         // Fetch license tiers
@@ -86,7 +97,14 @@ export const useLicenses = () => {
   }, [toast]);
 
   const addLicense = (newLicense: License) => {
-    setLicenses([newLicense, ...licenses]);
+    // Ensure features and addons are arrays
+    const processedLicense = {
+      ...newLicense,
+      features: Array.isArray(newLicense.features) ? newLicense.features : [],
+      addons: Array.isArray(newLicense.addons) ? newLicense.addons : []
+    };
+    
+    setLicenses([processedLicense, ...licenses]);
   };
 
   return {

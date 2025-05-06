@@ -25,8 +25,16 @@ import {
   User,
   Clock,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Package,
+  Gift
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type License = {
   id: string;
@@ -41,6 +49,8 @@ type License = {
   seats: number;
   created_at: string;
   last_active: string | null;
+  features: string[];
+  addons: string[];
 };
 
 type LicenseTableProps = {
@@ -67,6 +77,56 @@ const LicenseTable: React.FC<LicenseTableProps> = ({ licenses, loading, onCopyKe
     }
   };
 
+  const renderFeatureIcons = (license: License) => {
+    if (!license.features || license.features.length === 0) return null;
+    
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center text-muted-foreground">
+              <Package className="h-4 w-4 mr-1" />
+              <span>{license.features.length}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <strong>Features:</strong>
+            <ul className="mt-1 text-xs">
+              {license.features.map(feature => (
+                <li key={feature}>{feature.replace('_', ' ')}</li>
+              ))}
+            </ul>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+  
+  const renderAddonIcons = (license: License) => {
+    if (!license.addons || license.addons.length === 0) return null;
+    
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center text-muted-foreground ml-2">
+              <Gift className="h-4 w-4 mr-1" />
+              <span>{license.addons.length}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <strong>Add-ons:</strong>
+            <ul className="mt-1 text-xs">
+              {license.addons.map(addon => (
+                <li key={addon}>{addon.replace('_', ' ')}</li>
+              ))}
+            </ul>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -79,19 +139,20 @@ const LicenseTable: React.FC<LicenseTableProps> = ({ licenses, loading, onCopyKe
             <TableHead>Seats</TableHead>
             <TableHead>Expiry Date</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Features & Add-ons</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {loading ? (
             <TableRow>
-              <TableCell colSpan={8} className="text-center py-8">
+              <TableCell colSpan={9} className="text-center py-8">
                 Loading licenses...
               </TableCell>
             </TableRow>
           ) : licenses.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="text-center py-8">
+              <TableCell colSpan={9} className="text-center py-8">
                 No licenses found. Create a new license to get started.
               </TableCell>
             </TableRow>
@@ -121,6 +182,12 @@ const LicenseTable: React.FC<LicenseTableProps> = ({ licenses, loading, onCopyKe
                 <TableCell>{license.seats}</TableCell>
                 <TableCell>{format(parseISO(license.expiry_date), 'MMM dd, yyyy')}</TableCell>
                 <TableCell>{getStatusBadge(license.status)}</TableCell>
+                <TableCell>
+                  <div className="flex items-center">
+                    {renderFeatureIcons(license)}
+                    {renderAddonIcons(license)}
+                  </div>
+                </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

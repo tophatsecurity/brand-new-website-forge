@@ -95,6 +95,10 @@ export const useLicenseForm = ({
         return;
       }
       
+      // Ensure features and addons are properly handled as arrays
+      const featureArray = Array.isArray(data.features) ? data.features : [];
+      const addonArray = Array.isArray(data.addons) ? data.addons : [];
+      
       const { data: newLicense, error } = await supabase
         .from('product_licenses')
         .insert({
@@ -105,8 +109,8 @@ export const useLicenseForm = ({
           expiry_date: data.expiryDate.toISOString(),
           status: data.email ? "active" : "unassigned",
           seats: data.seats,
-          features: data.features,  // Store selected features
-          addons: data.addons,      // Store selected addons
+          features: featureArray,
+          addons: addonArray,
         })
         .select(`
           id,

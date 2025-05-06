@@ -53,6 +53,14 @@ type LicenseFormProps = {
 const LicenseForm: React.FC<LicenseFormProps> = ({ tiers, onLicenseCreated, onClose }) => {
   const { form, onSubmit, isSubmitting } = useLicenseForm({
     tiers,
+    products: [
+      { value: "SeekCap", label: "SeekCap" },
+      { value: "DDX", label: "DDX" },
+      { value: "ParaGuard", label: "ParaGuard" },
+      { value: "SecondLook", label: "SecondLook" },
+    ],
+    features: productFeatures,
+    addons: productAddons,
     onLicenseCreated,
     onClose
   });
