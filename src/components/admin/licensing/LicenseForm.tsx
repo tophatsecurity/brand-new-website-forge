@@ -24,6 +24,25 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useLicenseForm, type LicenseTier } from "@/hooks/useLicenseForm";
+import { MultiSelect, type Option } from "@/components/ui/multi-select";
+
+// Product features for multi-select
+const productFeatures: Option[] = [
+  { value: "api_access", label: "API Access" },
+  { value: "advanced_reporting", label: "Advanced Reporting" },
+  { value: "data_export", label: "Data Export" },
+  { value: "real_time_alerts", label: "Real-time Alerts" },
+  { value: "custom_dashboards", label: "Custom Dashboards" },
+];
+
+// Product addons for multi-select
+const productAddons: Option[] = [
+  { value: "premium_support", label: "Premium Support" },
+  { value: "training", label: "Training Sessions" },
+  { value: "custom_integration", label: "Custom Integration" },
+  { value: "extended_storage", label: "Extended Storage" },
+  { value: "ai_features", label: "AI Features" },
+];
 
 type LicenseFormProps = {
   tiers: LicenseTier[];
@@ -138,6 +157,52 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ tiers, onLicenseCreated, onCl
             )}
           />
         </div>
+        
+        {/* Features Multi-Select */}
+        <FormField
+          control={form.control}
+          name="features"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Features</FormLabel>
+              <FormControl>
+                <MultiSelect
+                  options={productFeatures}
+                  selected={field.value}
+                  onChange={field.onChange}
+                  placeholder="Select features"
+                />
+              </FormControl>
+              <FormDescription>
+                Select product features to include in this license
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Add-ons Multi-Select */}
+        <FormField
+          control={form.control}
+          name="addons"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Add-ons</FormLabel>
+              <FormControl>
+                <MultiSelect
+                  options={productAddons}
+                  selected={field.value}
+                  onChange={field.onChange}
+                  placeholder="Select add-ons"
+                />
+              </FormControl>
+              <FormDescription>
+                Select additional add-ons for this license
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         
         <FormField
           control={form.control}

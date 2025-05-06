@@ -18,6 +18,8 @@ export type FormValues = {
   seats: number;
   expiryDate: Date;
   email: string;
+  features: string[];  // Added support for multi-select features
+  addons: string[];    // Added support for multi-select addons
 };
 
 type UseLicenseFormProps = {
@@ -37,6 +39,8 @@ export const useLicenseForm = ({ tiers, onLicenseCreated, onClose }: UseLicenseF
       seats: 1,
       expiryDate: addMonths(new Date(), 12),
       email: "",
+      features: [],
+      addons: [],
     },
   });
 
@@ -75,6 +79,8 @@ export const useLicenseForm = ({ tiers, onLicenseCreated, onClose }: UseLicenseF
           expiry_date: data.expiryDate.toISOString(),
           status: data.email ? "active" : "unassigned",
           seats: data.seats,
+          features: data.features,  // Store selected features
+          addons: data.addons,      // Store selected addons
         })
         .select(`
           id,
@@ -86,6 +92,8 @@ export const useLicenseForm = ({ tiers, onLicenseCreated, onClose }: UseLicenseF
           seats,
           expiry_date,
           status,
+          features,
+          addons,
           created_at,
           last_active
         `)
