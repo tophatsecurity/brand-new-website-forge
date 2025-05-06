@@ -119,7 +119,7 @@ const Navbar = () => {
           {/* User Menu, Role Switcher, and Theme Toggle */}
           <div className="hidden md:flex items-center space-x-2">
             {user && <RoleSwitcher />}
-            <UserNavMenu />
+            <UserNavMenu user={user} signOut={signOut} isAdmin={isAdmin} />
             <ThemeToggle />
           </div>
 
