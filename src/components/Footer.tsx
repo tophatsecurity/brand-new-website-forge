@@ -29,8 +29,8 @@ const Footer = () => {
             />
             <div className="mb-3">
               <span className="text-2xl font-bold">
-                <span className="text-white">THS</span>
-                <span className="text-[#cc0c1a]">|WEB</span>
+                <span className="text-white">TOPHAT</span>
+                <span className="text-[#cc0c1a]">|SECURITY</span>
               </span>
             </div>
             <p className="text-white/80 mb-6">
@@ -108,7 +108,7 @@ const Footer = () => {
         
         <div className="border-t border-white/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-white/70 text-sm mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} THS|WEB. All rights reserved.
+            &copy; {new Date().getFullYear()} TOPHAT|SECURITY. All rights reserved.
           </p>
           <div className="flex space-x-6 text-sm">
             <a href="#" className="text-white/70 hover:text-[#cc0c1a] transition-colors">Privacy Policy</a>

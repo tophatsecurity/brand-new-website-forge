@@ -65,8 +65,8 @@ const Navbar = () => {
                 className="h-14 md:h-16 mr-3"
               />
               <span className="text-2xl font-bold">
-                <span className="text-[#222] dark:text-white">THS</span>
-                <span className="text-[#cc0c1a]">|WEB</span>
+                <span className="text-[#222] dark:text-white">TOPHAT</span>
+                <span className="text-[#cc0c1a]">|SECURITY</span>
               </span>
             </Link>
           </div>
