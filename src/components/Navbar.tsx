@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -69,6 +70,11 @@ const Navbar = () => {
     }
   };
 
+  const handleRoleChange = (role: string) => {
+    setSelectedRole(role);
+    console.log("Role changed to:", role);
+  };
+
   return (
     <header className="fixed top-0 w-full z-50">
       <nav className={cn(
@@ -99,7 +105,7 @@ const Navbar = () => {
             signOut={signOut} 
             isAdmin={isAdmin} 
             selectedRole={selectedRole} 
-            onRoleChange={setSelectedRole}
+            onRoleChange={handleRoleChange}
           />
           
           {/* Mobile Navigation */}
@@ -110,7 +116,7 @@ const Navbar = () => {
               signOut={signOut} 
               isAdmin={isAdmin} 
               selectedRole={selectedRole} 
-              onRoleChange={setSelectedRole} 
+              onRoleChange={handleRoleChange} 
             />
           </div>
         </div>
