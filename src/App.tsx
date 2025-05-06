@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,6 +30,7 @@ import SecurityPerpetual from "./pages/SecurityPerpetual";
 import Licensing from "./pages/Licensing";
 import Downloads from "./pages/Downloads";
 import Support from "./pages/Support";
+import Settings from "./pages/Settings";
 
 // Admin Pages
 import UsersPage from "./pages/admin/UsersPage";
@@ -122,6 +122,13 @@ const App = () => (
                 <AdminRoute>
                   <LicensingAdminPage />
                 </AdminRoute>
+              } />
+              
+              {/* Settings route */}
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
               } />
               
               {/* 404 route */}

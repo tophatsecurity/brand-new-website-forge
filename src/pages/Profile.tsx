@@ -5,6 +5,7 @@ import MainLayout from '@/components/layouts/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
+import UserSettings from '@/components/UserSettings';
 
 const Profile = () => {
   const { user, setUserAsAdmin } = useAuth();
@@ -74,7 +75,10 @@ const Profile = () => {
           </CardFooter>
         </Card>
         
-        <Card>
+        {/* User Settings Card */}
+        {user && <UserSettings userId={user.id} />}
+        
+        <Card className="mt-8">
           <CardHeader>
             <CardTitle>Security</CardTitle>
             <CardDescription>
