@@ -131,9 +131,11 @@ export type Database = {
       }
       product_licenses: {
         Row: {
+          addons: string[] | null
           assigned_to: string | null
           created_at: string
           expiry_date: string
+          features: string[] | null
           id: string
           last_active: string | null
           license_key: string
@@ -144,9 +146,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          addons?: string[] | null
           assigned_to?: string | null
           created_at?: string
           expiry_date: string
+          features?: string[] | null
           id?: string
           last_active?: string | null
           license_key: string
@@ -157,9 +161,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          addons?: string[] | null
           assigned_to?: string | null
           created_at?: string
           expiry_date?: string
+          features?: string[] | null
           id?: string
           last_active?: string | null
           license_key?: string
