@@ -16,6 +16,18 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO } from 'date-fns';
+import {
+  Package,
+  Gift,
+  Copy,
+  Calendar
+} from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type License = {
   id: string;
@@ -29,6 +41,8 @@ type License = {
   expiry_date: string;
   status: string;
   seats: number;
+  features: string[];
+  addons: string[];
 };
 
 const Licensing = () => {
@@ -56,7 +70,9 @@ const Licensing = () => {
             assigned_to,
             seats,
             expiry_date,
-            status
+            status,
+            features,
+            addons
           `)
           .eq('assigned_to', user.email)
           .eq('status', 'active');
@@ -72,7 +88,9 @@ const Licensing = () => {
           // Process the data to make it easier to use in the UI
           const processedData = data.map(license => ({
             ...license,
-            tier_name: license.tier?.name || 'Unknown'
+            tier_name: license.tier?.name || 'Unknown',
+            features: Array.isArray(license.features) ? license.features : [],
+            addons: Array.isArray(license.addons) ? license.addons : []
           }));
           setLicenses(processedData || []);
         }
@@ -85,6 +103,64 @@ const Licensing = () => {
     
     fetchUserLicenses();
   }, [user, toast]);
+
+  const handleCopyKey = (key: string) => {
+    navigator.clipboard.writeText(key);
+    toast({
+      title: "Copied to clipboard",
+      description: "License key copied to clipboard."
+    });
+  };
+
+  const renderFeatureIcons = (license: License) => {
+    if (!license.features || license.features.length === 0) return null;
+    
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center text-muted-foreground cursor-help">
+              <Package className="h-4 w-4 mr-1" />
+              <span>{license.features.length}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <strong>Features:</strong>
+            <ul className="mt-1 text-xs">
+              {license.features.map(feature => (
+                <li key={feature}>{feature.replace(/_/g, ' ')}</li>
+              ))}
+            </ul>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+  
+  const renderAddonIcons = (license: License) => {
+    if (!license.addons || license.addons.length === 0) return null;
+    
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center text-muted-foreground ml-2 cursor-help">
+              <Gift className="h-4 w-4 mr-1" />
+              <span>{license.addons.length}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <strong>Add-ons:</strong>
+            <ul className="mt-1 text-xs">
+              {license.addons.map(addon => (
+                <li key={addon}>{addon.replace(/_/g, ' ')}</li>
+              ))}
+            </ul>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -111,31 +187,42 @@ const Licensing = () => {
                     <TableHead>Status</TableHead>
                     <TableHead>Expiry Date</TableHead>
                     <TableHead>Seats</TableHead>
+                    <TableHead>Features & Add-ons</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {loading ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8">
+                      <TableCell colSpan={7} className="text-center py-8">
                         Loading your licenses...
                       </TableCell>
                     </TableRow>
                   ) : licenses.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8">
+                      <TableCell colSpan={7} className="text-center py-8">
                         No active licenses found. Contact the administrator to request a license.
                       </TableCell>
                     </TableRow>
                   ) : (
                     licenses.map((license) => (
                       <TableRow key={license.id}>
-                        <TableCell>
-                          {license.product_name} {license.tier_name}
+                        <TableCell className="font-medium">
+                          {license.product_name}
                         </TableCell>
                         <TableCell>
-                          <code className="bg-muted px-2 py-1 rounded text-xs">
-                            {license.license_key}
-                          </code>
+                          <div className="flex items-center gap-1">
+                            <code className="bg-muted px-2 py-1 rounded text-xs max-w-[120px] truncate">
+                              {license.license_key}
+                            </code>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-6 w-6"
+                              onClick={() => handleCopyKey(license.license_key)}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </TableCell>
                         <TableCell>{license.tier_name}</TableCell>
                         <TableCell>
@@ -143,8 +230,19 @@ const Licensing = () => {
                             Active
                           </Badge>
                         </TableCell>
-                        <TableCell>{format(parseISO(license.expiry_date), 'MMM dd, yyyy')}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                            {format(parseISO(license.expiry_date), 'MMM dd, yyyy')}
+                          </div>
+                        </TableCell>
                         <TableCell>{license.seats}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center">
+                            {renderFeatureIcons(license)}
+                            {renderAddonIcons(license)}
+                          </div>
+                        </TableCell>
                       </TableRow>
                     ))
                   )}

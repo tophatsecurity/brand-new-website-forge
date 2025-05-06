@@ -30,8 +30,12 @@ type LicenseTier = {
 export const useLicenses = () => {
   const { toast } = useToast();
   const [licenses, setLicenses] = useState<License[]>([]);
+  const [filteredLicenses, setFilteredLicenses] = useState<License[]>([]);
   const [tiers, setTiers] = useState<LicenseTier[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [featureFilter, setFeatureFilter] = useState<string | null>(null);
+  const [addonFilter, setAddonFilter] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchLicensesAndTiers = async () => {
@@ -73,6 +77,7 @@ export const useLicenses = () => {
           })) || [];
           
           setLicenses(processedLicenses);
+          setFilteredLicenses(processedLicenses);
         }
         
         // Fetch license tiers
@@ -96,6 +101,38 @@ export const useLicenses = () => {
     fetchLicensesAndTiers();
   }, [toast]);
 
+  // Apply search and filters whenever dependencies change
+  useEffect(() => {
+    let result = [...licenses];
+    
+    // Apply search term filter
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(license => 
+        license.license_key.toLowerCase().includes(term) ||
+        license.product_name.toLowerCase().includes(term) ||
+        (license.assigned_to && license.assigned_to.toLowerCase().includes(term)) ||
+        (license.tier?.name && license.tier.name.toLowerCase().includes(term))
+      );
+    }
+    
+    // Apply feature filter
+    if (featureFilter) {
+      result = result.filter(license => 
+        license.features.some(feature => feature.toLowerCase() === featureFilter.toLowerCase())
+      );
+    }
+    
+    // Apply addon filter
+    if (addonFilter) {
+      result = result.filter(license => 
+        license.addons.some(addon => addon.toLowerCase() === addonFilter.toLowerCase())
+      );
+    }
+    
+    setFilteredLicenses(result);
+  }, [licenses, searchTerm, featureFilter, addonFilter]);
+
   const addLicense = (newLicense: License) => {
     // Ensure features and addons are arrays
     const processedLicense = {
@@ -107,10 +144,37 @@ export const useLicenses = () => {
     setLicenses([processedLicense, ...licenses]);
   };
 
+  // Get unique features from all licenses
+  const getAllFeatures = (): string[] => {
+    const featuresSet = new Set<string>();
+    licenses.forEach(license => {
+      license.features.forEach(feature => featuresSet.add(feature));
+    });
+    return Array.from(featuresSet).sort();
+  };
+
+  // Get unique addons from all licenses
+  const getAllAddons = (): string[] => {
+    const addonsSet = new Set<string>();
+    licenses.forEach(license => {
+      license.addons.forEach(addon => addonsSet.add(addon));
+    });
+    return Array.from(addonsSet).sort();
+  };
+
   return {
-    licenses,
+    licenses: filteredLicenses, // Return filtered licenses instead of all licenses
+    allLicenses: licenses, // Original unfiltered licenses
     tiers,
     loading,
-    addLicense
+    addLicense,
+    searchTerm,
+    setSearchTerm,
+    featureFilter,
+    setFeatureFilter,
+    addonFilter, 
+    setAddonFilter,
+    getAllFeatures,
+    getAllAddons
   };
 };
