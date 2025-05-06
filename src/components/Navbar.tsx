@@ -8,6 +8,8 @@ import MobileNav from './navbar/MobileNav';
 import ThemeToggle from './ThemeToggle';
 import SecondaryNav from './navbar/SecondaryNav';
 import AdminNav from './navbar/AdminNav';
+import RoleSwitcher from './navbar/RoleSwitcher';
+import UserNavMenu from './UserNavMenu';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -59,9 +61,8 @@ const Navbar = () => {
         <SecondaryNav 
           user={user} 
           className={cn(scrolled ? "shadow-sm" : "", "z-40")} 
-          isAdmin={isAdmin} 
-          selectedRole={selectedRole} 
-          onRoleChange={setSelectedRole}
+          isAdmin={isAdmin}
+          selectedRole={selectedRole}
         />
       );
     }
@@ -93,7 +94,12 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
-            <DesktopNav user={user} signOut={signOut} />
+            {user && isAdmin && (
+              <div className="mr-4">
+                <RoleSwitcher selectedRole={selectedRole} onRoleChange={setSelectedRole} />
+              </div>
+            )}
+            <UserNavMenu />
             <ThemeToggle />
           </div>
           

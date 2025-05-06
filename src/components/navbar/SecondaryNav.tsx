@@ -2,14 +2,12 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 import RegularNavLinks from './RegularNavLinks';
-import RoleSwitcher from './RoleSwitcher';
 
 interface SecondaryNavProps {
   user: any;
   className?: string;
   isAdmin?: boolean;
   selectedRole?: string | null;
-  onRoleChange?: (role: string) => void;
 }
 
 const SecondaryNav: React.FC<SecondaryNavProps> = ({ 
@@ -17,7 +15,6 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({
   className, 
   isAdmin = false,
   selectedRole = null,
-  onRoleChange = () => {}
 }) => {
   // Only show the secondary nav to approved users
   if (!user?.user_metadata?.approved) {
@@ -34,11 +31,6 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({
       className
     )}>
       <div className="flex items-center py-2 px-6 md:px-12 lg:px-24 overflow-x-auto">
-        {isAdmin && (
-          <div className="mr-4">
-            <RoleSwitcher selectedRole={selectedRole} onRoleChange={onRoleChange} />
-          </div>
-        )}
         {(!isAdmin || (isAdmin && selectedRole === 'user')) && (
           <div className="text-sm font-semibold text-foreground/70 dark:text-foreground/70 mr-4">
             Features:
