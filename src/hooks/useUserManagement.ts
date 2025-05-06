@@ -1,2 +1,3 @@
 
-export { useUserManagement, User, AddUserValues } from './user-management';
+export { useUserManagement } from './user-management';
+export type { User, AddUserValues } from './user-management';

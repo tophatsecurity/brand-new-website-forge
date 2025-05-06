@@ -1,19 +1,24 @@
 
-import React, { useState, useEffect } from 'react';
-import NavLinkGroup from './NavLinkGroup';
-import { useAdminNavigation } from '@/hooks/useAdminNavigation';
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import React from 'react';
+import NavLinkGroup, { NavLink } from './NavLinkGroup';
+import { LayoutDashboard, Users, Shield, Key, Download, ActivitySquare } from 'lucide-react';
 
 interface AdminNavLinksProps {
-  isAdmin: boolean;
   className?: string;
 }
 
-// This component is now deprecated as we're moving all admin links to the Admin Dashboard
-const AdminNavLinks: React.FC<AdminNavLinksProps> = ({ isAdmin, className }) => {
-  // Return null since we're not using this component anymore
-  return null;
+const AdminNavLinks: React.FC<AdminNavLinksProps> = ({ className }) => {
+  // Define admin links
+  const adminLinks: NavLink[] = [
+    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { name: "Users", href: "/admin/users", icon: Users },
+    { name: "Permissions", href: "/admin/permissions", icon: Shield },
+    { name: "Actions", href: "/admin/actions", icon: ActivitySquare },
+    { name: "Licensing", href: "/admin/licensing", icon: Key },
+    { name: "Downloads", href: "/admin/downloads", icon: Download },
+  ];
+
+  return <NavLinkGroup links={adminLinks} className={className} />;
 };
 
 export default AdminNavLinks;
