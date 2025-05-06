@@ -36,19 +36,33 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
 
       {/* User menu, role switcher, and theme toggle */}
       <div className="flex items-center space-x-1">
-        {/* User Navigation Menu */}
-        <UserNavMenu />
-        
-        {/* Role Switcher - only for admin users */}
-        {user && isAdmin && (
-          <RoleSwitcher 
-            selectedRole={selectedRole} 
-            onRoleChange={onRoleChange} 
-          />
+        {user && (
+          <>
+            {/* User Navigation Menu */}
+            <UserNavMenu user={user} signOut={signOut} isAdmin={isAdmin} />
+            
+            {/* Role Switcher - only for admin users */}
+            {isAdmin && (
+              <RoleSwitcher 
+                selectedRole={selectedRole} 
+                onRoleChange={onRoleChange} 
+              />
+            )}
+          </>
         )}
         
         {/* Theme Toggle */}
         <ThemeToggle />
+        
+        {/* Login/Register buttons for non-authenticated users */}
+        {!user && (
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={() => navigate('/login')}>
+              Log in
+            </Button>
+            <Button onClick={() => navigate('/register')}>Sign up</Button>
+          </div>
+        )}
       </div>
     </div>
   );
