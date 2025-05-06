@@ -1,17 +1,15 @@
 
 import React from 'react';
-import Navbar from '@/components/Navbar';
+import MainLayout from '@/components/layouts/MainLayout';
 import HeroSection from '@/components/HeroSection';
 import ProductsSection from '@/components/ProductsSection';
 import ProductCategories from '@/components/ProductCategories';
-import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
-      <Navbar />
+    <MainLayout fullWidth paddingTop="none">
       <HeroSection />
       
       <div className="bg-gray-50">
@@ -52,9 +50,7 @@ const Index = () => {
           </Link>
         </div>
       </div>
-      
-      <Footer />
-    </div>
+    </MainLayout>
   );
 };
 

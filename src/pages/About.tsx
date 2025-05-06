@@ -1,18 +1,13 @@
 
 import React from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import MainLayout from '@/components/layouts/MainLayout';
 import AboutSection from '@/components/AboutSection';
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container mx-auto px-6 pt-32 pb-16">
-        <AboutSection />
-      </main>
-      <Footer />
-    </div>
+    <MainLayout>
+      <AboutSection />
+    </MainLayout>
   );
 };
 

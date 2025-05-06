@@ -1,7 +1,6 @@
 
 import React from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import MainLayout from '@/components/layouts/MainLayout';
 import ParaGuardHero from '@/components/paraguard/ParaGuardHero';
 import ComparisonTable from '@/components/paraguard/ComparisonTable';
 import DetectionCapabilities from '@/components/paraguard/DetectionCapabilities';
@@ -11,29 +10,25 @@ import ParaGuardCallToAction from '@/components/paraguard/ParaGuardCallToAction'
 
 const ParaGuard = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Navbar />
-      <div className="pt-24">
-        {/* Hero Section */}
-        <ParaGuardHero />
+    <MainLayout fullWidth paddingTop="small">
+      {/* Hero Section */}
+      <ParaGuardHero />
 
-        {/* ParaGuard vs Traditional Security */}
-        <ComparisonTable />
+      {/* ParaGuard vs Traditional Security */}
+      <ComparisonTable />
 
-        {/* Advanced Detection Capabilities */}
-        <DetectionCapabilities />
+      {/* Advanced Detection Capabilities */}
+      <DetectionCapabilities />
 
-        {/* Deployment Models */}
-        <DeploymentModels />
+      {/* Deployment Models */}
+      <DeploymentModels />
 
-        {/* Response Lifecycle */}
-        <ResponseLifecycle />
+      {/* Response Lifecycle */}
+      <ResponseLifecycle />
 
-        {/* Call to Action */}
-        <ParaGuardCallToAction />
-      </div>
-      <Footer />
-    </div>
+      {/* Call to Action */}
+      <ParaGuardCallToAction />
+    </MainLayout>
   );
 };
 
