@@ -68,11 +68,11 @@ const Navbar = () => {
       </nav>
       
       {/* Secondary Navigation Bar (for user functions) */}
-      {user && <SecondaryNav user={user} className={scrolled ? "shadow-sm" : ""} />}
+      {user && <SecondaryNav user={user} className={cn(scrolled ? "shadow-sm" : "", "z-40")} />}
       
       {/* Admin Navigation Bar (for admin functions) */}
       {user && user.user_metadata?.role === 'admin' && (
-        <AdminNav user={user} className={scrolled ? "shadow-sm" : ""} />
+        <AdminNav user={user} className={cn(scrolled ? "shadow-sm" : "", "z-30")} />
       )}
     </header>
   );

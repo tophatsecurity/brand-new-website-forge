@@ -34,12 +34,12 @@ const LicenseHeader: React.FC<LicenseHeaderProps> = ({
       
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button className="flex items-center shrink-0 mt-2 sm:mt-0">
+          <Button className="flex items-center shrink-0 mt-2 sm:mt-0 bg-primary text-primary-foreground hover:bg-primary/90 z-10">
             <Key className="mr-2 h-4 w-4" />
             Create License
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[540px]">
+        <DialogContent className="sm:max-w-[540px] z-50">
           <DialogHeader>
             <DialogTitle>Create New License</DialogTitle>
             <DialogDescription>
