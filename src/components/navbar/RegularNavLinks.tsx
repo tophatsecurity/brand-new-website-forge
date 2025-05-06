@@ -25,7 +25,7 @@ const RegularNavLinks: React.FC<RegularNavLinksProps> = ({ className }) => {
   ];
 
   return (
-    <div className={`flex items-center space-x-6 overflow-x-auto ${className}`}>
+    <div className={`flex items-center space-x-8 overflow-x-auto ${className}`}>
       {regularLinks.map((link) => (
         <SecondaryNavLink 
           key={link.name} 

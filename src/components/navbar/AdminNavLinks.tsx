@@ -52,7 +52,7 @@ const AdminNavLinks: React.FC<AdminNavLinksProps> = ({ isAdmin, className }) => 
   }
 
   return (
-    <div className={`flex items-center space-x-6 overflow-x-auto ${className}`}>
+    <div className={`flex items-center space-x-8 overflow-x-auto ${className}`}>
       {loading ? (
         <div className="text-sm text-muted-foreground">Loading admin...</div>
       ) : (
