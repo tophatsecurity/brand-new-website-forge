@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -70,28 +69,6 @@ const Navbar = () => {
     }
   };
 
-  // Role Selector Component
-  const RoleSelector = () => {
-    if (!isAdmin || !user) return null;
-    
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="h-8 gap-1 ml-2">
-            {selectedRole === 'admin' ? 'Admin' : 'User'}
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuRadioGroup value={selectedRole || undefined} onValueChange={setSelectedRole}>
-            <DropdownMenuRadioItem value="admin">Admin</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="user">User</DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  };
-
   return (
     <header className="fixed top-0 w-full z-50">
       <nav className={cn(
@@ -117,13 +94,13 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-2">
-            <DesktopNav user={user} signOut={signOut} />
-            <UserNavMenu />
-            {/* Role Selector in the top navbar */}
-            <RoleSelector />
-            <ThemeToggle />
-          </div>
+          <DesktopNav 
+            user={user} 
+            signOut={signOut} 
+            isAdmin={isAdmin} 
+            selectedRole={selectedRole} 
+            onRoleChange={setSelectedRole}
+          />
           
           {/* Mobile Navigation */}
           <div className="md:hidden flex items-center">

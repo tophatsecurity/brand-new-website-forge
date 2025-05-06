@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { NavLink, getNavLinks } from '../NavLinks';
 import { Separator } from "@/components/ui/separator";
 import MobileAdminLinks from './MobileAdminLinks';
@@ -36,6 +36,7 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
   };
 
   const isApproved = user?.user_metadata?.approved;
+  const userEmail = user?.email?.split('@')[0] || 'Account';
 
   return (
     <div className="flex flex-col space-y-4 px-6">
@@ -49,26 +50,33 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
         />
       ))}
 
-      {/* Role Switcher for Admins */}
-      {user && isAdmin && isApproved && (
-        <div className="py-2">
-          <RoleSwitcher selectedRole={selectedRole} onRoleChange={onRoleChange} />
-        </div>
-      )}
-
-      {/* User resources section for approved users */}
-      {isApproved && (selectedRole === 'user' || !isAdmin) && (
-        <MobileUserResources onClose={onClose} />
-      )}
-
-      {/* Admin sections for mobile */}
-      {isAdmin && selectedRole === 'admin' && (
-        <MobileAdminLinks onClose={onClose} />
-      )}
+      <Separator className="my-2" />
 
       {user ? (
         <>
-          <Separator className="my-2" />
+          {/* User account info */}
+          <div className="flex items-center space-x-2 py-2">
+            <User className="h-4 w-4" />
+            <span className="font-medium">{userEmail}</span>
+          </div>
+
+          {/* Role Switcher for Admins */}
+          {isAdmin && isApproved && (
+            <div className="py-2">
+              <RoleSwitcher selectedRole={selectedRole} onRoleChange={onRoleChange} />
+            </div>
+          )}
+
+          {/* User resources section for approved users */}
+          {isApproved && (selectedRole === 'user' || !isAdmin) && (
+            <MobileUserResources onClose={onClose} />
+          )}
+
+          {/* Admin sections for mobile */}
+          {isAdmin && selectedRole === 'admin' && (
+            <MobileAdminLinks onClose={onClose} />
+          )}
+
           <Link
             to="/profile"
             className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
