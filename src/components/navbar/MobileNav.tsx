@@ -5,7 +5,6 @@ import { Menu, X } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import MobileMenuContent from './mobile/MobileMenuContent';
 import ThemeToggle from '@/components/ThemeToggle';
-import RoleSwitcher from './RoleSwitcher';
 
 interface MobileNavProps {
   user: any;
@@ -28,7 +27,6 @@ const MobileNav: React.FC<MobileNavProps> = ({
   
   return (
     <div className="md:hidden flex items-center space-x-2">
-      {user && isAdmin && <RoleSwitcher selectedRole={selectedRole} onRoleChange={onRoleChange} />}
       <ThemeToggle />
       <Button
         variant="ghost"

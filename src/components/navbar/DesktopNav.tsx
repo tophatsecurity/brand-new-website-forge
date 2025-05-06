@@ -35,12 +35,9 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
       </div>
 
       {/* User menu, role switcher, and theme toggle */}
-      <div className="flex items-center space-x-1">
+      <div className="flex items-center space-x-2">
         {user && (
           <>
-            {/* User Navigation Menu */}
-            <UserNavMenu user={user} signOut={signOut} isAdmin={isAdmin} />
-            
             {/* Role Switcher - only for admin users */}
             {isAdmin && (
               <RoleSwitcher 
@@ -48,6 +45,9 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
                 onRoleChange={onRoleChange} 
               />
             )}
+            
+            {/* User Navigation Menu */}
+            <UserNavMenu user={user} signOut={signOut} isAdmin={isAdmin} />
           </>
         )}
         

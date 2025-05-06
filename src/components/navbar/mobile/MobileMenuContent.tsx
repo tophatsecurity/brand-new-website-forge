@@ -61,7 +61,7 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
           </div>
 
           {/* Role Switcher for Admins */}
-          {isAdmin && isApproved && (
+          {isAdmin && (
             <div className="py-2">
               <RoleSwitcher selectedRole={selectedRole} onRoleChange={onRoleChange} />
             </div>
