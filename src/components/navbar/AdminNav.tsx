@@ -16,12 +16,12 @@ const AdminNav: React.FC<AdminNavProps> = ({ user, className }) => {
   
   return (
     <div className={cn(
-      "w-full backdrop-blur-md border-b transition-all duration-300",
-      "bg-gray-100/90 dark:bg-gray-800/90 z-20", // Added z-index
+      "w-full border-b transition-all duration-300",
+      "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md",
       className
     )}>
-      <div className="flex items-center justify-start py-3 px-6 md:px-12 lg:px-24 overflow-x-auto">
-        <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 mr-4">Admin:</div>
+      <div className="flex items-center justify-start py-4 px-6 md:px-12 lg:px-24 overflow-x-auto">
+        <div className="text-sm font-semibold text-primary dark:text-primary mr-4">Admin:</div>
         <AdminNavLinks className="flex-1" />
       </div>
     </div>

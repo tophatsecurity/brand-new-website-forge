@@ -24,8 +24,8 @@ const SecondaryNavLink: React.FC<SecondaryNavLinkProps> = ({
       className={cn(
         "flex items-center font-medium transition-colors px-4 py-2 rounded-md whitespace-nowrap",
         active 
-          ? "text-[#cc0c1a] dark:text-[#cc0c1a]" 
-          : "text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a]",
+          ? "text-primary dark:text-primary" 
+          : "text-foreground dark:text-white hover:text-primary dark:hover:text-primary",
         className
       )}
     >
