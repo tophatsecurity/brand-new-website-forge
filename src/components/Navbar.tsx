@@ -8,7 +8,10 @@ import MobileNav from './navbar/MobileNav';
 import ThemeToggle from './ThemeToggle';
 import SecondaryNav from './navbar/SecondaryNav';
 import AdminNav from './navbar/AdminNav';
-import UserNavMenuWithRoles from './UserNavMenuWithRoles';
+import UserNavMenu from './UserNavMenu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { Button } from './ui/button';
+import { ChevronDown } from 'lucide-react';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -67,6 +70,28 @@ const Navbar = () => {
     }
   };
 
+  // Role Selector Component
+  const RoleSelector = () => {
+    if (!isAdmin || !user) return null;
+    
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="h-8 gap-1 ml-2">
+            {selectedRole === 'admin' ? 'Admin' : 'User'}
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-32">
+          <DropdownMenuRadioGroup value={selectedRole || undefined} onValueChange={setSelectedRole}>
+            <DropdownMenuRadioItem value="admin">Admin</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="user">User</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
+
   return (
     <header className="fixed top-0 w-full z-50">
       <nav className={cn(
@@ -94,10 +119,9 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
             <DesktopNav user={user} signOut={signOut} />
-            <UserNavMenuWithRoles 
-              selectedRole={selectedRole}
-              onRoleChange={setSelectedRole}
-            />
+            <UserNavMenu />
+            {/* Role Selector in the top navbar */}
+            <RoleSelector />
             <ThemeToggle />
           </div>
           

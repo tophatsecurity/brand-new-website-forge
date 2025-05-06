@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,19 +8,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { User, LogOut, Settings, Shield } from 'lucide-react';
 
-interface UserNavMenuWithRolesProps {
-  selectedRole: string | null;
-  onRoleChange: (role: string) => void;
-}
-
-const UserNavMenuWithRoles = ({ selectedRole, onRoleChange }: UserNavMenuWithRolesProps) => {
+// This component is no longer needed since we've moved role selection to the Navbar
+// Keeping it for now in case we need to revert changes
+const UserNavMenuWithRoles = () => {
+  console.warn('UserNavMenuWithRoles is deprecated, use UserNavMenu instead');
+  
   const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
@@ -58,18 +54,6 @@ const UserNavMenuWithRoles = ({ selectedRole, onRoleChange }: UserNavMenuWithRol
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        
-        {isAdmin && (
-          <>
-            <DropdownMenuLabel>View as</DropdownMenuLabel>
-            <DropdownMenuRadioGroup value={selectedRole || undefined} onValueChange={onRoleChange}>
-              <DropdownMenuRadioItem value="admin">Admin</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="user">User</DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-            <DropdownMenuSeparator />
-          </>
-        )}
-        
         <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/profile')}>
           <User className="mr-2 h-4 w-4" />
           Profile
