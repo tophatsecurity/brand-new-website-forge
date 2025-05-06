@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogTrigger
 } from "@/components/ui/dialog";
 import LicenseForm from "@/components/admin/licensing/LicenseForm";
 import { useLocation } from "react-router-dom";
