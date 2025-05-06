@@ -74,9 +74,17 @@ const AccountSettings: React.FC = () => {
     try {
       setIsUpdatingPassword(true);
       
+      // Get current user email - fix the Promise<string> error by using async/await properly
+      const { data: userData } = await supabase.auth.getUser();
+      const userEmail = userData?.user?.email || '';
+      
+      if (!userEmail) {
+        throw new Error('Unable to retrieve user email');
+      }
+      
       // First verify the current password
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: supabase.auth.getUser().then(({ data }) => data.user?.email || ''),
+        email: userEmail,
         password: data.currentPassword,
       });
       
