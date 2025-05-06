@@ -23,6 +23,9 @@ const MobileNav: React.FC<MobileNavProps> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClose = () => setIsOpen(false);
+  
+  // For debugging
+  console.log("MobileNav rendered with:", { isAdmin, selectedRole });
 
   return (
     <div className="md:hidden">

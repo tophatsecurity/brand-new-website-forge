@@ -24,6 +24,9 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({
     return null;
   }
   
+  // For debugging
+  console.log("SecondaryNav rendered with:", { isAdmin, selectedRole });
+  
   return (
     <div className={cn(
       "w-full border-b transition-all duration-300",

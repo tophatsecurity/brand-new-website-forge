@@ -43,6 +43,9 @@ const Navbar = () => {
     };
   }, []);
 
+  // For debugging
+  console.log("Navbar state:", { isAdmin, selectedRole, user: !!user });
+
   // Show appropriate navigation based on role
   const renderNavigation = () => {
     if (!user) return null;
