@@ -24,7 +24,7 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
       "bg-white/70 dark:bg-gray-900/70",
       className
     )}>
-      <div className="flex items-center justify-between py-2 px-6 md:px-12 lg:px-24 overflow-x-auto">
+      <div className="flex items-center justify-between py-3 px-6 md:px-12 lg:px-24 overflow-x-auto">
         <RegularNavLinks />
         <AdminNavLinks isAdmin={isAdmin} />
       </div>
