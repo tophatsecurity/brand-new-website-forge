@@ -26,7 +26,7 @@ const SecondaryNav: React.FC<SecondaryNavProps> = ({ user, className }) => {
     )}>
       <div className="flex items-center justify-between py-4 px-6 md:px-12 lg:px-24 overflow-x-auto">
         <RegularNavLinks />
-        <AdminNavLinks isAdmin={isAdmin} />
+        {isAdmin && <AdminNavLinks isAdmin={isAdmin} />}
       </div>
     </div>
   );
