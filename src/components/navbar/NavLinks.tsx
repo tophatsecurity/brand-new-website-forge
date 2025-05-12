@@ -33,3 +33,15 @@ export const getNavLinks = () => {
     { name: "Contact", href: "/contact" }
   ];
 };
+
+// Get primary links for main navbar
+export const getPrimaryNavLinks = () => {
+  const allLinks = getNavLinks();
+  return allLinks.slice(0, 3); // First 3 items: Home, Products, Services
+};
+
+// Get secondary links for overflow display
+export const getSecondaryNavLinks = () => {
+  const allLinks = getNavLinks();
+  return allLinks.slice(3); // Remaining items: Team, About, Careers, Contact
+};

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { NavLink, getNavLinks } from './NavLinks';
+import { NavLink, getPrimaryNavLinks } from './NavLinks';
 import RoleSwitcher from './RoleSwitcher';
 import ThemeToggle from '@/components/ThemeToggle';
 import UserNavMenu from '@/components/UserNavMenu';
@@ -25,18 +25,13 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
   hasOverflow = false
 }) => {
   const navigate = useNavigate();
-  const navLinks = getNavLinks();
-  
-  // Display only first couple of links if overflow is detected
-  const visibleNavLinks = hasOverflow 
-    ? [navLinks[0], navLinks[1]] // Only show Home and one other link
-    : navLinks;
+  const primaryLinks = getPrimaryNavLinks();
   
   return (
     <div className="hidden md:flex items-center space-x-4">
       {/* Primary Navigation Links */}
       <div className="flex items-center space-x-6 mr-2">
-        {visibleNavLinks.map((link) => (
+        {primaryLinks.map((link) => (
           <NavLink key={link.name} name={link.name} href={link.href} className="nav-item" />
         ))}
       </div>
