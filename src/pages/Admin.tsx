@@ -29,21 +29,21 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <div className="pt-40 pb-16 px-4">
+      <div className="pt-28 pb-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+          <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
           
           {loading ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
               {[...Array(4)].map((_, i) => (
-                <Card key={i} className="p-6">
-                  <div className="h-20 animate-pulse bg-muted rounded-md"></div>
+                <Card key={i} className="p-4">
+                  <div className="h-16 animate-pulse bg-muted rounded-md"></div>
                 </Card>
               ))}
             </div>
           ) : (
             <>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4 mb-4">
                 <StatCard 
                   title="Total Users" 
                   value={stats.totalUsers} 
@@ -71,20 +71,20 @@ const Admin = () => {
                 />
               </div>
               
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 mb-4">
                 <Card className="col-span-1">
-                  <CardContent className="pt-6">
-                    <h3 className="text-xl font-semibold mb-4">Key Metrics</h3>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center border-b pb-2">
+                  <CardContent className="pt-4">
+                    <h3 className="text-lg font-semibold mb-2">Key Metrics</h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center border-b pb-1">
                         <span className="text-muted-foreground">Total Licenses</span>
                         <span className="font-medium">{stats.totalLicenses}</span>
                       </div>
-                      <div className="flex justify-between items-center border-b pb-2">
+                      <div className="flex justify-between items-center border-b pb-1">
                         <span className="text-muted-foreground">Total Seats Licensed</span>
                         <span className="font-medium">{stats.totalSeatsLicensed}</span>
                       </div>
-                      <div className="flex justify-between items-center border-b pb-2">
+                      <div className="flex justify-between items-center border-b pb-1">
                         <span className="text-muted-foreground">License Utilization</span>
                         <span className="font-medium">
                           {stats.totalLicenses ? 
@@ -103,20 +103,20 @@ const Admin = () => {
               </div>
               
               <Card>
-                <CardContent className="pt-6">
-                  <h3 className="text-xl font-semibold mb-4">System Information</h3>
-                  <p className="text-muted-foreground mb-4">
+                <CardContent className="pt-4">
+                  <h3 className="text-lg font-semibold mb-2">System Information</h3>
+                  <p className="text-muted-foreground mb-2">
                     Welcome to the TopHat Security admin dashboard. Use the navigation bar above to access
-                    different admin sections. Below is a summary of your system's current status.
+                    different admin sections.
                   </p>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5 text-muted-foreground" />
-                      <span>Last updated: {new Date().toLocaleString()}</span>
+                  <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">Last updated: {new Date().toLocaleString()}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Database className="h-5 w-5 text-muted-foreground" />
-                      <span>Database status: Operational</span>
+                    <div className="flex items-center gap-1">
+                      <Database className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">Database status: Operational</span>
                     </div>
                   </div>
                 </CardContent>

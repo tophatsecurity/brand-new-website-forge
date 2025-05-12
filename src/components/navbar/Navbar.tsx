@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -99,14 +100,14 @@ const Navbar = () => {
   return (
     <header className="fixed top-0 w-full z-50">
       <nav className={cn(
-        "w-full transition-all duration-300 py-4 px-6 md:px-12 lg:px-24",
+        "w-full transition-all duration-300 py-2 px-4 md:px-6 lg:px-8",
         scrolled 
           ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-md" 
           : "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md"
       )}>
         <div className={cn(
           "flex flex-wrap md:flex-row md:items-center md:justify-between", 
-          (isMobile || isOverlapping) ? "space-y-4" : ""
+          (isMobile || isOverlapping) ? "space-y-2" : ""
         )}>
           {/* Logo */}
           <div ref={logoRef} className="flex items-center justify-between">
@@ -114,15 +115,15 @@ const Navbar = () => {
               <img
                 src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png"
                 alt="TopHat Security Logo"
-                className="h-12 md:h-14 lg:h-16 mr-2 md:mr-3"
+                className="h-8 md:h-10 lg:h-12 mr-2"
               />
-              <span className="text-xl md:text-2xl font-bold whitespace-nowrap">
+              <span className="text-lg md:text-xl font-bold whitespace-nowrap">
                 <span className="text-[#222] dark:text-white">TOPHAT</span>
                 <span className="text-[#cc0c1a]">|SECURITY</span>
               </span>
             </Link>
             
-            {/* Mobile Navigation - Only show toggle button next to logo on mobile */}
+            {/* Mobile Navigation */}
             {(isMobile || isOverlapping) && (
               <MobileNav 
                 user={user}
@@ -134,7 +135,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Desktop Navigation - show as normal on desktop */}
+          {/* Desktop Navigation */}
           {!isOverlapping && !isMobile && (
             <div ref={navRef} className="hidden md:block">
               <DesktopNav 
@@ -151,16 +152,16 @@ const Navbar = () => {
         
         {/* Secondary Nav Row - Always display on desktop (not mobile) when there's space */}
         {!isMobile && !isOverlapping && (
-          <div className="mt-3 pt-2 border-t border-border-dark/10 hidden md:block">
+          <div className="mt-1 pt-1 border-t border-border-dark/10 hidden md:block">
             <div className="flex justify-center">
               <ScrollArea className="w-full max-w-3xl">
-                <div className="flex items-center space-x-6 px-2 justify-center">
+                <div className="flex items-center space-x-4 px-2 justify-center">
                   {secondaryLinks.map((link) => (
                     <NavLink 
                       key={link.name} 
                       name={link.name} 
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
                     />
                   ))}
                 </div>

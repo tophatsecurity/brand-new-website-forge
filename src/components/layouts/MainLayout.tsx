@@ -34,16 +34,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const getPaddingTopClass = () => {
     switch (paddingTop) {
       case 'none': return 'pt-0';
-      case 'small': return 'pt-20';
-      case 'large': return 'pt-40';
-      default: return 'pt-32';
+      case 'small': return 'pt-16';
+      case 'large': return 'pt-28';
+      default: return 'pt-24';
     }
   };
 
   return (
     <div className={`min-h-screen bg-background text-foreground ${className}`}>
       <Navbar />
-      <main className={`${getPaddingTopClass()} pb-16 ${fullWidth ? '' : 'px-6'}`}>
+      <main className={`${getPaddingTopClass()} pb-8 ${fullWidth ? '' : 'px-4'}`}>
         <div className={`${fullWidth ? 'w-full' : 'container mx-auto'} ${containerClassName}`}>
           {children}
         </div>
