@@ -15,8 +15,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useScrollToTop } from '@/hooks/useScrollToTop';
 
 const DDX = () => {
+  useScrollToTop();
+  
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />

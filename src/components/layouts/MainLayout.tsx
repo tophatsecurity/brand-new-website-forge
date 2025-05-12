@@ -1,7 +1,8 @@
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { useLocation } from 'react-router-dom';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -21,6 +22,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   fullWidth = false,
   paddingTop = 'default',
 }) => {
+  const { pathname } = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, [pathname]);
+
   const getPaddingTopClass = () => {
     switch (paddingTop) {
       case 'none': return 'pt-0';

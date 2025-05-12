@@ -7,8 +7,11 @@ import DetectionCapabilities from '@/components/paraguard/DetectionCapabilities'
 import DeploymentModels from '@/components/paraguard/DeploymentModels';
 import ResponseLifecycle from '@/components/paraguard/ResponseLifecycle';
 import ParaGuardCallToAction from '@/components/paraguard/ParaGuardCallToAction';
+import { useScrollToTop } from '@/hooks/useScrollToTop';
 
 const ParaGuard = () => {
+  useScrollToTop();
+  
   return (
     <MainLayout fullWidth paddingTop="small">
       {/* Hero Section */}

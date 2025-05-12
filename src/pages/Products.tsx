@@ -5,8 +5,11 @@ import ProductsSection from '@/components/ProductsSection';
 import ProductCategories from '@/components/ProductCategories';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useScrollToTop } from '@/hooks/useScrollToTop';
 
 const Products = () => {
+  useScrollToTop();
+  
   return (
     <MainLayout fullWidth paddingTop="none">
       <div className="hero-section pt-32">

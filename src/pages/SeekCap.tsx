@@ -11,8 +11,11 @@ import CallToAction from '@/components/seekcap/CallToAction';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useScrollToTop } from '@/hooks/useScrollToTop';
 
 const SeekCap = () => {
+  useScrollToTop();
+  
   return (
     <MainLayout containerClassName="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
       <div className="text-center mb-8">
