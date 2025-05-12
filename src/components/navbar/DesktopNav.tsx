@@ -56,14 +56,11 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
         {/* Theme Toggle */}
         <ThemeToggle />
         
-        {/* Login/Register buttons for non-authenticated users */}
+        {/* Login button only for non-authenticated users */}
         {!user && (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={() => navigate('/login')}>
-              Log in
-            </Button>
-            <Button onClick={() => navigate('/register')}>Sign up</Button>
-          </div>
+          <Button variant="ghost" onClick={() => navigate('/login')}>
+            Log in
+          </Button>
         )}
       </div>
     </div>

@@ -94,24 +94,14 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
           </Button>
         </>
       ) : (
-        <>
-          <Link
-            to="/login"
-            className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
-            onClick={onClose}
-          >
-            Login
-          </Link>
-          <Button
-            className="bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full"
-            onClick={() => {
-              navigate('/register');
-              onClose();
-            }}
-          >
-            Register
-          </Button>
-        </>
+        // Only show login link for non-authenticated users
+        <Link
+          to="/login"
+          className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
+          onClick={onClose}
+        >
+          Login
+        </Link>
       )}
     </div>
   );
