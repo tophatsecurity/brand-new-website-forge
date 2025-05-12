@@ -6,6 +6,10 @@ import { NavLink, getPrimaryNavLinks } from './NavLinks';
 import RoleSwitcher from './RoleSwitcher';
 import ThemeToggle from '@/components/ThemeToggle';
 import UserNavMenu from '@/components/UserNavMenu';
+import {
+  NavigationMenu,
+  NavigationMenuList
+} from "@/components/ui/navigation-menu";
 
 interface DesktopNavProps {
   user: any;
@@ -31,9 +35,20 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
     <div className="hidden md:flex items-center space-x-4">
       {/* Primary Navigation Links */}
       <div className="flex items-center space-x-6 mr-2">
-        {primaryLinks.map((link) => (
-          <NavLink key={link.name} name={link.name} href={link.href} className="nav-item" />
-        ))}
+        <NavigationMenu>
+          <NavigationMenuList className="gap-6">
+            {primaryLinks.map((link) => (
+              <NavLink 
+                key={link.name} 
+                name={link.name} 
+                href={link.href} 
+                className="nav-item" 
+                hasDropdown={link.hasDropdown}
+                dropdownItems={link.dropdownItems}
+              />
+            ))}
+          </NavigationMenuList>
+        </NavigationMenu>
       </div>
 
       {/* User menu, role switcher, and theme toggle */}

@@ -1,13 +1,18 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, ChevronDown, ChevronRight } from 'lucide-react';
 import { NavLink, getNavLinks } from '../NavLinks';
 import { Separator } from "@/components/ui/separator";
 import MobileAdminLinks from './MobileAdminLinks';
 import MobileUserResources from './MobileUserResources';
 import RoleSwitcher from '../RoleSwitcher';
+import { 
+  Collapsible, 
+  CollapsibleContent, 
+  CollapsibleTrigger 
+} from "@/components/ui/collapsible";
 
 interface MobileMenuContentProps {
   user: any;
@@ -38,16 +43,54 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
   const isApproved = user?.user_metadata?.approved;
   const userEmail = user?.email?.split('@')[0] || 'Account';
 
+  const [openCollapsibles, setOpenCollapsibles] = useState<Record<string, boolean>>({});
+
+  const toggleCollapsible = (name: string) => {
+    setOpenCollapsibles(prev => ({
+      ...prev,
+      [name]: !prev[name]
+    }));
+  };
+
   return (
     <div className="flex flex-col space-y-4 px-6">
       {/* Primary navigation links */}
       {navLinks.map((link) => (
-        <NavLink 
-          key={link.name}
-          name={link.name}
-          href={link.href}
-          onClick={onClose}
-        />
+        link.hasDropdown ? (
+          <Collapsible 
+            key={link.name}
+            open={openCollapsibles[link.name]}
+            onOpenChange={() => toggleCollapsible(link.name)}
+          >
+            <CollapsibleTrigger className="flex items-center justify-between w-full font-medium text-foreground dark:text-white py-2">
+              {link.name}
+              {openCollapsibles[link.name] ? (
+                <ChevronDown className="h-4 w-4 ml-1" />
+              ) : (
+                <ChevronRight className="h-4 w-4 ml-1" />
+              )}
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pl-4 pt-1 pb-2 space-y-2">
+              {link.dropdownItems?.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="block font-medium text-muted-foreground hover:text-foreground py-1"
+                  onClick={onClose}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        ) : (
+          <NavLink 
+            key={link.name}
+            name={link.name}
+            href={link.href}
+            onClick={onClose}
+          />
+        )
       ))}
 
       <Separator className="my-2" />

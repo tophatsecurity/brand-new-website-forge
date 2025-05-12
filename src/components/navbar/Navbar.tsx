@@ -151,7 +151,7 @@ const Navbar = () => {
         </div>
         
         {/* Secondary Nav Row - Always display on desktop (not mobile) when there's space */}
-        {!isMobile && !isOverlapping && (
+        {!isMobile && !isOverlapping && secondaryLinks.length > 0 && (
           <div className="mt-1 pt-1 border-t border-border-dark/10 hidden md:block">
             <div className="flex justify-center">
               <ScrollArea className="w-full max-w-3xl">
@@ -161,6 +161,8 @@ const Navbar = () => {
                       key={link.name} 
                       name={link.name} 
                       href={link.href}
+                      hasDropdown={link.hasDropdown}
+                      dropdownItems={link.dropdownItems}
                       className="text-xs text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
                     />
                   ))}
