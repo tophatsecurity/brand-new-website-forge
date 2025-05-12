@@ -1,12 +1,11 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import DesktopNav from './navbar/DesktopNav';
-import MobileNav from './navbar/MobileNav';
-import AdminNav from './navbar/AdminNav';
-import SecondaryNav from './navbar/SecondaryNav';
+import DesktopNav from './DesktopNav';
+import MobileNav from './MobileNav';
+import AdminNav from './AdminNav';
+import SecondaryNav from './SecondaryNav';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { NavLink, getSecondaryNavLinks } from './NavLinks';
