@@ -8,6 +8,7 @@ import MobileNav from './navbar/MobileNav';
 import AdminNav from './navbar/AdminNav';
 import SecondaryNav from './navbar/SecondaryNav';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -17,6 +18,7 @@ const Navbar = () => {
   const [isOverlapping, setIsOverlapping] = useState(false);
   const logoRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
+  const [hasOverflow, setHasOverflow] = useState(false);
 
   useEffect(() => {
     // Set default role when user loads or changes
@@ -59,6 +61,21 @@ const Navbar = () => {
         const combined = logoRect.width + navRect.width + 24; // 24px for padding
         
         setIsOverlapping(combined > containerWidth);
+        
+        // Check if nav items are overflowing
+        if (navRef.current) {
+          const navItems = navRef.current.querySelectorAll('.nav-item');
+          let totalWidth = 0;
+          navItems.forEach((item) => {
+            totalWidth += (item as HTMLElement).offsetWidth;
+          });
+          
+          // Add some margin space
+          totalWidth += (navItems.length - 1) * 24;
+          
+          // Check if content width exceeds container width
+          setHasOverflow(totalWidth > navRef.current.offsetWidth);
+        }
       }
     };
     
@@ -85,7 +102,7 @@ const Navbar = () => {
           : "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md"
       )}>
         <div className={cn(
-          "flex flex-col md:flex-row md:items-center md:justify-between", 
+          "flex flex-wrap md:flex-row md:items-center md:justify-between", 
           (isMobile || isOverlapping) ? "space-y-4" : ""
         )}>
           {/* Logo */}
@@ -115,18 +132,45 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Navigation - show as normal on desktop */}
-          <div ref={navRef} className={cn(!isOverlapping && "hidden md:block")}>
-            <DesktopNav 
-              user={user}
-              signOut={signOut}
-              isAdmin={isAdmin}
-              selectedRole={selectedRole}
-              onRoleChange={handleRoleChange}
-            />
-          </div>
-          
-          {/* When on mobile or overlapping, MobileNav is placed next to the logo */}
+          {!isOverlapping && !isMobile && (
+            <div ref={navRef} className="hidden md:block">
+              <DesktopNav 
+                user={user}
+                signOut={signOut}
+                isAdmin={isAdmin}
+                selectedRole={selectedRole}
+                onRoleChange={handleRoleChange}
+                hasOverflow={hasOverflow}
+              />
+            </div>
+          )}
         </div>
+        
+        {/* Overflow navigation items - display as a second row when needed */}
+        {hasOverflow && !isMobile && !isOverlapping && (
+          <div className="mt-2 pt-2 border-t border-border-dark/10 hidden md:flex justify-center">
+            <ScrollArea className="w-full max-w-3xl">
+              <div className="flex items-center space-x-6 px-2">
+                {/* Secondary row of navigation links */}
+                <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
+                  Products
+                </Link>
+                <Link to="/services" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
+                  Services
+                </Link>
+                <Link to="/team" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
+                  Team
+                </Link>
+                <Link to="/careers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
+                  Careers
+                </Link>
+                <Link to="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
+                  Contact
+                </Link>
+              </div>
+            </ScrollArea>
+          </div>
+        )}
       </nav>
 
       {/* Admin Navigation */}

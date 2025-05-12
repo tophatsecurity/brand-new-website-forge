@@ -6,13 +6,14 @@ type NavLinkProps = {
   name: string;
   href: string;
   onClick?: () => void;
+  className?: string;
 };
 
-export const NavLink: React.FC<NavLinkProps> = ({ name, href, onClick }) => {
+export const NavLink: React.FC<NavLinkProps> = ({ name, href, onClick, className = '' }) => {
   return (
     <Link
       to={href}
-      className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] transition-colors duration-200"
+      className={`font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] transition-colors duration-200 ${className}`}
       onClick={onClick}
     >
       {name}

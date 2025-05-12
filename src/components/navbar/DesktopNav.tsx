@@ -13,6 +13,7 @@ interface DesktopNavProps {
   isAdmin?: boolean;
   selectedRole?: string | null;
   onRoleChange?: (role: string) => void;
+  hasOverflow?: boolean;
 }
 
 const DesktopNav: React.FC<DesktopNavProps> = ({ 
@@ -20,17 +21,23 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
   signOut,
   isAdmin = false,
   selectedRole = null,
-  onRoleChange = () => {}
+  onRoleChange = () => {},
+  hasOverflow = false
 }) => {
   const navigate = useNavigate();
   const navLinks = getNavLinks();
+  
+  // Display only first couple of links if overflow is detected
+  const visibleNavLinks = hasOverflow 
+    ? [navLinks[0], navLinks[1]] // Only show Home and one other link
+    : navLinks;
   
   return (
     <div className="hidden md:flex items-center space-x-4">
       {/* Primary Navigation Links */}
       <div className="flex items-center space-x-6 mr-2">
-        {navLinks.map((link) => (
-          <NavLink key={link.name} name={link.name} href={link.href} />
+        {visibleNavLinks.map((link) => (
+          <NavLink key={link.name} name={link.name} href={link.href} className="nav-item" />
         ))}
       </div>
 
