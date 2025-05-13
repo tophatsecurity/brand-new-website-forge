@@ -1,6 +1,6 @@
+
 import React from 'react';
 import { Link } from "react-router-dom";
-import { ChevronDown } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
@@ -68,21 +68,13 @@ export const NavLink: React.FC<NavLinkProps> = ({
 };
 
 export const getNavLinks = () => {
-  // Base navigation links
+  // Base navigation links - updated to remove About dropdown and add Careers
   return [
     { name: "Home", href: "/" },
     { name: "Products", href: "/products" },
     { name: "Services", href: "/services" },
-    { 
-      name: "About", 
-      href: "/about",
-      hasDropdown: true,
-      dropdownItems: [
-        { name: "About Us", href: "/about" },
-        { name: "Team", href: "/team" },
-        { name: "Careers", href: "/careers" }
-      ] 
-    },
+    { name: "About", href: "/about" },
+    { name: "Careers", href: "/careers" },
     { name: "Contact", href: "/contact" }
   ];
 };
@@ -90,11 +82,11 @@ export const getNavLinks = () => {
 // Get primary links for main navbar
 export const getPrimaryNavLinks = () => {
   const allLinks = getNavLinks();
-  return allLinks.slice(0, 4); // First 4 items: Home, Products, Services, About
+  return allLinks.slice(0, 5); // First 5 items: Home, Products, Services, About, Careers
 };
 
 // Get secondary links for overflow display
 export const getSecondaryNavLinks = () => {
   const allLinks = getNavLinks();
-  return [allLinks[4]]; // Only Contact remains in secondary
+  return [allLinks[5]]; // Only Contact remains in secondary
 };

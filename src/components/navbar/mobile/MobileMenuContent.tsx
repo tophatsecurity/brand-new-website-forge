@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -95,9 +94,9 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
 
       <Separator className="my-2" />
 
+      {/* User account info */}
       {user ? (
         <>
-          {/* User account info */}
           <div className="flex items-center space-x-2 py-2">
             <User className="h-4 w-4" />
             <span className="font-medium">{userEmail}</span>
