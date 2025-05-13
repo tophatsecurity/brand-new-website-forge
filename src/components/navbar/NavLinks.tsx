@@ -37,7 +37,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
           {name}
         </NavigationMenuTrigger>
         <NavigationMenuContent>
-          <ul className="grid w-[200px] gap-1 p-2">
+          <ul className="grid w-[200px] gap-1 p-2 absolute left-0">
             {dropdownItems.map((item) => (
               <li key={item.name}>
                 <NavigationMenuLink asChild>
