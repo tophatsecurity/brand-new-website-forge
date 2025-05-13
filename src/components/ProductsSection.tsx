@@ -69,7 +69,7 @@ const ProductsSection = () => {
   const allProducts = productCategories.flatMap(category => category.products);
 
   return (
-    <section id="products" className="section-padding bg-white">
+    <section id="products" className="section-padding">
       <div className="max-w-7xl mx-auto">
         {productCategories.map((category, categoryIndex) => (
           <div key={categoryIndex} className="mb-16" id={category.id}>
@@ -80,7 +80,7 @@ const ProductsSection = () => {
               {category.products.map((product, productIndex) => (
                 <Card 
                   key={productIndex} 
-                  className={`service-card transition-all duration-300 animate-slide-up opacity-0 border-t-0 border-l-4 ${product.borderColor} bg-white text-foreground hover:shadow-lg`} 
+                  className={`service-card transition-all duration-300 animate-slide-up opacity-0 border-t-0 border-l-4 ${product.borderColor} bg-background text-foreground hover:shadow-lg`} 
                   style={{ animationDelay: `${productIndex * 100 + 200}ms` }}
                 >
                   <Link to={product.link} className="block h-full">
@@ -111,7 +111,7 @@ const ProductsSection = () => {
               {allProducts.map((product, index) => (
                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2">
                   <div className="p-1">
-                    <Card className={`h-full border-t-0 border-l-4 ${product.borderColor} bg-white text-foreground hover:shadow-lg`}>
+                    <Card className={`h-full border-t-0 border-l-4 ${product.borderColor} bg-background text-foreground hover:shadow-lg`}>
                       <Link to={product.link} className="block h-full">
                         <CardHeader className="pb-2">
                           <div className="mb-4">{product.icon}</div>

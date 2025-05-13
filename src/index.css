@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -120,7 +121,7 @@
   }
 
   .hero-section {
-    @apply bg-background border-b border-gray-200 dark:bg-gray-950 dark:border-gray-800;
+    @apply bg-[#1A1F2C] border-b border-gray-800 dark:bg-gray-950 dark:border-gray-800;
   }
 
   .hero-content {
@@ -128,10 +129,10 @@
   }
 
   .hero-title {
-    @apply text-4xl md:text-5xl font-bold mb-6 text-foreground;
+    @apply text-4xl md:text-5xl font-bold mb-6 text-white;
   }
 
   .hero-description {
-    @apply text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto;
+    @apply text-lg text-gray-300 max-w-3xl mx-auto;
   }
 }
