@@ -2,10 +2,8 @@
 import React from 'react';
 import MainLayout from '@/components/layouts/MainLayout';
 import ProductsSection from '@/components/ProductsSection';
-import ProductCategories from '@/components/ProductCategories';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
+import { Link } from 'react-router-dom';
 
 const Products = () => {
   useScrollToTop();
@@ -16,15 +14,11 @@ const Products = () => {
         <div className="hero-content">
           <div className="text-center">
             <h1 className="hero-title">Our Security Solutions</h1>
-            <p className="hero-description">
-              Comprehensive cybersecurity platforms for today's evolving threat landscape.
-            </p>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-16">
-        <ProductCategories />
         <ProductsSection />
 
         <div className="text-center py-16 bg-muted/30 mt-16 rounded-xl">
@@ -33,9 +27,9 @@ const Products = () => {
             Our experts can help you identify the right security tools for your specific needs.
           </p>
           <Link to="/contact">
-            <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8">
+            <button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white px-8 py-2 rounded-md">
               Contact Our Team
-            </Button>
+            </button>
           </Link>
         </div>
       </div>

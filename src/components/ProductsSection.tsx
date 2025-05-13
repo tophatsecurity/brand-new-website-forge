@@ -80,26 +80,24 @@ const ProductsSection = () => {
               {category.products.map((product, productIndex) => (
                 <Card 
                   key={productIndex} 
-                  className={`service-card transition-all duration-300 animate-slide-up opacity-0 border-t-0 border-l-4 ${product.borderColor} bg-background text-foreground`} 
+                  className={`service-card transition-all duration-300 animate-slide-up opacity-0 border-t-0 border-l-4 ${product.borderColor} bg-background text-foreground hover:shadow-lg`} 
                   style={{ animationDelay: `${productIndex * 100 + 200}ms` }}
                 >
-                  <CardHeader className="pb-2">
-                    <div className="mb-4">{product.icon}</div>
-                    <Link to={product.link}>
+                  <Link to={product.link} className="block h-full">
+                    <CardHeader className="pb-2">
+                      <div className="mb-4">{product.icon}</div>
                       <CardTitle className="hover:text-primary transition-colors">{product.title}</CardTitle>
-                    </Link>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">{product.description}</p>
-                    <Link to={product.link}>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground mb-4">{product.description}</p>
                       <Button 
                         variant="default"
                         className="bg-[#cc0c1a] hover:bg-[#a80916] text-white"
                       >
                         Learn More
                       </Button>
-                    </Link>
-                  </CardContent>
+                    </CardContent>
+                  </Link>
                 </Card>
               ))}
             </div>
@@ -113,24 +111,22 @@ const ProductsSection = () => {
               {allProducts.map((product, index) => (
                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2">
                   <div className="p-1">
-                    <Card className={`h-full border-t-0 border-l-4 ${product.borderColor} bg-background text-foreground`}>
-                      <CardHeader className="pb-2">
-                        <div className="mb-4">{product.icon}</div>
-                        <Link to={product.link}>
+                    <Card className={`h-full border-t-0 border-l-4 ${product.borderColor} bg-background text-foreground hover:shadow-lg`}>
+                      <Link to={product.link} className="block h-full">
+                        <CardHeader className="pb-2">
+                          <div className="mb-4">{product.icon}</div>
                           <CardTitle className="hover:text-primary transition-colors">{product.title}</CardTitle>
-                        </Link>
-                      </CardHeader>
-                      <CardContent className="flex flex-col h-full">
-                        <p className="text-muted-foreground mb-6 flex-grow">{product.longDescription}</p>
-                        <Link to={product.link} className="mt-auto">
+                        </CardHeader>
+                        <CardContent className="flex flex-col h-full">
+                          <p className="text-muted-foreground mb-6 flex-grow">{product.longDescription}</p>
                           <Button 
                             variant="default"
-                            className="bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full"
+                            className="bg-[#cc0c1a] hover:bg-[#a80916] text-white w-full mt-auto"
                           >
                             Learn More
                           </Button>
-                        </Link>
-                      </CardContent>
+                        </CardContent>
+                      </Link>
                     </Card>
                   </div>
                 </CarouselItem>
