@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from "react-router-dom";
 import { ChevronDown } from 'lucide-react';
@@ -37,7 +36,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
           {name}
         </NavigationMenuTrigger>
         <NavigationMenuContent>
-          <ul className="grid w-[200px] gap-1 p-2 absolute left-0">
+          <ul className="grid w-[200px] gap-1 p-2 bg-popover border border-border shadow-md rounded-md">
             {dropdownItems.map((item) => (
               <li key={item.name}>
                 <NavigationMenuLink asChild>
