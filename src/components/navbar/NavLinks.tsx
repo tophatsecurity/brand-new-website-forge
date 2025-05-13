@@ -67,7 +67,15 @@ export const NavLink: React.FC<NavLinkProps> = ({
   );
 };
 
-export const getNavLinks = () => {
+// Define the type for navigation links
+export type NavigationLinkType = {
+  name: string;
+  href: string;
+  hasDropdown?: boolean;
+  dropdownItems?: { name: string; href: string }[];
+};
+
+export const getNavLinks = (): NavigationLinkType[] => {
   // Base navigation links - updated to remove About dropdown and add Careers
   return [
     { name: "Home", href: "/" },
@@ -80,13 +88,13 @@ export const getNavLinks = () => {
 };
 
 // Get primary links for main navbar
-export const getPrimaryNavLinks = () => {
+export const getPrimaryNavLinks = (): NavigationLinkType[] => {
   const allLinks = getNavLinks();
   return allLinks.slice(0, 5); // First 5 items: Home, Products, Services, About, Careers
 };
 
 // Get secondary links for overflow display
-export const getSecondaryNavLinks = () => {
+export const getSecondaryNavLinks = (): NavigationLinkType[] => {
   const allLinks = getNavLinks();
   return [allLinks[5]]; // Only Contact remains in secondary
 };

@@ -9,7 +9,7 @@ import AdminNav from './AdminNav';
 import SecondaryNav from './SecondaryNav';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { NavLink, getSecondaryNavLinks } from './NavLinks';
+import { NavLink, getSecondaryNavLinks, NavigationLinkType } from './NavLinks';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -156,7 +156,7 @@ const Navbar = () => {
             <div className="flex justify-center">
               <ScrollArea className="w-full max-w-3xl">
                 <div className="flex items-center space-x-4 px-2 justify-center">
-                  {secondaryLinks.map((link) => (
+                  {secondaryLinks.map((link: NavigationLinkType) => (
                     <NavLink 
                       key={link.name} 
                       name={link.name} 

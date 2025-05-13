@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { NavLink, getPrimaryNavLinks } from './NavLinks';
+import { NavLink, getPrimaryNavLinks, NavigationLinkType } from './NavLinks';
 import RoleSwitcher from './RoleSwitcher';
 import ThemeToggle from '@/components/ThemeToggle';
 import UserNavMenu from '@/components/UserNavMenu';
@@ -37,7 +37,7 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
       <div className="flex items-center space-x-6 mr-2">
         <NavigationMenu>
           <NavigationMenuList className="gap-6">
-            {primaryLinks.map((link) => (
+            {primaryLinks.map((link: NavigationLinkType) => (
               <NavLink 
                 key={link.name} 
                 name={link.name} 

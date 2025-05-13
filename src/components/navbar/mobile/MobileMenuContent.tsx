@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LogOut, User, ChevronDown, ChevronRight } from 'lucide-react';
-import { NavLink, getNavLinks } from '../NavLinks';
+import { NavLink, getNavLinks, NavigationLinkType } from '../NavLinks';
 import { Separator } from "@/components/ui/separator";
 import MobileAdminLinks from './MobileAdminLinks';
 import MobileUserResources from './MobileUserResources';
@@ -54,7 +55,7 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
   return (
     <div className="flex flex-col space-y-4 px-6">
       {/* Primary navigation links */}
-      {navLinks.map((link) => (
+      {navLinks.map((link: NavigationLinkType) => (
         link.hasDropdown ? (
           <Collapsible 
             key={link.name}
