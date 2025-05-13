@@ -1,59 +1,36 @@
 
 import React from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, Shield, Lock, Eye } from "lucide-react";
 
 const AboutSection = () => {
-  const keyPoints = [
-    "Advanced technical capabilities for underserved areas",
-    "Extensive background in preventing and fixing security problems",
-    "Understanding of foreign actors, hidden threats, and the Dark Web",
-    "Protection against hidden threats in the Supply Chain"
-  ];
-
   return (
-    <section id="about" className="section-padding bg-secondary/50">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="lg:w-1/2">
-            <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-primary/20 rounded-lg opacity-70 blur-lg"></div>
-              <div className="relative bg-background rounded-lg overflow-hidden shadow-xl">
-                <img 
-                  src="https://images.unsplash.com/photo-1519389950473-47ba0277781c" 
-                  alt="Our team collaborating" 
-                  className="w-full h-auto object-cover"
-                />
+    <section className="py-16 px-4 bg-gradient-to-r from-[#f9f7ff] to-[#f0ebff] dark:from-[#1a1f2c]/80 dark:to-[#1a1f2c]">
+      <div className="container max-w-6xl mx-auto">
+        <div className="flex flex-col items-center text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#6E59A5] dark:text-[#9b87f5]">
+            About TopHat Security
+          </h2>
+          <div className="max-w-4xl mx-auto">
+            <p className="text-lg mb-6 leading-relaxed">
+              At TopHat Security, we're dedicated to protecting your digital assets with cutting-edge cybersecurity solutions.
+              Our team of experts has decades of combined experience in identifying vulnerabilities and mitigating risks.
+            </p>
+            <p className="text-lg mb-8 leading-relaxed">
+              Founded in 2010, we've grown from a small consulting firm to a comprehensive security provider,
+              serving clients across industries from healthcare and finance to government and education.
+              Our mission is to stay one step ahead of emerging threats through continuous innovation and research.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105">
+                <h3 className="text-xl font-semibold mb-3 text-[#6E59A5] dark:text-[#9b87f5]">Our Mission</h3>
+                <p>To empower organizations with the tools and knowledge needed to defend against evolving cyber threats.</p>
               </div>
-            </div>
-          </div>
-          
-          <div className="lg:w-1/2">
-            <div className="animate-slide-up opacity-0" style={{ animationDelay: '100ms' }}>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">TOPHAT SECURITY'S PHILOSOPHY</h2>
-              <div className="w-20 h-1 bg-primary mb-6"></div>
-              <h3 className="text-lg font-semibold text-primary mb-4">Advanced technology protection</h3>
-              <p className="text-lg text-muted-foreground mb-8">
-                Tophat was founded six years ago with the desire to develop tools that provide advanced 
-                technical capabilities for areas that have been largely under served.
-              </p>
-              <p className="text-lg text-muted-foreground mb-8">
-                Our extensive background in preventing and fixing security problems has been the cornerstone 
-                for developing security products based on an understanding of foreign actors, hidden threats, 
-                and the presence of the Dark Web.
-              </p>
-              <p className="text-lg text-muted-foreground mb-8">
-                Tophat Security addresses hidden threats from devices in the Supply Chain. We also offer 
-                advanced monitoring based on understanding attack vectors and breaches.
-              </p>
-              
-              <div className="space-y-4 mb-8">
-                {keyPoints.map((point, index) => (
-                  <div key={index} className="flex items-start">
-                    <CheckCircle className="h-6 w-6 text-primary mr-3 flex-shrink-0" />
-                    <p className="text-foreground">{point}</p>
-                  </div>
-                ))}
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105">
+                <h3 className="text-xl font-semibold mb-3 text-[#6E59A5] dark:text-[#9b87f5]">Our Vision</h3>
+                <p>A world where digital innovation flourishes without the constraint of security concerns.</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform transition-all duration-300 hover:scale-105">
+                <h3 className="text-xl font-semibold mb-3 text-[#6E59A5] dark:text-[#9b87f5]">Our Values</h3>
+                <p>Integrity, innovation, excellence, and a relentless focus on our clients' security needs.</p>
               </div>
             </div>
           </div>

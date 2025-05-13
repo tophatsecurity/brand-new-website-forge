@@ -6,7 +6,9 @@ import AboutSection from '@/components/AboutSection';
 const About = () => {
   return (
     <MainLayout>
-      <AboutSection />
+      <div className="animate-fade-in">
+        <AboutSection />
+      </div>
     </MainLayout>
   );
 };
