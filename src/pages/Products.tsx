@@ -14,7 +14,7 @@ const Products = () => {
         <div className="hero-content">
           <div className="text-center">
             <h1 className="hero-title">Our Security Solutions</h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mt-4">
+            <p className="hero-description mt-4">
               Our innovative cybersecurity products safeguard your organization across multiple domains, 
               from AI systems to supply chain security and comprehensive asset management. Each solution 
               is designed to address emerging threats with cutting-edge technology.
