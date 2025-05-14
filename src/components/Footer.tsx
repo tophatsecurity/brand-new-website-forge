@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -41,7 +42,7 @@ const Footer = () => {
               <a href="https://x.com/tophatsecurity1" target="_blank" rel="noopener noreferrer" className="hover:text-[#cc0c1a] transition-colors" aria-label="X (formerly Twitter)">
                 <X size={24} />
               </a>
-              <a href="#" className="hover:text-[#cc0c1a] transition-colors" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/company/tophatsecurity/" target="_blank" rel="noopener noreferrer" className="hover:text-[#cc0c1a] transition-colors" aria-label="LinkedIn">
                 <Linkedin size={24} />
               </a>
               <a href="#" className="hover:text-[#cc0c1a] transition-colors" aria-label="Instagram">
