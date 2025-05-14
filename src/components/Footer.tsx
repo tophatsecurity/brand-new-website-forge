@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { X, Linkedin, Instagram } from "lucide-react";
+import { X, Linkedin } from "lucide-react";
 
 const Footer = () => {
   const { toast } = useToast();
@@ -44,9 +43,6 @@ const Footer = () => {
               </a>
               <a href="https://www.linkedin.com/company/tophatsecurity/" target="_blank" rel="noopener noreferrer" className="hover:text-[#cc0c1a] transition-colors" aria-label="LinkedIn">
                 <Linkedin size={24} />
-              </a>
-              <a href="#" className="hover:text-[#cc0c1a] transition-colors" aria-label="Instagram">
-                <Instagram size={24} />
               </a>
             </div>
           </div>
