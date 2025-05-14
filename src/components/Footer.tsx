@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -111,7 +112,7 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} TOPHAT|SECURITY. All rights reserved.
           </p>
           <div className="flex space-x-6 text-sm">
-            <a href="#" className="text-white/70 hover:text-[#cc0c1a] transition-colors">Privacy Policy</a>
+            <Link to="/privacy-policy" className="text-white/70 hover:text-[#cc0c1a] transition-colors">Privacy Policy</Link>
             <a href="#" className="text-white/70 hover:text-[#cc0c1a] transition-colors">Terms of Service</a>
           </div>
         </div>
