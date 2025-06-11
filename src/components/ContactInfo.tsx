@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Phone, MapPin, Building } from "lucide-react";
+import { Mail, Phone, MapPin, Building, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const ContactInfo = () => {
   const locations = [
@@ -10,7 +12,8 @@ const ContactInfo = () => {
         "Tophat Security",
         "2810 N Church St., PMB 41266",
         "Wilmington, Delaware 19802"
-      ]
+      ],
+      fullAddress: "2810 N Church St., PMB 41266, Wilmington, Delaware 19802"
     },
     {
       title: "Alaska Office",
@@ -18,7 +21,8 @@ const ContactInfo = () => {
         "Tophat Security",
         "821 N ST, STE 102",
         "Anchorage, AK, 99501"
-      ]
+      ],
+      fullAddress: "821 N ST, STE 102, Anchorage, AK, 99501"
     },
     {
       title: "Georgia Office",
@@ -26,7 +30,8 @@ const ContactInfo = () => {
         "Tophat Security",
         "1954 Airport Rd. Suite 130-10",
         "Atlanta, Georgia 30341"
-      ]
+      ],
+      fullAddress: "1954 Airport Rd. Suite 130-10, Atlanta, Georgia 30341"
     }
   ];
 
@@ -50,6 +55,14 @@ const ContactInfo = () => {
       link: "tel:18009895718"
     }
   ];
+
+  const getGoogleMapsLink = (address: string) => {
+    return `https://maps.google.com/?q=${encodeURIComponent(address)}`;
+  };
+
+  const getAppleMapsLink = (address: string) => {
+    return `https://maps.apple.com/?q=${encodeURIComponent(address)}`;
+  };
 
   return (
     <div>
@@ -80,7 +93,7 @@ const ContactInfo = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-start">
+              <div className="flex items-start mb-4">
                 <MapPin className="h-5 w-5 text-primary mt-1 mr-2 flex-shrink-0" />
                 <div>
                   {location.address.map((line, i) => (
@@ -89,6 +102,27 @@ const ContactInfo = () => {
                     </p>
                   ))}
                 </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                  onClick={() => window.open(getGoogleMapsLink(location.fullAddress), '_blank')}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Google Maps
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                  onClick={() => window.open(getAppleMapsLink(location.fullAddress), '_blank')}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Apple Maps
+                </Button>
               </div>
             </CardContent>
           </Card>
