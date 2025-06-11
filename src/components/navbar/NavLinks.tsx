@@ -76,25 +76,24 @@ export type NavigationLinkType = {
 };
 
 export const getNavLinks = (): NavigationLinkType[] => {
-  // Base navigation links - updated to remove About dropdown and add Careers
+  // Base navigation links - updated to include Contact in primary navigation
   return [
     { name: "Home", href: "/" },
     { name: "Products", href: "/products" },
     { name: "Services", href: "/services" },
     { name: "About", href: "/about" },
-    { name: "Careers", href: "/careers" },
-    { name: "Contact", href: "/contact" }
+    { name: "Contact", href: "/contact" },
+    { name: "Careers", href: "/careers" }
   ];
 };
 
 // Get primary links for main navbar
 export const getPrimaryNavLinks = (): NavigationLinkType[] => {
   const allLinks = getNavLinks();
-  return allLinks.slice(0, 5); // First 5 items: Home, Products, Services, About, Careers
+  return allLinks; // All 6 items: Home, Products, Services, About, Contact, Careers
 };
 
-// Get secondary links for overflow display
+// Get secondary links for overflow display - now empty since Contact moved to primary
 export const getSecondaryNavLinks = (): NavigationLinkType[] => {
-  const allLinks = getNavLinks();
-  return [allLinks[5]]; // Only Contact remains in secondary
+  return []; // No secondary links now
 };
