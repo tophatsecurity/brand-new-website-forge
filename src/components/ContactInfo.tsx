@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Phone, MapPin, Building, ExternalLink } from "lucide-react";
@@ -7,13 +6,13 @@ import { Button } from "@/components/ui/button";
 const ContactInfo = () => {
   const locations = [
     {
-      title: "Delaware Office",
+      title: "Georgia Office",
       address: [
         "Tophat Security",
-        "2810 N Church St., PMB 41266",
-        "Wilmington, Delaware 19802"
+        "1954 Airport Rd. Suite 130-10",
+        "Atlanta, Georgia 30341"
       ],
-      fullAddress: "2810 N Church St., PMB 41266, Wilmington, Delaware 19802"
+      fullAddress: "1954 Airport Rd. Suite 130-10, Atlanta, Georgia 30341"
     },
     {
       title: "Alaska Office",
@@ -25,13 +24,13 @@ const ContactInfo = () => {
       fullAddress: "821 N ST, STE 102, Anchorage, AK, 99501"
     },
     {
-      title: "Georgia Office",
+      title: "Delaware Office",
       address: [
         "Tophat Security",
-        "1954 Airport Rd. Suite 130-10",
-        "Atlanta, Georgia 30341"
+        "2810 N Church St., PMB 41266",
+        "Wilmington, Delaware 19802"
       ],
-      fullAddress: "1954 Airport Rd. Suite 130-10, Atlanta, Georgia 30341"
+      fullAddress: "2810 N Church St., PMB 41266, Wilmington, Delaware 19802"
     }
   ];
 
