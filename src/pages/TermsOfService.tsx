@@ -96,9 +96,9 @@ const TermsOfService = () => {
 
           <div className="ml-8 mt-4">
             <p>
-              Tophat Security Inc.<br />
-              427 N Tatnall St #41266<br />
-              Wilmington, Delaware 19801
+              TOPHAT SECURITY INC.<br />
+              1954 AIRPORT RD STE 130-10<br />
+              ATLANTA GA 30341
             </p>
           </div>
 
