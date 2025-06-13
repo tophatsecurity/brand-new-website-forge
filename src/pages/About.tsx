@@ -43,7 +43,7 @@ const About = () => {
       position: 'Vice President and CFO',
       bio: 'Driving operational excellence and strategic financial initiatives.',
       initials: 'CH',
-      image: '/lovable-uploads/135abb60-1d41-430d-a924-65badba87863.png',
+      image: '/lovable-uploads/37b4abe7-f66c-4cd9-aa7c-46e4aa3665cc.png',
       linkedinUrl: 'https://www.linkedin.com/in/christyhenry/'
     },
     {
