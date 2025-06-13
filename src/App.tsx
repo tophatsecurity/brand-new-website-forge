@@ -33,6 +33,7 @@ import Support from "./pages/Support";
 import Settings from "./pages/Settings";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import UseOfCookies from "./pages/UseOfCookies";
 
 // Admin Pages
 import UsersPage from "./pages/admin/UsersPage";
