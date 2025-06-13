@@ -32,6 +32,7 @@ import Downloads from "./pages/Downloads";
 import Support from "./pages/Support";
 import Settings from "./pages/Settings";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 // Admin Pages
 import UsersPage from "./pages/admin/UsersPage";
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="/register" element={<Register />} />
               <Route path="/pending-approval" element={<PendingApproval />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
               
               {/* Product routes */}
               <Route path="/seekcap" element={<SeekCap />} />
