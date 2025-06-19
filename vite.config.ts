@@ -14,9 +14,7 @@ export default defineConfig(({ mode }) => ({
     }
   },
   plugins: [
-    react({
-      include: "**/*.{jsx,tsx,js,ts}",
-    }),
+    react(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
