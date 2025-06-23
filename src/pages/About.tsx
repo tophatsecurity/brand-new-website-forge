@@ -19,7 +19,7 @@ const About = () => {
       position: 'CEO & Founder',
       bio: 'Veteran builder in cybersecurity, leading TopHat\'s mission.',
       initials: 'MC',
-      image: '/lovable-uploads/c19a0f81-ce2e-4f42-9922-65f06749af1b.png',
+      image: '/lovable-uploads/81ff3455-fd73-4d8a-80c3-ca06bfd2becf.png',
       linkedinUrl: 'https://www.linkedin.com/in/matthew-caldwell-1a1421/'
     },
     {
