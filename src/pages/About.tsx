@@ -1,3 +1,4 @@
+
 import React from 'react';
 import MainLayout from '@/components/layouts/MainLayout';
 import AboutSection from '@/components/AboutSection';
@@ -51,7 +52,7 @@ const About = () => {
       position: 'CRO',
       bio: 'Connects TopHat to Partners, DoD, IC, and critical infrastructure agencies.',
       initials: 'GD',
-      image: '/lovable-uploads/ddfcd1d0-8eb9-4ae5-a740-5d1200050e8f.png'
+      image: '/lovable-uploads/ca27bc40-2376-40a6-b9ea-14bc5ac291b5.png'
     },
     {
       name: 'Mike Klipstein PHD',
