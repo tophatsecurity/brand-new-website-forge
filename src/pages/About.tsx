@@ -27,7 +27,7 @@ const About = () => {
       position: 'Chief Strategy Officer',
       bio: 'Cybersecurity GTM expert focused on executive messaging.',
       initials: 'JC',
-      image: '/lovable-uploads/eadb63aa-1b11-404e-b624-0f0241d22574.png',
+      image: '/lovable-uploads/d075faa1-51ba-4391-b62e-35971d4b4f7b.png',
       linkedinUrl: 'https://www.linkedin.com/in/josephcardin/'
     },
     {
