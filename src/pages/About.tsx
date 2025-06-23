@@ -1,4 +1,3 @@
-
 import React from 'react';
 import MainLayout from '@/components/layouts/MainLayout';
 import AboutSection from '@/components/AboutSection';
@@ -59,7 +58,7 @@ const About = () => {
       position: 'Advisor',
       bio: 'Nationally recognized expert in defense technology, space and sigint and AI risk.',
       initials: 'MK',
-      image: '/lovable-uploads/8481a3e3-ebb5-459a-8315-279d932658d9.png'
+      image: '/lovable-uploads/933acda1-6fc3-47a1-8478-9fb88d4e4980.png'
     }
   ];
 
