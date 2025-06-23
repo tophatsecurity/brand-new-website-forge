@@ -35,7 +35,7 @@ const About = () => {
       position: 'CISO (Ex-CISO, Honeywell)',
       bio: 'Industry legend in ICS/OT security.',
       initials: 'RM',
-      image: '/lovable-uploads/be1494fe-58a8-4df1-aa77-293b5cfce159.png',
+      image: '/lovable-uploads/29864183-e17c-48bd-8524-ce45990d6e3b.png',
       linkedinUrl: 'https://www.linkedin.com/in/rich-mason-1a74711/'
     },
     {
