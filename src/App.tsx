@@ -30,6 +30,7 @@ import SecurityPerpetual from "./pages/SecurityPerpetual";
 import Licensing from "./pages/Licensing";
 import Downloads from "./pages/Downloads";
 import Support from "./pages/Support";
+import Credits from "./pages/Credits";
 import Settings from "./pages/Settings";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -42,6 +43,7 @@ import PermissionsPage from "./pages/admin/PermissionsPage";
 import DownloadsAdminPage from "./pages/admin/DownloadsAdminPage";
 import LicensingAdminPage from "./pages/admin/LicensingAdminPage";
 import CatalogAdminPage from "./pages/admin/CatalogAdminPage";
+import CreditsAdminPage from "./pages/admin/CreditsAdminPage";
 
 const queryClient = new QueryClient();
 
@@ -102,6 +104,11 @@ const App = () => (
                   <Support />
                 </ProtectedRoute>
               } />
+              <Route path="/credits" element={
+                <ProtectedRoute>
+                  <Credits />
+                </ProtectedRoute>
+              } />
               
               {/* Admin routes */}
               <Route path="/admin/users" element={
@@ -132,6 +139,11 @@ const App = () => (
               <Route path="/admin/catalog" element={
                 <AdminRoute>
                   <CatalogAdminPage />
+                </AdminRoute>
+              } />
+              <Route path="/admin/credits" element={
+                <AdminRoute>
+                  <CreditsAdminPage />
                 </AdminRoute>
               } />
               
