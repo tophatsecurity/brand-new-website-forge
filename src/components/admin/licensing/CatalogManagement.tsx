@@ -77,6 +77,7 @@ const productIcons: Record<string, React.ElementType> = {
   'Enterprise Bundle': Layers,
   'ICS Probe': Shield,
   'ORANGE Scada Simulator': Network,
+  'OnBoard': Briefcase,
 };
 
 const defaultFormData: CatalogFormData = {
