@@ -70,6 +70,8 @@ const productIcons: Record<string, React.ElementType> = {
   'Network Maintenance': Wrench,
   'Security Consulting': Briefcase,
   'Enterprise Bundle': Layers,
+  'ICS Probe': Shield,
+  'ORANGE Scada Simulator': Network,
 };
 
 const productTypeLabels: Record<ProductType, string> = {
@@ -82,7 +84,9 @@ const productTypeLabels: Record<ProductType, string> = {
 const licenseModelLabels: Record<LicenseModel, string> = {
   perpetual: 'Perpetual',
   subscription: 'Subscription',
-  demo: 'Demo Only'
+  demo: 'Demo Only',
+  beta: 'Beta',
+  alpha: 'Alpha'
 };
 
 const supportLevelLabels: Record<SupportLevel, string> = {
@@ -168,6 +172,10 @@ const CatalogManagement: React.FC = () => {
         return <Badge variant="outline" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400"><RefreshCw className="h-3 w-3 mr-1" />Subscription</Badge>;
       case 'demo':
         return <Badge variant="outline" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Demo</Badge>;
+      case 'beta':
+        return <Badge variant="outline" className="bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400">Beta</Badge>;
+      case 'alpha':
+        return <Badge variant="outline" className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">Alpha</Badge>;
     }
   };
 
@@ -240,6 +248,8 @@ const CatalogManagement: React.FC = () => {
               <SelectItem value="perpetual">Perpetual</SelectItem>
               <SelectItem value="subscription">Subscription</SelectItem>
               <SelectItem value="demo">Demo Only</SelectItem>
+              <SelectItem value="beta">Beta</SelectItem>
+              <SelectItem value="alpha">Alpha</SelectItem>
             </SelectContent>
           </Select>
         </div>
