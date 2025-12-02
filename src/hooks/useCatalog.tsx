@@ -6,6 +6,13 @@ export type ProductType = 'software' | 'maintenance' | 'service' | 'bundle';
 export type LicenseModel = 'perpetual' | 'subscription' | 'demo' | 'beta' | 'alpha';
 export type SupportLevel = 'standard' | 'premium' | 'enterprise';
 export type VersionStage = 'alpha' | 'beta' | 'rc' | 'stable' | 'deprecated';
+export type PriceTier = 'free' | 'starter' | 'standard' | 'professional' | 'enterprise';
+
+export type CreditPackage = {
+  name: string;
+  credits: number;
+  price: number;
+};
 
 export type CatalogItem = {
   id: string;
@@ -26,6 +33,11 @@ export type CatalogItem = {
   changelog: string | null;
   min_version: string | null;
   latest_stable_version: string | null;
+  credits_included: number;
+  price_tier: PriceTier;
+  base_price: number;
+  price_per_credit: number;
+  credit_packages: CreditPackage[];
   created_at: string;
   updated_at: string;
 };
@@ -46,6 +58,11 @@ export type CatalogFormData = {
   version_stage: VersionStage;
   release_date: string | null;
   changelog: string | null;
+  credits_included: number;
+  price_tier: PriceTier;
+  base_price: number;
+  price_per_credit: number;
+  credit_packages: CreditPackage[];
 };
 
 export const useCatalog = () => {
@@ -63,7 +80,14 @@ export const useCatalog = () => {
         .order('product_name');
 
       if (error) throw error;
-      setCatalog((data || []) as CatalogItem[]);
+      
+      // Parse credit_packages from JSON
+      const processedData = (data || []).map(item => ({
+        ...item,
+        credit_packages: item.credit_packages || []
+      }));
+      
+      setCatalog(processedData as CatalogItem[]);
     } catch (err: any) {
       console.error('Error fetching catalog:', err);
       toast({
@@ -84,13 +108,16 @@ export const useCatalog = () => {
     try {
       const { data, error } = await supabase
         .from('license_catalog')
-        .insert(item)
+        .insert({
+          ...item,
+          credit_packages: item.credit_packages
+        })
         .select()
         .single();
 
       if (error) throw error;
       
-      setCatalog(prev => [...prev, data as CatalogItem]);
+      setCatalog(prev => [...prev, { ...data, credit_packages: data.credit_packages || [] } as CatalogItem]);
       toast({
         title: "Product added",
         description: `${item.product_name} has been added to the catalog.`
@@ -118,7 +145,7 @@ export const useCatalog = () => {
 
       if (error) throw error;
       
-      setCatalog(prev => prev.map(c => c.id === id ? data as CatalogItem : c));
+      setCatalog(prev => prev.map(c => c.id === id ? { ...data, credit_packages: data.credit_packages || [] } as CatalogItem : c));
       toast({
         title: "Product updated",
         description: "Catalog item has been updated."

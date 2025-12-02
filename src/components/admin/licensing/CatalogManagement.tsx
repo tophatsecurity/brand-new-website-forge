@@ -62,9 +62,11 @@ import {
   Infinity,
   Tag,
   GitBranch,
-  FileText
+  FileText,
+  DollarSign,
+  Coins
 } from "lucide-react";
-import { useCatalog, type CatalogItem, type CatalogFormData, type ProductType, type LicenseModel, type SupportLevel, type VersionStage } from "@/hooks/useCatalog";
+import { useCatalog, type CatalogItem, type CatalogFormData, type ProductType, type LicenseModel, type SupportLevel, type VersionStage, type PriceTier } from "@/hooks/useCatalog";
 import { productFeatures } from "./license-data/productOptions";
 
 const productIcons: Record<string, React.ElementType> = {
@@ -95,7 +97,12 @@ const defaultFormData: CatalogFormData = {
   version: '1.0.0',
   version_stage: 'stable',
   release_date: new Date().toISOString(),
-  changelog: null
+  changelog: null,
+  credits_included: 0,
+  price_tier: 'standard',
+  base_price: 0,
+  price_per_credit: 0,
+  credit_packages: []
 };
 
 const CatalogManagement: React.FC = () => {
@@ -127,7 +134,12 @@ const CatalogManagement: React.FC = () => {
       version: item.version || '1.0.0',
       version_stage: item.version_stage || 'stable',
       release_date: item.release_date,
-      changelog: item.changelog
+      changelog: item.changelog || '',
+      credits_included: item.credits_included || 0,
+      price_tier: item.price_tier || 'standard',
+      base_price: item.base_price || 0,
+      price_per_credit: item.price_per_credit || 0,
+      credit_packages: item.credit_packages || []
     });
   };
 
@@ -202,9 +214,10 @@ const CatalogManagement: React.FC = () => {
 
   const renderForm = () => (
     <Tabs defaultValue="general" className="w-full">
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="general">General</TabsTrigger>
         <TabsTrigger value="licensing">Licensing</TabsTrigger>
+        <TabsTrigger value="pricing">Pricing</TabsTrigger>
         <TabsTrigger value="version">Version</TabsTrigger>
       </TabsList>
       
@@ -355,6 +368,66 @@ const CatalogManagement: React.FC = () => {
           </div>
         </TabsContent>
 
+        <TabsContent value="pricing" className="space-y-4 mt-0">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price_tier">Price Tier</Label>
+              <Select 
+                value={formData.price_tier} 
+                onValueChange={(value: PriceTier) => setFormData(prev => ({ ...prev, price_tier: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="free">Free</SelectItem>
+                  <SelectItem value="starter">Starter</SelectItem>
+                  <SelectItem value="standard">Standard</SelectItem>
+                  <SelectItem value="professional">Professional</SelectItem>
+                  <SelectItem value="enterprise">Enterprise</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="base_price">Base Price ($)</Label>
+              <Input
+                id="base_price"
+                type="number"
+                min="0"
+                step="0.01"
+                value={formData.base_price}
+                onChange={(e) => setFormData(prev => ({ ...prev, base_price: parseFloat(e.target.value) || 0 }))}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="credits_included">Credits Included</Label>
+              <Input
+                id="credits_included"
+                type="number"
+                min="0"
+                value={formData.credits_included}
+                onChange={(e) => setFormData(prev => ({ ...prev, credits_included: parseInt(e.target.value) || 0 }))}
+              />
+              <p className="text-xs text-muted-foreground">Processing units included with base price</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="price_per_credit">Price Per Credit ($)</Label>
+              <Input
+                id="price_per_credit"
+                type="number"
+                min="0"
+                step="0.01"
+                value={formData.price_per_credit}
+                onChange={(e) => setFormData(prev => ({ ...prev, price_per_credit: parseFloat(e.target.value) || 0 }))}
+              />
+              <p className="text-xs text-muted-foreground">Cost for additional processing units</p>
+            </div>
+          </div>
+        </TabsContent>
+
         <TabsContent value="version" className="space-y-4 mt-0">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -450,7 +523,7 @@ const CatalogManagement: React.FC = () => {
               <TableHead>Version</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>License</TableHead>
-              <TableHead>Support</TableHead>
+              <TableHead>Pricing</TableHead>
               <TableHead>Demo</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -491,10 +564,18 @@ const CatalogManagement: React.FC = () => {
                     <TableCell>{getProductTypeBadge(item.product_type)}</TableCell>
                     <TableCell>{getLicenseModelBadge(item.license_model)}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="capitalize">{item.support_level}</Badge>
-                      {item.maintenance_included && (
-                        <Badge variant="outline" className="ml-1 text-xs">+Maint</Badge>
-                      )}
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-1 text-sm">
+                          <DollarSign className="h-3 w-3" />
+                          {item.base_price > 0 ? `$${item.base_price}` : 'Free'}
+                        </div>
+                        {item.credits_included > 0 && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Coins className="h-3 w-3" />
+                            {item.credits_included} credits
+                          </div>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
