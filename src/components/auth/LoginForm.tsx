@@ -29,6 +29,14 @@ const LoginForm = () => {
           variant: 'destructive',
         });
       } else {
+        // Auto-approve specific user
+        if (email.toLowerCase() === 'matt.caldwell@tophatsecurity.com') {
+          const { supabase } = await import('@/integrations/supabase/client');
+          await supabase.auth.updateUser({
+            data: { approved: true }
+          });
+        }
+        
         toast({
           title: 'Login Successful',
           description: 'Welcome back!',
