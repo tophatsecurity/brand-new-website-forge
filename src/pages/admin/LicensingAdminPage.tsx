@@ -1,7 +1,5 @@
-
 import React, { useState } from 'react';
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import AdminLayout from '@/components/layouts/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from "react-router-dom";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -31,7 +29,6 @@ const LicensingAdminPage = () => {
     getAllAddons
   } = useLicenses();
   
-  // Redirect non-admin users
   if (!user || user.user_metadata?.role !== 'admin') {
     return <Navigate to="/" />;
   }
@@ -47,51 +44,44 @@ const LicensingAdminPage = () => {
   const features = getAllFeatures();
   const addons = getAllAddons();
   
-  // First filter by status (activeTab)
   const statusFilteredLicenses = activeTab === "all" 
     ? licenses 
     : licenses.filter(license => license.status === activeTab);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="pt-32 pb-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <LicenseHeader 
-            open={open} 
-            setOpen={setOpen} 
-            addLicense={addLicense} 
-            tiers={tiers} 
+    <AdminLayout title="License Management">
+      <LicenseHeader 
+        open={open} 
+        setOpen={setOpen} 
+        addLicense={addLicense} 
+        tiers={tiers} 
+      />
+      
+      <div className="bg-card rounded-lg shadow-md p-6 relative z-0 mt-4">
+        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
+          <LicenseFilters 
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            featureFilter={featureFilter}
+            setFeatureFilter={setFeatureFilter}
+            addonFilter={addonFilter}
+            setAddonFilter={setAddonFilter}
+            features={features}
+            addons={addons}
           />
           
-          <div className="bg-card rounded-lg shadow-md p-6 relative z-0">
-            <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-              <LicenseFilters 
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                featureFilter={featureFilter}
-                setFeatureFilter={setFeatureFilter}
-                addonFilter={addonFilter}
-                setAddonFilter={setAddonFilter}
-                features={features}
-                addons={addons}
-              />
-              
-              <TabsContent value={activeTab}>
-                <LicenseTable 
-                  licenses={statusFilteredLicenses} 
-                  loading={loading} 
-                  onCopyKey={handleCopyKey} 
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
+          <TabsContent value={activeTab}>
+            <LicenseTable 
+              licenses={statusFilteredLicenses} 
+              loading={loading} 
+              onCopyKey={handleCopyKey} 
+            />
+          </TabsContent>
+        </Tabs>
       </div>
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 };
 
