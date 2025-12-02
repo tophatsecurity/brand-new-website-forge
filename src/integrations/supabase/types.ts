@@ -399,6 +399,59 @@ export type Database = {
         }
         Relationships: []
       }
+      user_credits: {
+        Row: {
+          catalog_id: string | null
+          created_at: string
+          credits_purchased: number
+          credits_remaining: number | null
+          credits_used: number
+          id: string
+          package_name: string | null
+          price_paid: number | null
+          purchased_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          catalog_id?: string | null
+          created_at?: string
+          credits_purchased?: number
+          credits_remaining?: number | null
+          credits_used?: number
+          id?: string
+          package_name?: string | null
+          price_paid?: number | null
+          purchased_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          catalog_id?: string | null
+          created_at?: string
+          credits_purchased?: number
+          credits_remaining?: number | null
+          credits_used?: number
+          id?: string
+          package_name?: string | null
+          price_paid?: number | null
+          purchased_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_credits_catalog_id_fkey"
+            columns: ["catalog_id"]
+            isOneToOne: false
+            referencedRelation: "license_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_permissions: {
         Row: {
           granted_at: string

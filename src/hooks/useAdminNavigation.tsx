@@ -64,6 +64,7 @@ export const useAdminNavigation = (isAdmin: boolean) => {
     { name: "Permissions", href: "/admin/permissions", icon: getIconComponent("Shield") },
     { name: "Downloads", href: "/admin/downloads", icon: getIconComponent("Download") },
     { name: "Licensing", href: "/admin/licensing", icon: getIconComponent("Key") },
+    { name: "Credits", href: "/admin/credits", icon: getIconComponent("Coins") },
   ];
   
   // Convert admin nav items to links format
