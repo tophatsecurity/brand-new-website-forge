@@ -46,19 +46,27 @@ export function AdminSidebar() {
         collapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Header with collapse button */}
+      {/* Header with collapse button and back to site */}
       <div className="p-4 border-b border-border flex items-center justify-between">
-        {!collapsed && (
-          <h2 className="font-semibold text-lg text-foreground">Admin Panel</h2>
-        )}
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className="ml-auto"
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => setCollapsed(!collapsed)}
+          >
+            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </Button>
+          {!collapsed && (
+            <h2 className="font-semibold text-lg text-foreground">Admin Panel</h2>
+          )}
+        </div>
+        <NavLink
+          to="/"
+          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </Button>
+          <Home className="h-4 w-4" />
+          {!collapsed && <span>Back to Site</span>}
+        </NavLink>
       </div>
 
       {/* User info at top */}
@@ -110,21 +118,8 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      {/* Bottom section with actions */}
-      <div className="border-t border-border p-2 space-y-1">
-        {/* Back to site */}
-        <NavLink
-          to="/"
-          className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
-            "hover:bg-accent hover:text-accent-foreground text-muted-foreground"
-          )}
-        >
-          <Home className="h-5 w-5 flex-shrink-0" />
-          {!collapsed && <span className="font-medium">Back to Site</span>}
-        </NavLink>
-
-        {/* Sign out */}
+      {/* Bottom section - Sign out only */}
+      <div className="border-t border-border p-2">
         <Button
           variant="ghost"
           onClick={signOut}
