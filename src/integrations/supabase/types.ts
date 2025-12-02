@@ -56,7 +56,12 @@ export type Database = {
           description: string
           id: string
           is_active: boolean
+          license_model: string
+          maintenance_included: boolean | null
           product_name: string
+          product_type: string
+          subscription_period_months: number | null
+          support_level: string | null
           updated_at: string
         }
         Insert: {
@@ -67,7 +72,12 @@ export type Database = {
           description: string
           id?: string
           is_active?: boolean
+          license_model?: string
+          maintenance_included?: boolean | null
           product_name: string
+          product_type?: string
+          subscription_period_months?: number | null
+          support_level?: string | null
           updated_at?: string
         }
         Update: {
@@ -78,7 +88,12 @@ export type Database = {
           description?: string
           id?: string
           is_active?: boolean
+          license_model?: string
+          maintenance_included?: boolean | null
           product_name?: string
+          product_type?: string
+          subscription_period_months?: number | null
+          support_level?: string | null
           updated_at?: string
         }
         Relationships: []

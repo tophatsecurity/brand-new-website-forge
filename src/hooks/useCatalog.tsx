@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+export type ProductType = 'software' | 'maintenance' | 'service' | 'bundle';
+export type LicenseModel = 'perpetual' | 'subscription' | 'demo';
+export type SupportLevel = 'standard' | 'premium' | 'enterprise';
+
 export type CatalogItem = {
   id: string;
   product_name: string;
@@ -10,6 +14,11 @@ export type CatalogItem = {
   demo_seats: number;
   demo_features: string[];
   is_active: boolean;
+  product_type: ProductType;
+  license_model: LicenseModel;
+  subscription_period_months: number | null;
+  maintenance_included: boolean;
+  support_level: SupportLevel;
   created_at: string;
   updated_at: string;
 };
@@ -21,6 +30,11 @@ export type CatalogFormData = {
   demo_seats: number;
   demo_features: string[];
   is_active: boolean;
+  product_type: ProductType;
+  license_model: LicenseModel;
+  subscription_period_months: number | null;
+  maintenance_included: boolean;
+  support_level: SupportLevel;
 };
 
 export const useCatalog = () => {
@@ -34,10 +48,11 @@ export const useCatalog = () => {
       const { data, error } = await supabase
         .from('license_catalog')
         .select('*')
+        .order('product_type')
         .order('product_name');
 
       if (error) throw error;
-      setCatalog(data || []);
+      setCatalog((data || []) as CatalogItem[]);
     } catch (err: any) {
       console.error('Error fetching catalog:', err);
       toast({
@@ -64,7 +79,7 @@ export const useCatalog = () => {
 
       if (error) throw error;
       
-      setCatalog(prev => [...prev, data]);
+      setCatalog(prev => [...prev, data as CatalogItem]);
       toast({
         title: "Product added",
         description: `${item.product_name} has been added to the catalog.`
@@ -92,7 +107,7 @@ export const useCatalog = () => {
 
       if (error) throw error;
       
-      setCatalog(prev => prev.map(c => c.id === id ? data : c));
+      setCatalog(prev => prev.map(c => c.id === id ? data as CatalogItem : c));
       toast({
         title: "Product updated",
         description: "Catalog item has been updated."
