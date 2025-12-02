@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import DesktopNav from './navbar/DesktopNav';
@@ -19,6 +19,10 @@ const Navbar = () => {
   const logoRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const [hasOverflow, setHasOverflow] = useState(false);
+  const location = useLocation();
+  
+  // Check if we're on an admin page (sidebar handles navigation)
+  const isAdminPage = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     // Set default role when user loads or changes
@@ -173,13 +177,13 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* Admin Navigation */}
-      {user && selectedRole === 'admin' && isAdmin && (
+      {/* Admin Navigation - hide on admin pages since sidebar handles it */}
+      {user && selectedRole === 'admin' && isAdmin && !isAdminPage && (
         <AdminNav user={user} className="z-30" />
       )}
       
-      {/* User Features Navigation */}
-      {user && (selectedRole === 'user' || !isAdmin) && user.user_metadata?.approved && (
+      {/* User Features Navigation - hide on admin pages */}
+      {user && (selectedRole === 'user' || !isAdmin) && user.user_metadata?.approved && !isAdminPage && (
         <SecondaryNav 
           user={user} 
           className="z-40" 
