@@ -41,6 +41,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { format, parseISO } from 'date-fns';
 import { 
   Plus, 
   Pencil, 
@@ -57,9 +59,12 @@ import {
   Briefcase,
   Layers,
   RefreshCw,
-  Infinity
+  Infinity,
+  Tag,
+  GitBranch,
+  FileText
 } from "lucide-react";
-import { useCatalog, type CatalogItem, type CatalogFormData, type ProductType, type LicenseModel, type SupportLevel } from "@/hooks/useCatalog";
+import { useCatalog, type CatalogItem, type CatalogFormData, type ProductType, type LicenseModel, type SupportLevel, type VersionStage } from "@/hooks/useCatalog";
 import { productFeatures } from "./license-data/productOptions";
 
 const productIcons: Record<string, React.ElementType> = {
@@ -74,27 +79,6 @@ const productIcons: Record<string, React.ElementType> = {
   'ORANGE Scada Simulator': Network,
 };
 
-const productTypeLabels: Record<ProductType, string> = {
-  software: 'Software',
-  maintenance: 'Maintenance',
-  service: 'Service',
-  bundle: 'Bundle'
-};
-
-const licenseModelLabels: Record<LicenseModel, string> = {
-  perpetual: 'Perpetual',
-  subscription: 'Subscription',
-  demo: 'Demo Only',
-  beta: 'Beta',
-  alpha: 'Alpha'
-};
-
-const supportLevelLabels: Record<SupportLevel, string> = {
-  standard: 'Standard',
-  premium: 'Premium',
-  enterprise: 'Enterprise'
-};
-
 const defaultFormData: CatalogFormData = {
   product_name: '',
   description: '',
@@ -106,7 +90,11 @@ const defaultFormData: CatalogFormData = {
   license_model: 'subscription',
   subscription_period_months: 12,
   maintenance_included: false,
-  support_level: 'standard'
+  support_level: 'standard',
+  version: '1.0.0',
+  version_stage: 'stable',
+  release_date: new Date().toISOString(),
+  changelog: null
 };
 
 const CatalogManagement: React.FC = () => {
@@ -134,7 +122,11 @@ const CatalogManagement: React.FC = () => {
       license_model: item.license_model,
       subscription_period_months: item.subscription_period_months,
       maintenance_included: item.maintenance_included,
-      support_level: item.support_level
+      support_level: item.support_level,
+      version: item.version || '1.0.0',
+      version_stage: item.version_stage || 'stable',
+      release_date: item.release_date,
+      changelog: item.changelog
     });
   };
 
@@ -179,6 +171,21 @@ const CatalogManagement: React.FC = () => {
     }
   };
 
+  const getVersionStageBadge = (stage: VersionStage) => {
+    switch (stage) {
+      case 'alpha':
+        return <Badge className="bg-red-500 hover:bg-red-600">Alpha</Badge>;
+      case 'beta':
+        return <Badge className="bg-cyan-500 hover:bg-cyan-600">Beta</Badge>;
+      case 'rc':
+        return <Badge className="bg-orange-500 hover:bg-orange-600">RC</Badge>;
+      case 'stable':
+        return <Badge className="bg-green-500 hover:bg-green-600">Stable</Badge>;
+      case 'deprecated':
+        return <Badge variant="secondary" className="bg-gray-500 hover:bg-gray-600 text-white">Deprecated</Badge>;
+    }
+  };
+
   const getProductTypeBadge = (type: ProductType) => {
     switch (type) {
       case 'software':
@@ -193,149 +200,204 @@ const CatalogManagement: React.FC = () => {
   };
 
   const renderForm = () => (
-    <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="product_name">Product Name</Label>
-          <Input
-            id="product_name"
-            value={formData.product_name}
-            onChange={(e) => setFormData(prev => ({ ...prev, product_name: e.target.value }))}
-            placeholder="e.g., SeekCap"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="product_type">Product Type</Label>
-          <Select 
-            value={formData.product_type} 
-            onValueChange={(value: ProductType) => setFormData(prev => ({ ...prev, product_type: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="software">Software</SelectItem>
-              <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="service">Service</SelectItem>
-              <SelectItem value="bundle">Bundle</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+    <Tabs defaultValue="general" className="w-full">
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="general">General</TabsTrigger>
+        <TabsTrigger value="licensing">Licensing</TabsTrigger>
+        <TabsTrigger value="version">Version</TabsTrigger>
+      </TabsList>
+      
+      <div className="max-h-[50vh] overflow-y-auto pr-2 mt-4">
+        <TabsContent value="general" className="space-y-4 mt-0">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="product_name">Product Name</Label>
+              <Input
+                id="product_name"
+                value={formData.product_name}
+                onChange={(e) => setFormData(prev => ({ ...prev, product_name: e.target.value }))}
+                placeholder="e.g., SeekCap"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="product_type">Product Type</Label>
+              <Select 
+                value={formData.product_type} 
+                onValueChange={(value: ProductType) => setFormData(prev => ({ ...prev, product_type: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="software">Software</SelectItem>
+                  <SelectItem value="maintenance">Maintenance</SelectItem>
+                  <SelectItem value="service">Service</SelectItem>
+                  <SelectItem value="bundle">Bundle</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          placeholder="Product description..."
-          rows={2}
-        />
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              placeholder="Product description..."
+              rows={2}
+            />
+          </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="license_model">License Model</Label>
-          <Select 
-            value={formData.license_model} 
-            onValueChange={(value: LicenseModel) => setFormData(prev => ({ ...prev, license_model: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="perpetual">Perpetual</SelectItem>
-              <SelectItem value="subscription">Subscription</SelectItem>
-              <SelectItem value="demo">Demo Only</SelectItem>
-              <SelectItem value="beta">Beta</SelectItem>
-              <SelectItem value="alpha">Alpha</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="support_level">Support Level</Label>
-          <Select 
-            value={formData.support_level} 
-            onValueChange={(value: SupportLevel) => setFormData(prev => ({ ...prev, support_level: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="standard">Standard</SelectItem>
-              <SelectItem value="premium">Premium</SelectItem>
-              <SelectItem value="enterprise">Enterprise</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="demo_duration">Demo Duration (days)</Label>
+              <Input
+                id="demo_duration"
+                type="number"
+                min="1"
+                value={formData.demo_duration_days}
+                onChange={(e) => setFormData(prev => ({ ...prev, demo_duration_days: parseInt(e.target.value) || 14 }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="demo_seats">Demo Seats</Label>
+              <Input
+                id="demo_seats"
+                type="number"
+                min="1"
+                value={formData.demo_seats}
+                onChange={(e) => setFormData(prev => ({ ...prev, demo_seats: parseInt(e.target.value) || 1 }))}
+              />
+            </div>
+          </div>
 
-      {formData.license_model === 'subscription' && (
-        <div className="space-y-2">
-          <Label htmlFor="subscription_period">Subscription Period (months)</Label>
-          <Input
-            id="subscription_period"
-            type="number"
-            min="1"
-            value={formData.subscription_period_months || 12}
-            onChange={(e) => setFormData(prev => ({ ...prev, subscription_period_months: parseInt(e.target.value) || 12 }))}
-          />
-        </div>
-      )}
+          <div className="space-y-2">
+            <Label>Demo Features</Label>
+            <MultiSelect
+              options={productFeatures}
+              selected={formData.demo_features}
+              onChange={(features) => setFormData(prev => ({ ...prev, demo_features: features }))}
+              placeholder="Select demo features"
+            />
+          </div>
+        </TabsContent>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="demo_duration">Demo Duration (days)</Label>
-          <Input
-            id="demo_duration"
-            type="number"
-            min="1"
-            value={formData.demo_duration_days}
-            onChange={(e) => setFormData(prev => ({ ...prev, demo_duration_days: parseInt(e.target.value) || 14 }))}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="demo_seats">Demo Seats</Label>
-          <Input
-            id="demo_seats"
-            type="number"
-            min="1"
-            value={formData.demo_seats}
-            onChange={(e) => setFormData(prev => ({ ...prev, demo_seats: parseInt(e.target.value) || 1 }))}
-          />
-        </div>
-      </div>
+        <TabsContent value="licensing" className="space-y-4 mt-0">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="license_model">License Model</Label>
+              <Select 
+                value={formData.license_model} 
+                onValueChange={(value: LicenseModel) => setFormData(prev => ({ ...prev, license_model: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="perpetual">Perpetual</SelectItem>
+                  <SelectItem value="subscription">Subscription</SelectItem>
+                  <SelectItem value="demo">Demo Only</SelectItem>
+                  <SelectItem value="beta">Beta</SelectItem>
+                  <SelectItem value="alpha">Alpha</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="support_level">Support Level</Label>
+              <Select 
+                value={formData.support_level} 
+                onValueChange={(value: SupportLevel) => setFormData(prev => ({ ...prev, support_level: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="standard">Standard</SelectItem>
+                  <SelectItem value="premium">Premium</SelectItem>
+                  <SelectItem value="enterprise">Enterprise</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-      <div className="flex items-center gap-6">
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="is_active"
-            checked={formData.is_active}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
-          />
-          <Label htmlFor="is_active">Active in catalog</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="maintenance_included"
-            checked={formData.maintenance_included}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, maintenance_included: checked }))}
-          />
-          <Label htmlFor="maintenance_included">Maintenance included</Label>
-        </div>
-      </div>
+          {formData.license_model === 'subscription' && (
+            <div className="space-y-2">
+              <Label htmlFor="subscription_period">Subscription Period (months)</Label>
+              <Input
+                id="subscription_period"
+                type="number"
+                min="1"
+                value={formData.subscription_period_months || 12}
+                onChange={(e) => setFormData(prev => ({ ...prev, subscription_period_months: parseInt(e.target.value) || 12 }))}
+              />
+            </div>
+          )}
 
-      <div className="space-y-2">
-        <Label>Demo Features</Label>
-        <MultiSelect
-          options={productFeatures}
-          selected={formData.demo_features}
-          onChange={(features) => setFormData(prev => ({ ...prev, demo_features: features }))}
-          placeholder="Select demo features"
-        />
+          <div className="flex items-center gap-6">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="is_active"
+                checked={formData.is_active}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
+              />
+              <Label htmlFor="is_active">Active in catalog</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="maintenance_included"
+                checked={formData.maintenance_included}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, maintenance_included: checked }))}
+              />
+              <Label htmlFor="maintenance_included">Maintenance included</Label>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="version" className="space-y-4 mt-0">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="version">Version</Label>
+              <Input
+                id="version"
+                value={formData.version}
+                onChange={(e) => setFormData(prev => ({ ...prev, version: e.target.value }))}
+                placeholder="e.g., 1.0.0"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="version_stage">Version Stage</Label>
+              <Select 
+                value={formData.version_stage} 
+                onValueChange={(value: VersionStage) => setFormData(prev => ({ ...prev, version_stage: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="alpha">Alpha</SelectItem>
+                  <SelectItem value="beta">Beta</SelectItem>
+                  <SelectItem value="rc">Release Candidate</SelectItem>
+                  <SelectItem value="stable">Stable</SelectItem>
+                  <SelectItem value="deprecated">Deprecated</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="changelog">Changelog / Release Notes</Label>
+            <Textarea
+              id="changelog"
+              value={formData.changelog || ''}
+              onChange={(e) => setFormData(prev => ({ ...prev, changelog: e.target.value || null }))}
+              placeholder="What's new in this version..."
+              rows={4}
+            />
+          </div>
+        </TabsContent>
       </div>
-    </div>
+    </Tabs>
   );
 
   if (loading) {
@@ -360,7 +422,7 @@ const CatalogManagement: React.FC = () => {
               Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[550px]">
+          <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle>Add New Product</DialogTitle>
               <DialogDescription>
@@ -384,8 +446,9 @@ const CatalogManagement: React.FC = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Product</TableHead>
+              <TableHead>Version</TableHead>
               <TableHead>Type</TableHead>
-              <TableHead>License Model</TableHead>
+              <TableHead>License</TableHead>
               <TableHead>Support</TableHead>
               <TableHead>Demo</TableHead>
               <TableHead>Status</TableHead>
@@ -395,7 +458,7 @@ const CatalogManagement: React.FC = () => {
           <TableBody>
             {catalog.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-12">
+                <TableCell colSpan={8} className="text-center py-12">
                   <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <h3 className="text-lg font-medium">No products in catalog</h3>
                   <p className="text-muted-foreground">Add your first product to get started.</p>
@@ -411,8 +474,17 @@ const CatalogManagement: React.FC = () => {
                         <IconComponent className="h-4 w-4 text-primary" />
                         <div>
                           <p className="font-medium">{item.product_name}</p>
-                          <p className="text-xs text-muted-foreground truncate max-w-[200px]">{item.description}</p>
+                          <p className="text-xs text-muted-foreground truncate max-w-[180px]">{item.description}</p>
                         </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-1">
+                          <Tag className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-sm font-mono">{item.version}</span>
+                        </div>
+                        {getVersionStageBadge(item.version_stage)}
                       </div>
                     </TableCell>
                     <TableCell>{getProductTypeBadge(item.product_type)}</TableCell>
@@ -445,7 +517,7 @@ const CatalogManagement: React.FC = () => {
                               <Pencil className="h-4 w-4" />
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="sm:max-w-[550px]">
+                          <DialogContent className="sm:max-w-[600px]">
                             <DialogHeader>
                               <DialogTitle>Edit Product</DialogTitle>
                               <DialogDescription>Update product details.</DialogDescription>

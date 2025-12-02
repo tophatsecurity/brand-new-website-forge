@@ -49,6 +49,7 @@ export type Database = {
       }
       license_catalog: {
         Row: {
+          changelog: string | null
           created_at: string
           demo_duration_days: number
           demo_features: string[] | null
@@ -56,15 +57,21 @@ export type Database = {
           description: string
           id: string
           is_active: boolean
+          latest_stable_version: string | null
           license_model: string
           maintenance_included: boolean | null
+          min_version: string | null
           product_name: string
           product_type: string
+          release_date: string | null
           subscription_period_months: number | null
           support_level: string | null
           updated_at: string
+          version: string | null
+          version_stage: string | null
         }
         Insert: {
+          changelog?: string | null
           created_at?: string
           demo_duration_days?: number
           demo_features?: string[] | null
@@ -72,15 +79,21 @@ export type Database = {
           description: string
           id?: string
           is_active?: boolean
+          latest_stable_version?: string | null
           license_model?: string
           maintenance_included?: boolean | null
+          min_version?: string | null
           product_name: string
           product_type?: string
+          release_date?: string | null
           subscription_period_months?: number | null
           support_level?: string | null
           updated_at?: string
+          version?: string | null
+          version_stage?: string | null
         }
         Update: {
+          changelog?: string | null
           created_at?: string
           demo_duration_days?: number
           demo_features?: string[] | null
@@ -88,13 +101,18 @@ export type Database = {
           description?: string
           id?: string
           is_active?: boolean
+          latest_stable_version?: string | null
           license_model?: string
           maintenance_included?: boolean | null
+          min_version?: string | null
           product_name?: string
           product_type?: string
+          release_date?: string | null
           subscription_period_months?: number | null
           support_level?: string | null
           updated_at?: string
+          version?: string | null
+          version_stage?: string | null
         }
         Relationships: []
       }

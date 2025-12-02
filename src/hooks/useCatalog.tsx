@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 export type ProductType = 'software' | 'maintenance' | 'service' | 'bundle';
 export type LicenseModel = 'perpetual' | 'subscription' | 'demo' | 'beta' | 'alpha';
 export type SupportLevel = 'standard' | 'premium' | 'enterprise';
+export type VersionStage = 'alpha' | 'beta' | 'rc' | 'stable' | 'deprecated';
 
 export type CatalogItem = {
   id: string;
@@ -19,6 +20,12 @@ export type CatalogItem = {
   subscription_period_months: number | null;
   maintenance_included: boolean;
   support_level: SupportLevel;
+  version: string;
+  version_stage: VersionStage;
+  release_date: string | null;
+  changelog: string | null;
+  min_version: string | null;
+  latest_stable_version: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -35,6 +42,10 @@ export type CatalogFormData = {
   subscription_period_months: number | null;
   maintenance_included: boolean;
   support_level: SupportLevel;
+  version: string;
+  version_stage: VersionStage;
+  release_date: string | null;
+  changelog: string | null;
 };
 
 export const useCatalog = () => {
