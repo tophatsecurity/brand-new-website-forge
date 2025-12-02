@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -15,32 +14,49 @@ export const useUserFetch = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data: { users }, error } = await supabase.auth.admin.listUsers();
-      if (error) throw error;
+      // Get current session for auth header
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('No session');
+      }
 
-      const { data: perms } = await supabase
-        .from("user_permissions")
-        .select("*");
+      // Call edge function to list users
+      const response = await fetch(
+        `https://saveabkhpaemynlfcgcy.supabase.co/functions/v1/admin-list-users`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+        }
+      );
 
-      console.log('Fetched users:', users);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch users');
+      }
+
+      const data = await response.json();
+      
+      console.log('Fetched users:', data.users);
 
       setUsers(
-        users.map((user: any) => ({
+        data.users.map((user: any) => ({
           id: user.id,
           email: user.email,
           user_metadata: user.user_metadata,
           banned_until: user.banned_until,
           createdAt: user.created_at ? new Date(user.created_at).toLocaleString() : 'Unknown',
-          permissions: perms
-            ? perms.filter((p) => p.user_id === user.id)
-            : [],
+          permissions: user.permissions || [],
         }))
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching users:', error);
       toast({
         title: 'Error fetching users',
-        description: 'Please try again later.',
+        description: error.message || 'Please try again later.',
         variant: 'destructive',
       });
     } finally {

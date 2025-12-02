@@ -1,26 +1,38 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+
+const ADMIN_ACTIONS_URL = 'https://saveabkhpaemynlfcgcy.supabase.co/functions/v1/admin-user-actions';
 
 export const useUserStatusActions = (fetchUsers: () => Promise<void>) => {
   const { toast } = useToast();
 
+  const callAdminAction = async (action: string, payload: any) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error('No session');
+
+    const response = await fetch(ADMIN_ACTIONS_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ action, ...payload }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Action failed');
+    }
+
+    return response.json();
+  };
+
   const handleDisableUser = async (userId: string, isDisabled: boolean) => {
     try {
-      let userAttributes: any = {};
-      
-      if (isDisabled) {
-        // Set a future date to effectively ban the user
-        const futureDate = new Date();
-        futureDate.setFullYear(2100);
-        userAttributes.ban_duration = 'forever';
-      } else {
-        // To unban, we don't set a ban_duration
-      }
-      
-      const { error } = await supabase.auth.admin.updateUserById(userId, userAttributes);
-      
-      if (error) throw error;
+      await callAdminAction('ban', {
+        userId,
+        banDuration: isDisabled ? 'forever' : 'none'
+      });
       
       toast({
         title: isDisabled ? 'User disabled' : 'User enabled',
@@ -64,52 +76,7 @@ export const useUserStatusActions = (fetchUsers: () => Promise<void>) => {
 
   const handleUpdateRole = async (userId: string, role: "admin" | "user" | "moderator") => {
     try {
-      // First update auth metadata
-      const { error: authError } = await supabase.auth.admin.updateUserById(userId, {
-        user_metadata: { role }
-      });
-      
-      if (authError) throw authError;
-      
-      // Then update the user_roles table
-      if (role === 'admin') {
-        // Get the user's email first
-        const { data: userData, error: userError } = await supabase.auth.admin.getUserById(userId);
-        
-        if (userError) throw userError;
-        
-        const userEmail = userData.user?.email;
-        
-        if (!userEmail) {
-          throw new Error('User email not found');
-        }
-        
-        // Promote user to admin using our custom function
-        const { error: promoteError } = await supabase.rpc('promote_to_admin', { 
-          user_email: userEmail 
-        });
-        
-        if (promoteError) throw promoteError;
-      } else {
-        // For other roles, remove admin role if exists and add the new role
-        const { error: deleteError } = await supabase
-          .from('user_roles')
-          .delete()
-          .eq('user_id', userId)
-          .eq('role', 'admin');
-          
-        if (deleteError) throw deleteError;
-        
-        // Insert the new role
-        const { error: insertError } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: userId,
-            role
-          });
-          
-        if (insertError) throw insertError;
-      }
+      await callAdminAction('updateRole', { userId, role });
       
       toast({
         title: 'User role updated',

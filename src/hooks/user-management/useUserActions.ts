@@ -1,20 +1,39 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+
+const ADMIN_ACTIONS_URL = 'https://saveabkhpaemynlfcgcy.supabase.co/functions/v1/admin-user-actions';
 
 export const useUserActions = (fetchUsers: () => Promise<void>) => {
   const { toast } = useToast();
 
+  const callAdminAction = async (action: string, payload: any) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error('No session');
+
+    const response = await fetch(ADMIN_ACTIONS_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ action, ...payload }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Action failed');
+    }
+
+    return response.json();
+  };
+
   const handleAddUser = async (values: { email: string, password: string }) => {
     try {
-      const { data, error } = await supabase.auth.admin.createUser({
+      await callAdminAction('create', {
         email: values.email,
         password: values.password,
-        email_confirm: true,
-        user_metadata: { role: 'user', approved: false }
+        metadata: { role: 'user', approved: false }
       });
-
-      if (error) throw error;
 
       toast({
         title: 'User created successfully',
@@ -34,10 +53,11 @@ export const useUserActions = (fetchUsers: () => Promise<void>) => {
 
   const handleApproveUser = async (userId: string) => {
     try {
-      const { error } = await supabase.auth.admin.updateUserById(userId, {
-        user_metadata: { approved: true }
+      await callAdminAction('update', {
+        userId,
+        metadata: { approved: true }
       });
-      if (error) throw error;
+
       toast({
         title: 'User approved',
         description: 'The user can now access restricted content.',
@@ -55,10 +75,11 @@ export const useUserActions = (fetchUsers: () => Promise<void>) => {
 
   const handleRejectUser = async (userId: string) => {
     try {
-      const { error } = await supabase.auth.admin.updateUserById(userId, {
-        user_metadata: { approved: false }
+      await callAdminAction('update', {
+        userId,
+        metadata: { approved: false }
       });
-      if (error) throw error;
+
       toast({
         title: 'User rejected',
         description: 'The user access has been denied.',
@@ -76,8 +97,8 @@ export const useUserActions = (fetchUsers: () => Promise<void>) => {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      const { error } = await supabase.auth.admin.deleteUser(userId);
-      if (error) throw error;
+      await callAdminAction('delete', { userId });
+
       toast({
         title: 'User deleted',
         description: 'The user has been permanently deleted.',
