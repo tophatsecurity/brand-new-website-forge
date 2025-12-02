@@ -8,11 +8,15 @@ import {
   Wrench,
   Home,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 
 const navItems = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
@@ -26,6 +30,15 @@ const navItems = [
 export function AdminSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
+
+  const userEmail = user?.email || '';
+  const userInitials = userEmail
+    .split('@')[0]
+    .split('.')
+    .map(part => part[0]?.toUpperCase())
+    .join('')
+    .slice(0, 2) || 'U';
 
   return (
     <aside 
@@ -34,6 +47,7 @@ export function AdminSidebar() {
         collapsed ? "w-16" : "w-64"
       )}
     >
+      {/* Header with collapse button */}
       <div className="p-4 border-b border-border flex items-center justify-between">
         {!collapsed && (
           <h2 className="font-semibold text-lg text-foreground">Admin Panel</h2>
@@ -48,7 +62,8 @@ export function AdminSidebar() {
         </Button>
       </div>
       
-      <nav className="flex-1 p-2 space-y-1">
+      {/* Navigation items */}
+      <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.url || 
             (item.url !== '/admin' && location.pathname.startsWith(item.url));
@@ -72,17 +87,60 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      <div className="p-2 border-t border-border">
-        <NavLink
-          to="/"
-          className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
-            "hover:bg-accent hover:text-accent-foreground text-muted-foreground"
-          )}
-        >
-          <Home className="h-5 w-5 flex-shrink-0" />
-          {!collapsed && <span className="font-medium">Back to Site</span>}
-        </NavLink>
+      {/* Bottom section with user info and actions */}
+      <div className="border-t border-border">
+        {/* Back to site */}
+        <div className="p-2">
+          <NavLink
+            to="/"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
+              "hover:bg-accent hover:text-accent-foreground text-muted-foreground"
+            )}
+          >
+            <Home className="h-5 w-5 flex-shrink-0" />
+            {!collapsed && <span className="font-medium">Back to Site</span>}
+          </NavLink>
+        </div>
+
+        <Separator />
+
+        {/* User info and logout */}
+        <div className="p-3">
+          <div className={cn(
+            "flex items-center gap-3",
+            collapsed ? "justify-center" : ""
+          )}>
+            <Avatar className="h-9 w-9 flex-shrink-0">
+              <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
+                {userInitials}
+              </AvatarFallback>
+            </Avatar>
+            {!collapsed && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">
+                  {userEmail.split('@')[0]}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  Admin
+                </p>
+              </div>
+            )}
+          </div>
+          
+          <Button
+            variant="ghost"
+            size={collapsed ? "icon" : "sm"}
+            onClick={signOut}
+            className={cn(
+              "mt-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10",
+              collapsed ? "w-full justify-center" : "w-full justify-start"
+            )}
+          >
+            <LogOut className="h-4 w-4 flex-shrink-0" />
+            {!collapsed && <span className="ml-2">Sign out</span>}
+          </Button>
+        </div>
       </div>
     </aside>
   );
