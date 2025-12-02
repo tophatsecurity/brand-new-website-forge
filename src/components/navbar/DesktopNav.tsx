@@ -65,7 +65,7 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
             
             {/* User email and avatar */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground hidden lg:inline">
+              <span className="text-sm text-muted-foreground hidden lg:inline max-w-[200px] truncate">
                 {user.email}
               </span>
               <UserNavMenu user={user} signOut={signOut} isAdmin={isAdmin} />
