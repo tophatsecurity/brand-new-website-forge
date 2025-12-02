@@ -9,7 +9,8 @@ import {
   Home,
   ChevronLeft,
   ChevronRight,
-  LogOut
+  LogOut,
+  Package
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ const navItems = [
   { title: 'Users', url: '/admin/users', icon: Users },
   { title: 'Permissions', url: '/admin/permissions', icon: Shield },
   { title: 'Licensing', url: '/admin/licensing', icon: Key },
+  { title: 'Catalog', url: '/admin/catalog', icon: Package },
   { title: 'Downloads', url: '/admin/downloads', icon: Download },
   { title: 'Actions', url: '/admin/actions', icon: Wrench },
 ];
