@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -12,15 +11,20 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addDays } from 'date-fns';
 import {
   Package,
   Gift,
   Copy,
-  Calendar
+  Calendar,
+  Key,
+  Sparkles,
+  CheckCircle2,
+  Loader2
 } from "lucide-react";
 import {
   Tooltip,
@@ -28,14 +32,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type License = {
   id: string;
   license_key: string;
   product_name: string;
-  tier: {
-    name: string;
-  };
+  tier: { name: string } | null;
   tier_name: string;
   assigned_to: string | null;
   expiry_date: string;
@@ -45,22 +48,40 @@ type License = {
   addons: string[];
 };
 
+type CatalogItem = {
+  id: string;
+  product_name: string;
+  description: string;
+  demo_duration_days: number;
+  demo_seats: number;
+  demo_features: string[];
+};
+
 const Licensing = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [licenses, setLicenses] = useState<License[]>([]);
+  const [catalog, setCatalog] = useState<CatalogItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [generatingDemo, setGeneratingDemo] = useState<string | null>(null);
   
+  // Check if user already has a license for a product
+  const hasLicenseForProduct = (productName: string) => {
+    return licenses.some(l => l.product_name === productName);
+  };
+
   useEffect(() => {
-    const fetchUserLicenses = async () => {
+    const fetchData = async () => {
       if (!user) {
         setLoading(false);
+        setCatalogLoading(false);
         return;
       }
-      
+
+      // Fetch user licenses
       try {
-        // Only fetch licenses assigned to the current user's email
-        const { data, error } = await supabase
+        const { data: licenseData, error: licenseError } = await supabase
           .from('product_licenses')
           .select(`
             id,
@@ -74,35 +95,46 @@ const Licensing = () => {
             features,
             addons
           `)
-          .eq('assigned_to', user.email)
-          .eq('status', 'active');
+          .eq('assigned_to', user.email);
           
-        if (error) {
-          console.error('Error fetching licenses:', error);
-          toast({
-            title: "Error loading licenses",
-            description: error.message,
-            variant: "destructive"
-          });
+        if (licenseError) {
+          console.error('Error fetching licenses:', licenseError);
         } else {
-          // Process the data to make it easier to use in the UI
-          const processedData = data.map(license => ({
+          const processedData = (licenseData || []).map(license => ({
             ...license,
-            tier_name: license.tier?.name || 'Unknown',
+            tier_name: license.tier?.name || 'Demo',
             features: Array.isArray(license.features) ? license.features : [],
             addons: Array.isArray(license.addons) ? license.addons : []
           }));
-          setLicenses(processedData || []);
+          setLicenses(processedData);
         }
       } catch (err) {
         console.error('Exception fetching license data:', err);
       } finally {
         setLoading(false);
       }
+
+      // Fetch catalog
+      try {
+        const { data: catalogData, error: catalogError } = await supabase
+          .from('license_catalog')
+          .select('*')
+          .eq('is_active', true);
+          
+        if (catalogError) {
+          console.error('Error fetching catalog:', catalogError);
+        } else {
+          setCatalog(catalogData || []);
+        }
+      } catch (err) {
+        console.error('Exception fetching catalog:', err);
+      } finally {
+        setCatalogLoading(false);
+      }
     };
     
-    fetchUserLicenses();
-  }, [user, toast]);
+    fetchData();
+  }, [user]);
 
   const handleCopyKey = (key: string) => {
     navigator.clipboard.writeText(key);
@@ -110,6 +142,105 @@ const Licensing = () => {
       title: "Copied to clipboard",
       description: "License key copied to clipboard."
     });
+  };
+
+  const generateDemoLicense = async (catalogItem: CatalogItem) => {
+    if (!user?.email) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to generate a demo license.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setGeneratingDemo(catalogItem.id);
+
+    try {
+      // Get a demo tier (or create reference to one)
+      const { data: tiers } = await supabase
+        .from('license_tiers')
+        .select('id')
+        .eq('name', 'Demo')
+        .single();
+
+      let tierId = tiers?.id;
+
+      // If no Demo tier exists, get any tier
+      if (!tierId) {
+        const { data: anyTier } = await supabase
+          .from('license_tiers')
+          .select('id')
+          .limit(1)
+          .single();
+        tierId = anyTier?.id;
+      }
+
+      if (!tierId) {
+        throw new Error('No license tier available');
+      }
+
+      // Generate a unique license key
+      const licenseKey = `DEMO-${catalogItem.product_name.toUpperCase().substring(0, 4)}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
+      // Calculate expiry date
+      const expiryDate = addDays(new Date(), catalogItem.demo_duration_days);
+
+      // Create the demo license
+      const { data: newLicense, error } = await supabase
+        .from('product_licenses')
+        .insert({
+          license_key: licenseKey,
+          product_name: catalogItem.product_name,
+          tier_id: tierId,
+          assigned_to: user.email,
+          seats: catalogItem.demo_seats,
+          expiry_date: expiryDate.toISOString(),
+          status: 'active',
+          features: catalogItem.demo_features,
+          addons: []
+        })
+        .select(`
+          id,
+          license_key,
+          product_name,
+          tier:license_tiers(name),
+          assigned_to,
+          seats,
+          expiry_date,
+          status,
+          features,
+          addons
+        `)
+        .single();
+
+      if (error) throw error;
+
+      // Add to local state
+      const processedLicense = {
+        ...newLicense,
+        tier_name: newLicense.tier?.name || 'Demo',
+        features: Array.isArray(newLicense.features) ? newLicense.features : [],
+        addons: Array.isArray(newLicense.addons) ? newLicense.addons : []
+      };
+      
+      setLicenses(prev => [...prev, processedLicense]);
+
+      toast({
+        title: "Demo license generated!",
+        description: `Your ${catalogItem.demo_duration_days}-day demo license for ${catalogItem.product_name} is now active.`
+      });
+
+    } catch (err: any) {
+      console.error('Error generating demo license:', err);
+      toast({
+        title: "Failed to generate demo",
+        description: err.message || "An error occurred while generating your demo license.",
+        variant: "destructive"
+      });
+    } finally {
+      setGeneratingDemo(null);
+    }
   };
 
   const renderFeatureIcons = (license: License) => {
@@ -162,13 +293,29 @@ const Licensing = () => {
     );
   };
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800">Active</Badge>;
+      case 'expired':
+        return <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800">Expired</Badge>;
+      case 'suspended':
+        return <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800">Suspended</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-32 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">License Management</h1>
+            <div className="flex items-center gap-3">
+              <Key className="h-8 w-8 text-primary" />
+              <h1 className="text-3xl font-bold">License Management</h1>
+            </div>
             {user?.user_metadata?.role === 'admin' && (
               <Button asChild>
                 <a href="/admin/licensing">Admin Licenses</a>
@@ -176,80 +323,183 @@ const Licensing = () => {
             )}
           </div>
 
-          <div className="bg-card rounded-lg shadow-md p-6">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead>License Key</TableHead>
-                    <TableHead>Tier</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Expiry Date</TableHead>
-                    <TableHead>Seats</TableHead>
-                    <TableHead>Features & Add-ons</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
-                        Loading your licenses...
-                      </TableCell>
-                    </TableRow>
-                  ) : licenses.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
-                        No active licenses found. Contact the administrator to request a license.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    licenses.map((license) => (
-                      <TableRow key={license.id}>
-                        <TableCell className="font-medium">
-                          {license.product_name}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <code className="bg-muted px-2 py-1 rounded text-xs max-w-[120px] truncate">
-                              {license.license_key}
-                            </code>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-6 w-6"
-                              onClick={() => handleCopyKey(license.license_key)}
-                            >
-                              <Copy className="h-3 w-3" />
-                            </Button>
+          <Tabs defaultValue="catalog" className="space-y-6">
+            <TabsList className="grid w-full max-w-md grid-cols-2">
+              <TabsTrigger value="catalog" className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                Product Catalog
+              </TabsTrigger>
+              <TabsTrigger value="licenses" className="flex items-center gap-2">
+                <Key className="h-4 w-4" />
+                My Licenses ({licenses.length})
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="catalog" className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                {catalogLoading ? (
+                  <div className="col-span-2 text-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+                    <p className="mt-2 text-muted-foreground">Loading products...</p>
+                  </div>
+                ) : catalog.length === 0 ? (
+                  <div className="col-span-2 text-center py-12 bg-card rounded-lg">
+                    <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium">No products available</h3>
+                    <p className="text-muted-foreground">Check back later for available products.</p>
+                  </div>
+                ) : (
+                  catalog.map((item) => {
+                    const hasLicense = hasLicenseForProduct(item.product_name);
+                    return (
+                      <Card key={item.id} className="flex flex-col">
+                        <CardHeader>
+                          <CardTitle className="flex items-center justify-between">
+                            {item.product_name}
+                            {hasLicense && (
+                              <Badge variant="secondary" className="ml-2">
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                Licensed
+                              </Badge>
+                            )}
+                          </CardTitle>
+                          <CardDescription>{item.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1">
+                          <div className="space-y-2 text-sm">
+                            <div className="flex items-center text-muted-foreground">
+                              <Calendar className="h-4 w-4 mr-2" />
+                              {item.demo_duration_days}-day demo period
+                            </div>
+                            <div className="flex items-center text-muted-foreground">
+                              <Package className="h-4 w-4 mr-2" />
+                              {item.demo_seats} seat{item.demo_seats > 1 ? 's' : ''} included
+                            </div>
+                            {item.demo_features.length > 0 && (
+                              <div className="pt-2">
+                                <p className="text-xs font-medium text-muted-foreground mb-1">Demo Features:</p>
+                                <div className="flex flex-wrap gap-1">
+                                  {item.demo_features.map(feature => (
+                                    <Badge key={feature} variant="outline" className="text-xs">
+                                      {feature.replace(/_/g, ' ')}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
-                        </TableCell>
-                        <TableCell>{license.tier_name}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
-                            Active
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                            {format(parseISO(license.expiry_date), 'MMM dd, yyyy')}
-                          </div>
-                        </TableCell>
-                        <TableCell>{license.seats}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center">
-                            {renderFeatureIcons(license)}
-                            {renderAddonIcons(license)}
-                          </div>
-                        </TableCell>
+                        </CardContent>
+                        <CardFooter>
+                          <Button 
+                            className="w-full" 
+                            onClick={() => generateDemoLicense(item)}
+                            disabled={generatingDemo === item.id || hasLicense}
+                          >
+                            {generatingDemo === item.id ? (
+                              <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Generating...
+                              </>
+                            ) : hasLicense ? (
+                              <>
+                                <CheckCircle2 className="h-4 w-4 mr-2" />
+                                Already Licensed
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="h-4 w-4 mr-2" />
+                                Start Free Demo
+                              </>
+                            )}
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    );
+                  })
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="licenses">
+              <div className="bg-card rounded-lg shadow-md p-6">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Product</TableHead>
+                        <TableHead>License Key</TableHead>
+                        <TableHead>Tier</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Expiry Date</TableHead>
+                        <TableHead>Seats</TableHead>
+                        <TableHead>Features & Add-ons</TableHead>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
+                    </TableHeader>
+                    <TableBody>
+                      {loading ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8">
+                            <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                            <p className="mt-2 text-muted-foreground">Loading your licenses...</p>
+                          </TableCell>
+                        </TableRow>
+                      ) : licenses.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8">
+                            <Key className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                            <p className="font-medium">No licenses yet</p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              Start a free demo from the Product Catalog tab.
+                            </p>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        licenses.map((license) => (
+                          <TableRow key={license.id}>
+                            <TableCell className="font-medium">
+                              {license.product_name}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1">
+                                <code className="bg-muted px-2 py-1 rounded text-xs max-w-[120px] truncate">
+                                  {license.license_key}
+                                </code>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-6 w-6"
+                                  onClick={() => handleCopyKey(license.license_key)}
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>{license.tier_name}</TableCell>
+                            <TableCell>
+                              {getStatusBadge(license.status)}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center">
+                                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                                {format(parseISO(license.expiry_date), 'MMM dd, yyyy')}
+                              </div>
+                            </TableCell>
+                            <TableCell>{license.seats}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center">
+                                {renderFeatureIcons(license)}
+                                {renderAddonIcons(license)}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
 
           <div className="mt-8 bg-card rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold mb-4">Need Help?</h2>
