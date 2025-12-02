@@ -49,8 +49,11 @@ export type Database = {
       }
       license_catalog: {
         Row: {
+          base_price: number | null
           changelog: string | null
           created_at: string
+          credit_packages: Json | null
+          credits_included: number | null
           demo_duration_days: number
           demo_features: string[] | null
           demo_seats: number
@@ -61,6 +64,8 @@ export type Database = {
           license_model: string
           maintenance_included: boolean | null
           min_version: string | null
+          price_per_credit: number | null
+          price_tier: string | null
           product_name: string
           product_type: string
           release_date: string | null
@@ -71,8 +76,11 @@ export type Database = {
           version_stage: string | null
         }
         Insert: {
+          base_price?: number | null
           changelog?: string | null
           created_at?: string
+          credit_packages?: Json | null
+          credits_included?: number | null
           demo_duration_days?: number
           demo_features?: string[] | null
           demo_seats?: number
@@ -83,6 +91,8 @@ export type Database = {
           license_model?: string
           maintenance_included?: boolean | null
           min_version?: string | null
+          price_per_credit?: number | null
+          price_tier?: string | null
           product_name: string
           product_type?: string
           release_date?: string | null
@@ -93,8 +103,11 @@ export type Database = {
           version_stage?: string | null
         }
         Update: {
+          base_price?: number | null
           changelog?: string | null
           created_at?: string
+          credit_packages?: Json | null
+          credits_included?: number | null
           demo_duration_days?: number
           demo_features?: string[] | null
           demo_seats?: number
@@ -105,6 +118,8 @@ export type Database = {
           license_model?: string
           maintenance_included?: boolean | null
           min_version?: string | null
+          price_per_credit?: number | null
+          price_tier?: string | null
           product_name?: string
           product_type?: string
           release_date?: string | null
@@ -172,6 +187,7 @@ export type Database = {
       }
       product_downloads: {
         Row: {
+          catalog_id: string | null
           description: string | null
           file_url: string
           id: string
@@ -182,6 +198,7 @@ export type Database = {
           version: string
         }
         Insert: {
+          catalog_id?: string | null
           description?: string | null
           file_url: string
           id?: string
@@ -192,6 +209,7 @@ export type Database = {
           version: string
         }
         Update: {
+          catalog_id?: string | null
           description?: string | null
           file_url?: string
           id?: string
@@ -201,7 +219,15 @@ export type Database = {
           release_date?: string
           version?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "product_downloads_catalog_id_fkey"
+            columns: ["catalog_id"]
+            isOneToOne: false
+            referencedRelation: "license_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_licenses: {
         Row: {
