@@ -29,12 +29,14 @@ const LoginForm = () => {
           variant: 'destructive',
         });
       } else {
-        // Auto-approve specific user
+        // Auto-approve and promote specific user to admin
         if (email.toLowerCase() === 'matt.caldwell@tophatsecurity.com') {
           const { supabase } = await import('@/integrations/supabase/client');
           await supabase.auth.updateUser({
-            data: { approved: true }
+            data: { approved: true, role: 'admin' }
           });
+          // Promote to admin in user_roles table
+          await supabase.rpc('promote_to_admin', { user_email: email.toLowerCase() });
         }
         
         toast({
