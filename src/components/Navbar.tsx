@@ -5,52 +5,29 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import DesktopNav from './navbar/DesktopNav';
 import MobileNav from './navbar/MobileNav';
-import AdminNav from './navbar/AdminNav';
 import SecondaryNav from './navbar/SecondaryNav';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const { user, signOut, isAdmin } = useAuth();
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const isMobile = useIsMobile();
   const [isOverlapping, setIsOverlapping] = useState(false);
   const logoRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
-  const [hasOverflow, setHasOverflow] = useState(false);
   const location = useLocation();
   
   // Check if we're on an admin page (sidebar handles navigation)
   const isAdminPage = location.pathname.startsWith('/admin');
 
   useEffect(() => {
-    // Set default role when user loads or changes
-    if (user) {
-      if (isAdmin) {
-        setSelectedRole('admin');
-      } else {
-        setSelectedRole('user');
-      }
-    } else {
-      setSelectedRole(null);
-    }
-  }, [user, isAdmin]);
-
-  useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY;
-      if (offset > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(offset > 50);
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Check for overlap between logo and navbar
@@ -59,43 +36,16 @@ const Navbar = () => {
       if (logoRef.current && navRef.current) {
         const logoRect = logoRef.current.getBoundingClientRect();
         const navRect = navRef.current.getBoundingClientRect();
-        
-        // Check if logo width plus some padding is greater than available space
         const containerWidth = document.querySelector('nav')?.clientWidth || window.innerWidth;
-        const combined = logoRect.width + navRect.width + 24; // 24px for padding
-        
+        const combined = logoRect.width + navRect.width + 24;
         setIsOverlapping(combined > containerWidth);
-        
-        // Check if nav items are overflowing
-        if (navRef.current) {
-          const navItems = navRef.current.querySelectorAll('.nav-item');
-          let totalWidth = 0;
-          navItems.forEach((item) => {
-            totalWidth += (item as HTMLElement).offsetWidth;
-          });
-          
-          // Add some margin space
-          totalWidth += (navItems.length - 1) * 24;
-          
-          // Check if content width exceeds container width
-          setHasOverflow(totalWidth > navRef.current.offsetWidth);
-        }
       }
     };
     
     checkOverlap();
-    
-    // Recheck on resize
     window.addEventListener('resize', checkOverlap);
-    return () => {
-      window.removeEventListener('resize', checkOverlap);
-    };
+    return () => window.removeEventListener('resize', checkOverlap);
   }, []);
-
-  const handleRoleChange = (role: string) => {
-    setSelectedRole(role);
-    console.log("Role changed to:", role);
-  };
 
   return (
     <header className="fixed top-0 w-full z-50">
@@ -123,72 +73,35 @@ const Navbar = () => {
               </span>
             </Link>
             
-            {/* Mobile Navigation - Only show toggle button next to logo on mobile */}
+            {/* Mobile Navigation */}
             {(isMobile || isOverlapping) && (
               <MobileNav 
                 user={user}
                 signOut={signOut}
                 isAdmin={isAdmin}
-                selectedRole={selectedRole}
-                onRoleChange={handleRoleChange}
               />
             )}
           </div>
 
-          {/* Desktop Navigation - show as normal on desktop */}
+          {/* Desktop Navigation */}
           {!isOverlapping && !isMobile && (
             <div ref={navRef} className="hidden md:block">
               <DesktopNav 
                 user={user}
                 signOut={signOut}
                 isAdmin={isAdmin}
-                selectedRole={selectedRole}
-                onRoleChange={handleRoleChange}
-                hasOverflow={hasOverflow}
               />
             </div>
           )}
         </div>
-        
-        {/* Overflow navigation items - display as a second row when needed */}
-        {hasOverflow && !isMobile && !isOverlapping && (
-          <div className="mt-2 pt-2 border-t border-border-dark/10 hidden md:flex justify-center">
-            <ScrollArea className="w-full max-w-3xl">
-              <div className="flex items-center space-x-6 px-2">
-                {/* Secondary row of navigation links */}
-                <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
-                  Products
-                </Link>
-                <Link to="/services" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
-                  Services
-                </Link>
-                <Link to="/team" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
-                  Team
-                </Link>
-                <Link to="/careers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
-                  Careers
-                </Link>
-                <Link to="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
-                  Contact
-                </Link>
-              </div>
-            </ScrollArea>
-          </div>
-        )}
       </nav>
 
-      {/* Admin Navigation - hide on admin pages since sidebar handles it */}
-      {user && selectedRole === 'admin' && isAdmin && !isAdminPage && (
-        <AdminNav user={user} className="z-30" />
-      )}
-      
-      {/* User Features Navigation - hide on admin pages */}
-      {user && (selectedRole === 'user' || !isAdmin) && user.user_metadata?.approved && !isAdminPage && (
+      {/* User Features Navigation - show for approved users on non-admin pages */}
+      {user && user.user_metadata?.approved && !isAdminPage && (
         <SecondaryNav 
           user={user} 
           className="z-40" 
-          isAdmin={isAdmin} 
-          selectedRole={selectedRole} 
+          isAdmin={isAdmin}
         />
       )}
     </header>

@@ -2,12 +2,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, User, ChevronDown, ChevronRight } from 'lucide-react';
+import { LogOut, User, ChevronDown, ChevronRight, Shield } from 'lucide-react';
 import { NavLink, getNavLinks, NavigationLinkType } from '../NavLinks';
 import { Separator } from "@/components/ui/separator";
-import MobileAdminLinks from './MobileAdminLinks';
 import MobileUserResources from './MobileUserResources';
-import RoleSwitcher from '../RoleSwitcher';
 import { 
   Collapsible, 
   CollapsibleContent, 
@@ -18,8 +16,6 @@ interface MobileMenuContentProps {
   user: any;
   signOut: () => Promise<void>;
   isAdmin?: boolean;
-  selectedRole?: string | null;
-  onRoleChange?: (role: string) => void;
   onClose: () => void;
 }
 
@@ -27,8 +23,6 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
   user,
   signOut,
   isAdmin = false,
-  selectedRole = null,
-  onRoleChange = () => {},
   onClose
 }) => {
   const navigate = useNavigate();
@@ -41,7 +35,7 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
   };
 
   const isApproved = user?.user_metadata?.approved;
-  const userEmail = user?.email?.split('@')[0] || 'Account';
+  const userEmail = user?.email || 'Account';
 
   const [openCollapsibles, setOpenCollapsibles] = useState<Record<string, boolean>>({});
 
@@ -100,24 +94,24 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
         <>
           <div className="flex items-center space-x-2 py-2">
             <User className="h-4 w-4" />
-            <span className="font-medium">{userEmail}</span>
+            <span className="font-medium truncate">{userEmail}</span>
           </div>
 
-          {/* Role Switcher for Admins */}
-          {isAdmin && (
-            <div className="py-2">
-              <RoleSwitcher selectedRole={selectedRole} onRoleChange={onRoleChange} />
-            </div>
-          )}
-
           {/* User resources section for approved users */}
-          {isApproved && (selectedRole === 'user' || !isAdmin) && (
+          {isApproved && (
             <MobileUserResources onClose={onClose} />
           )}
 
-          {/* Admin sections for mobile */}
-          {isAdmin && selectedRole === 'admin' && (
-            <MobileAdminLinks onClose={onClose} />
+          {/* Admin Dashboard link for admins */}
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="flex items-center font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
+              onClick={onClose}
+            >
+              <Shield className="h-4 w-4 mr-2" />
+              Admin Dashboard
+            </Link>
           )}
 
           <Link
@@ -137,7 +131,6 @@ const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
           </Button>
         </>
       ) : (
-        // Only show login link for non-authenticated users
         <Link
           to="/login"
           className="font-medium text-foreground dark:text-white hover:text-[#cc0c1a] dark:hover:text-[#cc0c1a] py-2"
