@@ -2,3 +2,9 @@ project_id = "saveabkhpaemynlfcgcy"
 
 [functions.admin-reset-password]
 verify_jwt = false
+
+[functions.admin-list-users]
+verify_jwt = false
+
+[functions.admin-user-actions]
+verify_jwt = false
