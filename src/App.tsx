@@ -41,6 +41,7 @@ import ActionsPage from "./pages/admin/ActionsPage";
 import PermissionsPage from "./pages/admin/PermissionsPage";
 import DownloadsAdminPage from "./pages/admin/DownloadsAdminPage";
 import LicensingAdminPage from "./pages/admin/LicensingAdminPage";
+import CatalogAdminPage from "./pages/admin/CatalogAdminPage";
 
 const queryClient = new QueryClient();
 
@@ -126,6 +127,11 @@ const App = () => (
               <Route path="/admin/licensing" element={
                 <AdminRoute>
                   <LicensingAdminPage />
+                </AdminRoute>
+              } />
+              <Route path="/admin/catalog" element={
+                <AdminRoute>
+                  <CatalogAdminPage />
                 </AdminRoute>
               } />
               
