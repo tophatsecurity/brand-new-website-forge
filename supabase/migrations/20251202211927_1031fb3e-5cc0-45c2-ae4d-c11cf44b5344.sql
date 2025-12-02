@@ -1,0 +1,1 @@
+UPDATE profiles SET approved = true WHERE email = 'matt.caldwell@tophatsecurity.com'
