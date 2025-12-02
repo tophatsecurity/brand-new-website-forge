@@ -16,7 +16,6 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
 
 const navItems = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
@@ -61,6 +60,30 @@ export function AdminSidebar() {
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
       </div>
+
+      {/* User info at top */}
+      <div className="p-3 border-b border-border">
+        <div className={cn(
+          "flex items-center gap-3",
+          collapsed ? "justify-center" : ""
+        )}>
+          <Avatar className="h-9 w-9 flex-shrink-0">
+            <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
+              {userInitials}
+            </AvatarFallback>
+          </Avatar>
+          {!collapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">
+                {userEmail}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                Admin
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
       
       {/* Navigation items */}
       <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
@@ -87,60 +110,32 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      {/* Bottom section with user info and actions */}
-      <div className="border-t border-border">
+      {/* Bottom section with actions */}
+      <div className="border-t border-border p-2 space-y-1">
         {/* Back to site */}
-        <div className="p-2">
-          <NavLink
-            to="/"
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
-              "hover:bg-accent hover:text-accent-foreground text-muted-foreground"
-            )}
-          >
-            <Home className="h-5 w-5 flex-shrink-0" />
-            {!collapsed && <span className="font-medium">Back to Site</span>}
-          </NavLink>
-        </div>
+        <NavLink
+          to="/"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
+            "hover:bg-accent hover:text-accent-foreground text-muted-foreground"
+          )}
+        >
+          <Home className="h-5 w-5 flex-shrink-0" />
+          {!collapsed && <span className="font-medium">Back to Site</span>}
+        </NavLink>
 
-        <Separator />
-
-        {/* User info and logout */}
-        <div className="p-3">
-          <div className={cn(
-            "flex items-center gap-3",
-            collapsed ? "justify-center" : ""
-          )}>
-            <Avatar className="h-9 w-9 flex-shrink-0">
-              <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
-                {userInitials}
-              </AvatarFallback>
-            </Avatar>
-            {!collapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
-                  {userEmail.split('@')[0]}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  Admin
-                </p>
-              </div>
-            )}
-          </div>
-          
-          <Button
-            variant="ghost"
-            size={collapsed ? "icon" : "sm"}
-            onClick={signOut}
-            className={cn(
-              "mt-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10",
-              collapsed ? "w-full justify-center" : "w-full justify-start"
-            )}
-          >
-            <LogOut className="h-4 w-4 flex-shrink-0" />
-            {!collapsed && <span className="ml-2">Sign out</span>}
-          </Button>
-        </div>
+        {/* Sign out */}
+        <Button
+          variant="ghost"
+          onClick={signOut}
+          className={cn(
+            "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors justify-start",
+            "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          )}
+        >
+          <LogOut className="h-5 w-5 flex-shrink-0" />
+          {!collapsed && <span className="font-medium">Sign out</span>}
+        </Button>
       </div>
     </aside>
   );
