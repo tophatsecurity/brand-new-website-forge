@@ -47,6 +47,42 @@ export type Database = {
         }
         Relationships: []
       }
+      license_catalog: {
+        Row: {
+          created_at: string
+          demo_duration_days: number
+          demo_features: string[] | null
+          demo_seats: number
+          description: string
+          id: string
+          is_active: boolean
+          product_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          demo_duration_days?: number
+          demo_features?: string[] | null
+          demo_seats?: number
+          description: string
+          id?: string
+          is_active?: boolean
+          product_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          demo_duration_days?: number
+          demo_features?: string[] | null
+          demo_seats?: number
+          description?: string
+          id?: string
+          is_active?: boolean
+          product_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       license_tiers: {
         Row: {
           created_at: string
