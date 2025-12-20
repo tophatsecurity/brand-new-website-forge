@@ -18,8 +18,12 @@ export type FormValues = {
   seats: number;
   expiryDate: Date;
   email: string;
-  features: string[];  // Multi-select features
-  addons: string[];    // Multi-select addons
+  features: string[];
+  addons: string[];
+  maxHosts: number | null;
+  allowedNetworks: string;
+  usageHoursLimit: number | null;
+  concurrentSessions: number;
 };
 
 export type AvailableProduct = {
@@ -66,6 +70,10 @@ export const useLicenseForm = ({
       email: "",
       features: [],
       addons: [],
+      maxHosts: null,
+      allowedNetworks: "",
+      usageHoursLimit: null,
+      concurrentSessions: 1,
     },
   });
 
@@ -99,6 +107,11 @@ export const useLicenseForm = ({
       const featureArray = Array.isArray(data.features) ? data.features : [];
       const addonArray = Array.isArray(data.addons) ? data.addons : [];
       
+      // Parse allowed networks from comma-separated string to array
+      const networksArray = data.allowedNetworks
+        ? data.allowedNetworks.split(',').map(n => n.trim()).filter(n => n)
+        : [];
+      
       const { data: newLicense, error } = await supabase
         .from('product_licenses')
         .insert({
@@ -111,6 +124,10 @@ export const useLicenseForm = ({
           seats: data.seats,
           features: featureArray,
           addons: addonArray,
+          max_hosts: data.maxHosts || null,
+          allowed_networks: networksArray,
+          usage_hours_limit: data.usageHoursLimit || null,
+          concurrent_sessions: data.concurrentSessions || 1,
         })
         .select(`
           id,
@@ -125,7 +142,11 @@ export const useLicenseForm = ({
           features,
           addons,
           created_at,
-          last_active
+          last_active,
+          max_hosts,
+          allowed_networks,
+          concurrent_sessions,
+          usage_hours_limit
         `)
         .single();
           
