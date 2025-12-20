@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { NavLink, getPrimaryNavLinks, NavigationLinkType } from './NavLinks';
 import ThemeToggle from '@/components/ThemeToggle';
 import UserNavMenu from '@/components/UserNavMenu';
+import RoleSwitcher from './RoleSwitcher';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   NavigationMenu,
   NavigationMenuList
@@ -23,6 +25,10 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
 }) => {
   const navigate = useNavigate();
   const primaryLinks = getPrimaryNavLinks();
+  const { userRoles, activeRole, setActiveRole } = useAuth();
+  
+  // Only show role switcher for users with multiple roles or admin
+  const showRoleSwitcher = isAdmin || userRoles.length > 1;
   
   return (
     <div className="hidden md:flex items-center space-x-4">
@@ -46,6 +52,14 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
 
       {/* User menu and theme toggle */}
       <div className="flex items-center space-x-3">
+        {user && showRoleSwitcher && (
+          <RoleSwitcher 
+            selectedRole={activeRole}
+            onRoleChange={(role) => setActiveRole(role as any)}
+            availableRoles={isAdmin ? ['admin', 'var', 'customer_rep', 'customer'] : userRoles}
+          />
+        )}
+        
         {user && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground hidden lg:inline max-w-[200px] truncate">
