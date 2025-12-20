@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.send-email-postmark]
 verify_jwt = true
+
+[functions.validate-license]
+verify_jwt = false
