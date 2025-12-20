@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.admin-user-actions]
 verify_jwt = false
+
+[functions.send-email-postmark]
+verify_jwt = true
