@@ -4,7 +4,7 @@ import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-type AppRole = 'admin' | 'user' | 'moderator';
+type AppRole = 'admin' | 'user' | 'moderator' | 'var' | 'customer_rep' | 'customer';
 
 interface UserRole {
   id: string;
@@ -17,6 +17,8 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   userRoles: AppRole[];
+  activeRole: AppRole | null;
+  setActiveRole: (role: AppRole) => void;
   isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string) => Promise<{ error: any, data: any }>;
@@ -32,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userRoles, setUserRoles] = useState<AppRole[]>([]);
+  const [activeRole, setActiveRole] = useState<AppRole | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -80,8 +83,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUserRoles([]);
         setIsAdmin(false);
       } else {
-        setUserRoles(data || []);
-        setIsAdmin((data || []).includes('admin'));
+        const roles = data || [];
+        setUserRoles(roles);
+        setIsAdmin(roles.includes('admin'));
+        // Set default active role (highest privilege first)
+        if (roles.includes('admin')) {
+          setActiveRole('admin');
+        } else if (roles.includes('var')) {
+          setActiveRole('var');
+        } else if (roles.includes('customer_rep')) {
+          setActiveRole('customer_rep');
+        } else if (roles.includes('customer')) {
+          setActiveRole('customer');
+        } else if (roles.length > 0) {
+          setActiveRole(roles[0]);
+        }
       }
     } catch (err: any) {
       console.error("Exception fetching user roles:", err);
@@ -150,6 +166,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     session,
     user,
     userRoles,
+    activeRole,
+    setActiveRole,
     isAdmin,
     signIn,
     signUp,
