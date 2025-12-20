@@ -44,7 +44,8 @@ import DownloadsAdminPage from "./pages/admin/DownloadsAdminPage";
 import LicensingAdminPage from "./pages/admin/LicensingAdminPage";
 import CatalogAdminPage from "./pages/admin/CatalogAdminPage";
 import CreditsAdminPage from "./pages/admin/CreditsAdminPage";
-
+import OnboardingAdminPage from "./pages/admin/OnboardingAdminPage";
+import Onboarding from "./pages/Onboarding";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -145,6 +146,16 @@ const App = () => (
                 <AdminRoute>
                   <CreditsAdminPage />
                 </AdminRoute>
+              } />
+              <Route path="/admin/onboarding" element={
+                <AdminRoute>
+                  <OnboardingAdminPage />
+                </AdminRoute>
+              } />
+              <Route path="/onboarding" element={
+                <ProtectedRoute>
+                  <Onboarding />
+                </ProtectedRoute>
               } />
               
               {/* Settings route */}

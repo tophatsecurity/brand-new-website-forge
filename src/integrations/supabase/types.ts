@@ -47,6 +47,60 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_onboarding: {
+        Row: {
+          assigned_rep: string | null
+          company_name: string | null
+          completed_at: string | null
+          contact_email: string
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          current_step: number
+          id: string
+          notes: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["onboarding_status"]
+          total_steps: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_rep?: string | null
+          company_name?: string | null
+          completed_at?: string | null
+          contact_email: string
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          current_step?: number
+          id?: string
+          notes?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["onboarding_status"]
+          total_steps?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_rep?: string | null
+          company_name?: string | null
+          completed_at?: string | null
+          contact_email?: string
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          current_step?: number
+          id?: string
+          notes?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["onboarding_status"]
+          total_steps?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       license_activations: {
         Row: {
           activated_at: string
@@ -201,6 +255,100 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      onboarding_emails: {
+        Row: {
+          email_type: string
+          error_message: string | null
+          id: string
+          message_id: string | null
+          onboarding_id: string
+          recipient_email: string
+          sent_at: string
+          status: string
+          subject: string
+        }
+        Insert: {
+          email_type: string
+          error_message?: string | null
+          id?: string
+          message_id?: string | null
+          onboarding_id: string
+          recipient_email: string
+          sent_at?: string
+          status?: string
+          subject: string
+        }
+        Update: {
+          email_type?: string
+          error_message?: string | null
+          id?: string
+          message_id?: string | null
+          onboarding_id?: string
+          recipient_email?: string
+          sent_at?: string
+          status?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_emails_onboarding_id_fkey"
+            columns: ["onboarding_id"]
+            isOneToOne: false
+            referencedRelation: "customer_onboarding"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_steps: {
+        Row: {
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          data: Json | null
+          id: string
+          is_completed: boolean
+          onboarding_id: string
+          step_description: string | null
+          step_name: string
+          step_number: number
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_completed?: boolean
+          onboarding_id: string
+          step_description?: string | null
+          step_name: string
+          step_number: number
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_completed?: boolean
+          onboarding_id?: string
+          step_description?: string | null
+          step_name?: string
+          step_number?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_steps_onboarding_id_fkey"
+            columns: ["onboarding_id"]
+            isOneToOne: false
+            referencedRelation: "customer_onboarding"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       permission_types: {
         Row: {
@@ -616,6 +764,7 @@ export type Database = {
         | "var"
         | "customer_rep"
         | "customer"
+      onboarding_status: "not_started" | "in_progress" | "completed" | "on_hold"
       permission_type: "downloads" | "support" | "admin"
     }
     CompositeTypes: {
@@ -752,6 +901,7 @@ export const Constants = {
         "customer_rep",
         "customer",
       ],
+      onboarding_status: ["not_started", "in_progress", "completed", "on_hold"],
       permission_type: ["downloads", "support", "admin"],
     },
   },
