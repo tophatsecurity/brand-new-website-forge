@@ -14,3 +14,6 @@ verify_jwt = true
 
 [functions.validate-license]
 verify_jwt = false
+
+[functions.license-activation]
+verify_jwt = false

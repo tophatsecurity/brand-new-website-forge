@@ -47,6 +47,50 @@ export type Database = {
         }
         Relationships: []
       }
+      license_activations: {
+        Row: {
+          activated_at: string
+          host_identifier: string
+          host_ip: string | null
+          host_name: string | null
+          id: string
+          is_active: boolean
+          last_seen_at: string
+          license_id: string
+          metadata: Json | null
+        }
+        Insert: {
+          activated_at?: string
+          host_identifier: string
+          host_ip?: string | null
+          host_name?: string | null
+          id?: string
+          is_active?: boolean
+          last_seen_at?: string
+          license_id: string
+          metadata?: Json | null
+        }
+        Update: {
+          activated_at?: string
+          host_identifier?: string
+          host_ip?: string | null
+          host_name?: string | null
+          id?: string
+          is_active?: boolean
+          last_seen_at?: string
+          license_id?: string
+          metadata?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "license_activations_license_id_fkey"
+            columns: ["license_id"]
+            isOneToOne: false
+            referencedRelation: "product_licenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       license_catalog: {
         Row: {
           base_price: number | null
