@@ -68,6 +68,7 @@ type CatalogItem = {
   id: string;
   product_name: string;
   description: string;
+  product_type: string;
   demo_duration_days: number;
   demo_seats: number;
   demo_features: string[];
@@ -328,9 +329,12 @@ const Licensing = () => {
     ? licenses
     : licenses.filter(l => l.product_name === activeView);
 
+  const isServiceProduct = (item: CatalogItem) => item.product_type === 'service';
+
   const renderProductCard = (item: CatalogItem) => {
     const hasLicense = hasLicenseForProduct(item.product_name);
     const IconComponent = productIcons[item.product_name] || Package;
+    const isService = isServiceProduct(item);
     
     return (
       <Card key={item.id} className="flex flex-col">
@@ -351,51 +355,66 @@ const Licensing = () => {
         </CardHeader>
         <CardContent className="flex-1">
           <div className="space-y-2 text-sm">
-            <div className="flex items-center text-muted-foreground">
-              <Calendar className="h-4 w-4 mr-2" />
-              {item.demo_duration_days}-day demo period
-            </div>
-            <div className="flex items-center text-muted-foreground">
-              <Package className="h-4 w-4 mr-2" />
-              {item.demo_seats} seat{item.demo_seats > 1 ? 's' : ''} included
-            </div>
-            {item.demo_features.length > 0 && (
-              <div className="pt-2">
-                <p className="text-xs font-medium text-muted-foreground mb-1">Demo Features:</p>
-                <div className="flex flex-wrap gap-1">
-                  {item.demo_features.map(feature => (
-                    <Badge key={feature} variant="outline" className="text-xs">
-                      {feature.replace(/_/g, ' ')}
-                    </Badge>
-                  ))}
+            {!isService && (
+              <>
+                <div className="flex items-center text-muted-foreground">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  {item.demo_duration_days}-day demo period
                 </div>
+                <div className="flex items-center text-muted-foreground">
+                  <Package className="h-4 w-4 mr-2" />
+                  {item.demo_seats} seat{item.demo_seats > 1 ? 's' : ''} included
+                </div>
+                {item.demo_features.length > 0 && (
+                  <div className="pt-2">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">Demo Features:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {item.demo_features.map(feature => (
+                        <Badge key={feature} variant="outline" className="text-xs">
+                          {feature.replace(/_/g, ' ')}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+            {isService && (
+              <div className="text-muted-foreground italic">
+                Contact sales for service licensing
               </div>
             )}
           </div>
         </CardContent>
         <CardFooter>
-          <Button 
-            className="w-full" 
-            onClick={() => generateDemoLicense(item)}
-            disabled={generatingDemo === item.id || hasLicense}
-          >
-            {generatingDemo === item.id ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Generating...
-              </>
-            ) : hasLicense ? (
-              <>
-                <CheckCircle2 className="h-4 w-4 mr-2" />
-                Already Licensed
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4 mr-2" />
-                Start Free Demo
-              </>
-            )}
-          </Button>
+          {isService ? (
+            <Button className="w-full" variant="outline" asChild>
+              <a href="/contact">Contact Sales</a>
+            </Button>
+          ) : (
+            <Button 
+              className="w-full" 
+              onClick={() => generateDemoLicense(item)}
+              disabled={generatingDemo === item.id || hasLicense}
+            >
+              {generatingDemo === item.id ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : hasLicense ? (
+                <>
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  Already Licensed
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Start Free Demo
+                </>
+              )}
+            </Button>
+          )}
         </CardFooter>
       </Card>
     );
