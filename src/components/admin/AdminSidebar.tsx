@@ -10,7 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-  Package
+  Package,
+  UserPlus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 const navItems = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
   { title: 'Users', url: '/admin/users', icon: Users },
+  { title: 'Onboarding', url: '/admin/onboarding', icon: UserPlus },
   { title: 'Permissions', url: '/admin/permissions', icon: Shield },
   { title: 'Licensing', url: '/admin/licensing', icon: Key },
   { title: 'Catalog', url: '/admin/catalog', icon: Package },
