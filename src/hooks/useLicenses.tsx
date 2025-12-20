@@ -18,6 +18,10 @@ type License = {
   last_active: string | null;
   features: string[];
   addons: string[];
+  max_hosts: number | null;
+  allowed_networks: string[];
+  concurrent_sessions: number;
+  usage_hours_limit: number | null;
 };
 
 type LicenseTier = {
@@ -57,7 +61,11 @@ export const useLicenses = () => {
             features,
             addons,
             created_at,
-            last_active
+            last_active,
+            max_hosts,
+            allowed_networks,
+            concurrent_sessions,
+            usage_hours_limit
           `)
           .order('created_at', { ascending: false });
           
@@ -69,11 +77,15 @@ export const useLicenses = () => {
             variant: "destructive"
           });
         } else {
-          // Ensure features and addons are arrays
+          // Ensure features, addons, and allowed_networks are arrays
           const processedLicenses = licensesData?.map(license => ({
             ...license,
             features: Array.isArray(license.features) ? license.features : [],
-            addons: Array.isArray(license.addons) ? license.addons : []
+            addons: Array.isArray(license.addons) ? license.addons : [],
+            allowed_networks: Array.isArray(license.allowed_networks) ? license.allowed_networks : [],
+            max_hosts: license.max_hosts ?? null,
+            concurrent_sessions: license.concurrent_sessions ?? 1,
+            usage_hours_limit: license.usage_hours_limit ?? null,
           })) || [];
           
           setLicenses(processedLicenses);
@@ -134,11 +146,15 @@ export const useLicenses = () => {
   }, [licenses, searchTerm, featureFilter, addonFilter]);
 
   const addLicense = (newLicense: License) => {
-    // Ensure features and addons are arrays
+    // Ensure arrays and defaults
     const processedLicense = {
       ...newLicense,
       features: Array.isArray(newLicense.features) ? newLicense.features : [],
-      addons: Array.isArray(newLicense.addons) ? newLicense.addons : []
+      addons: Array.isArray(newLicense.addons) ? newLicense.addons : [],
+      allowed_networks: Array.isArray(newLicense.allowed_networks) ? newLicense.allowed_networks : [],
+      max_hosts: newLicense.max_hosts ?? null,
+      concurrent_sessions: newLicense.concurrent_sessions ?? 1,
+      usage_hours_limit: newLicense.usage_hours_limit ?? null,
     };
     
     setLicenses([processedLicense, ...licenses]);

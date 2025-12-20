@@ -10,6 +10,7 @@ import ProductTierFormFields from "./form-fields/ProductTierFormFields";
 import SeatsExpiryFormFields from "./form-fields/SeatsExpiryFormFields";
 import FeatureAddonsFormFields from "./form-fields/FeatureAddonsFormFields";
 import EmailAssignmentField from "./form-fields/EmailAssignmentField";
+import HostNetworkFormFields from "./form-fields/HostNetworkFormFields";
 
 type LicenseFormProps = {
   tiers: LicenseTier[];
@@ -38,7 +39,7 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ tiers, onLicenseCreated, onCl
           productAddons={productAddons} 
         />
         <EmailAssignmentField form={form} />
-
+        <HostNetworkFormFields form={form} />
         <DialogFooter className="mt-6">
           <Button variant="outline" onClick={onClose} type="button">Cancel</Button>
           <Button 

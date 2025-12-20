@@ -231,49 +231,64 @@ export type Database = {
       }
       product_licenses: {
         Row: {
+          activation_date: string | null
           addons: string[] | null
+          allowed_networks: string[] | null
           assigned_to: string | null
+          concurrent_sessions: number | null
           created_at: string
           expiry_date: string
           features: string[] | null
           id: string
           last_active: string | null
           license_key: string
+          max_hosts: number | null
           product_name: string
           seats: number
           status: string
           tier_id: string
           updated_at: string
+          usage_hours_limit: number | null
         }
         Insert: {
+          activation_date?: string | null
           addons?: string[] | null
+          allowed_networks?: string[] | null
           assigned_to?: string | null
+          concurrent_sessions?: number | null
           created_at?: string
           expiry_date: string
           features?: string[] | null
           id?: string
           last_active?: string | null
           license_key: string
+          max_hosts?: number | null
           product_name: string
           seats?: number
           status: string
           tier_id: string
           updated_at?: string
+          usage_hours_limit?: number | null
         }
         Update: {
+          activation_date?: string | null
           addons?: string[] | null
+          allowed_networks?: string[] | null
           assigned_to?: string | null
+          concurrent_sessions?: number | null
           created_at?: string
           expiry_date?: string
           features?: string[] | null
           id?: string
           last_active?: string | null
           license_key?: string
+          max_hosts?: number | null
           product_name?: string
           seats?: number
           status?: string
           tier_id?: string
           updated_at?: string
+          usage_hours_limit?: number | null
         }
         Relationships: [
           {
