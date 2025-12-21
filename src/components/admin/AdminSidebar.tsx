@@ -12,7 +12,8 @@ import {
   LogOut,
   Package,
   UserPlus,
-  Settings
+  Settings,
+  Building2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const navItems = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
+  { title: 'CRM', url: '/admin/crm', icon: Building2 },
   { title: 'Users', url: '/admin/users', icon: Users },
   { title: 'Onboarding', url: '/admin/onboarding', icon: UserPlus },
   { title: 'Permissions', url: '/admin/permissions', icon: Shield },
