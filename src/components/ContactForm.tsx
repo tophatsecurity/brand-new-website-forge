@@ -14,14 +14,14 @@ import { toast } from 'sonner';
 import { Loader2, Send } from 'lucide-react';
 
 const PRODUCT_OPTIONS = [
-  { value: "ALL", label: "All Products" },
-  { value: "LIGHTFOOT", label: "LIGHTFOOT" },
-  { value: "O-RANGE", label: "O-RANGE" },
-  { value: "SEEKCAP", label: "SEEKCAP" },
-  { value: "SECONDLOOK", label: "SECONDLOOK" },
-  { value: "DDX", label: "DDX" },
-  { value: "PARAGUARD", label: "PARAGUARD" },
-  { value: "PERPETUAL", label: "PERPETUAL" },
+  { value: "ALL", label: "All Products", description: "Interest in our full product suite" },
+  { value: "LIGHTFOOT", label: "LIGHTFOOT", description: "Network traffic analysis & forensics" },
+  { value: "O-RANGE", label: "O-RANGE", description: "Operational range security testing" },
+  { value: "SEEKCAP", label: "SEEKCAP", description: "Packet capture & deep inspection" },
+  { value: "SECONDLOOK", label: "SECONDLOOK", description: "Linux memory forensics" },
+  { value: "DDX", label: "DDX", description: "Deep packet inspection & analysis" },
+  { value: "PARAGUARD", label: "PARAGUARD", description: "Intrusion detection & response" },
+  { value: "PERPETUAL", label: "PERPETUAL", description: "Continuous security evaluation" },
 ];
 
 const contactFormSchema = z.object({
@@ -228,13 +228,31 @@ const ContactForm = () => {
                     </FormControl>
                     <SelectContent>
                       {PRODUCT_OPTIONS.map((product) => (
-                        <SelectItem key={product.value} value={product.value}>
-                          {product.label}
+                        <SelectItem key={product.value} value={product.value} className="py-3">
+                          <div className="flex flex-col">
+                            <span className="font-medium">{product.label}</span>
+                            <span className="text-xs text-muted-foreground">{product.description}</span>
+                          </div>
                         </SelectItem>
                       ))}
-                      <SelectItem value="General Inquiry">General Inquiry</SelectItem>
-                      <SelectItem value="Partnership">Partnership Opportunity</SelectItem>
-                      <SelectItem value="Support">Technical Support</SelectItem>
+                      <SelectItem value="General Inquiry" className="py-3">
+                        <div className="flex flex-col">
+                          <span className="font-medium">General Inquiry</span>
+                          <span className="text-xs text-muted-foreground">Questions about our company or services</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="Partnership" className="py-3">
+                        <div className="flex flex-col">
+                          <span className="font-medium">Partnership Opportunity</span>
+                          <span className="text-xs text-muted-foreground">Explore business partnerships</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="Support" className="py-3">
+                        <div className="flex flex-col">
+                          <span className="font-medium">Technical Support</span>
+                          <span className="text-xs text-muted-foreground">Get help with existing products</span>
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
