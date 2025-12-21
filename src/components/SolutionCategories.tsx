@@ -74,15 +74,15 @@ const SolutionCategories = () => {
     {
       icon: Satellite,
       title: "IoT & Aerospace",
-      tagline: "Unified Sensor & Connectivity Platform",
+      tagline: "Mission-Critical Sensor Intelligence",
       whatItDoes: [
-        "Unifies disparate IoT sensors into a single monitoring dashboard",
-        "Real-time Starlink and satellite terminal monitoring and alerting",
-        "Supports aerospace, drone, maritime, and remote site deployments",
-        "Self-hosted with complete data sovereignty and offline operation"
+        "Unified monitoring for aerospace ground stations, satellites, and UAV fleets",
+        "Real-time telemetry aggregation from Starlink terminals and satellite links",
+        "Supports defense, commercial aviation, drone operations, and space systems",
+        "Air-gapped deployment with complete data sovereignty and edge processing"
       ],
       products: [
-        { name: "AURORASENSE", path: "/aurorasense", desc: "IoT Sensor Platform" }
+        { name: "AURORASENSE", path: "/aurorasense", desc: "IoT & Aerospace Platform" }
       ],
       color: "from-cyan-500/20 to-cyan-600/10",
       iconColor: "text-cyan-600"
