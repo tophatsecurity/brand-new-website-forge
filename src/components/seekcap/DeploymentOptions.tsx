@@ -13,7 +13,7 @@ const deploymentOptions: DeploymentOptionProps[] = [
     title: "On-Premise Virtual Machine (VM) Deployment on VSX",
     icon: <HardDrive className="h-6 w-6 text-[#cc0c1a]" />,
     features: [
-      "SeekCap can be installed as a virtual machine (VM) within an on-premise VSX environment.",
+      "SEEKCAP can be installed as a virtual machine (VM) within an on-premise VSX environment.",
       "This setup provides full control over security, data privacy, and system configurations.",
       "Ideal for organizations requiring a high degree of customization and integration with existing infrastructure.",
       "Supports scalable deployment, allowing multiple instances to run within the VSX framework."
@@ -23,7 +23,7 @@ const deploymentOptions: DeploymentOptionProps[] = [
     title: "Client-Server Deployment Within Customer's Environment",
     icon: <Server className="h-6 w-6 text-[#cc0c1a]" />,
     features: [
-      "SeekCap can be set up in a client-server model where the server component is hosted within the customer's infrastructure.",
+      "SEEKCAP can be set up in a client-server model where the server component is hosted within the customer's infrastructure.",
       "Ensures compliance with internal security policies by keeping data within the customer's controlled environment.",
       "Supports integration with enterprise authentication and network security protocols."
     ]
@@ -32,7 +32,7 @@ const deploymentOptions: DeploymentOptionProps[] = [
     title: "Hardened Laptop Deployment for Specialized Use Cases",
     icon: <Laptop className="h-6 w-6 text-[#cc0c1a]" />,
     features: [
-      "SeekCap can be pre-installed on a hardened laptop for field operations.",
+      "SEEKCAP can be pre-installed on a hardened laptop for field operations.",
       "Designed for forensic investigations, asset inventory management, and risk assessment planning.",
       "Allows investigators and security professionals to operate in remote or restricted environments with minimal infrastructure dependency."
     ]

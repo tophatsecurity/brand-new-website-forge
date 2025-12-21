@@ -87,7 +87,7 @@ type CatalogItem = {
 };
 
 const productIcons: Record<string, React.ElementType> = {
-  'SeekCap': Search,
+  'SEEKCAP': Search,
   'DDX': Network,
   'ParaGuard': Shield,
   'SecondLook': Eye,

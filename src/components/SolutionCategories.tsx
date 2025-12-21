@@ -47,8 +47,7 @@ const SolutionCategories = () => {
       ],
       products: [
         { name: "DDX", path: "/ddx", desc: "Software Composition Analysis" },
-        { name: "ONBOARD", path: "/onboard", desc: "Hardware Board Forensics" },
-        { name: "SeekCap", path: "/seekcap", desc: "Network Asset Discovery" }
+        { name: "ONBOARD", path: "/onboard", desc: "Hardware Board Forensics" }
       ],
       color: "from-blue-500/20 to-blue-600/10",
       iconColor: "text-blue-600"
@@ -65,7 +64,8 @@ const SolutionCategories = () => {
       ],
       products: [
         { name: "LIGHTFOOT", path: "/lightfoot", desc: "OT/ICS Security Scanner" },
-        { name: "O-RANGE", path: "/orange", desc: "OT Network Digital Twin" }
+        { name: "O-RANGE", path: "/orange", desc: "OT Network Digital Twin" },
+        { name: "SEEKCAP", path: "/seekcap", desc: "Industrial Network Visibility" }
       ],
       color: "from-orange-500/20 to-orange-600/10",
       iconColor: "text-orange-600"

@@ -79,9 +79,9 @@ const ProductsSection = () => {
           link: "/orange"
         },
         {
-          title: "SeekCAP",
+          title: "SEEKCAP",
           description: "Industrial network visibility and packet analysis without SPAN ports.",
-          longDescription: "SeekCAP provides comprehensive industrial network visibility and detailed packet analysis without requiring SPAN ports. It enables security teams to monitor OT networks with minimal infrastructure changes.",
+          longDescription: "SEEKCAP provides comprehensive industrial network visibility and detailed packet analysis without requiring SPAN ports. It enables security teams to monitor OT networks with minimal infrastructure changes.",
           icon: <Eye className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/seekcap"
