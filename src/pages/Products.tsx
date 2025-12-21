@@ -5,7 +5,7 @@ import ProductsSection from '@/components/ProductsSection';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
-import { Brain, Shield, Factory, ArrowRight } from 'lucide-react';
+import { Brain, Shield, Factory, Satellite, ArrowRight } from 'lucide-react';
 
 const Products = () => {
   useScrollToTop();
@@ -47,6 +47,17 @@ const Products = () => {
       color: "from-orange-500/20 to-orange-600/10",
       iconColor: "text-orange-600",
       borderColor: "border-orange-500/30"
+    },
+    {
+      icon: Satellite,
+      title: "IoT & Satellite",
+      description: "Unified sensor monitoring with satellite connectivity",
+      products: [
+        { name: "AURORASENSE", path: "/aurorasense" }
+      ],
+      color: "from-cyan-500/20 to-cyan-600/10",
+      iconColor: "text-cyan-600",
+      borderColor: "border-cyan-500/30"
     }
   ];
   
