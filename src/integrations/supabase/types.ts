@@ -978,6 +978,7 @@ export type Database = {
           file_url: string
           id: string
           is_latest: boolean
+          package_format: string | null
           product_name: string
           product_type: string
           release_date: string
@@ -991,6 +992,7 @@ export type Database = {
           file_url: string
           id?: string
           is_latest?: boolean
+          package_format?: string | null
           product_name: string
           product_type: string
           release_date?: string
@@ -1004,6 +1006,7 @@ export type Database = {
           file_url?: string
           id?: string
           is_latest?: boolean
+          package_format?: string | null
           product_name?: string
           product_type?: string
           release_date?: string
