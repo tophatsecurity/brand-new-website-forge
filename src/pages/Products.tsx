@@ -16,8 +16,7 @@ const Products = () => {
       title: "AI Security",
       description: "Protect AI systems, GPU operations, and model security",
       products: [
-        { name: "PARAGUARD", path: "/paraguard" },
-        { name: "SecondLook", path: "/secondlook" }
+        { name: "PARAGUARD", path: "/paraguard" }
       ],
       color: "from-purple-500/20 to-purple-600/10",
       iconColor: "text-purple-600",
@@ -29,7 +28,8 @@ const Products = () => {
       description: "Secure software & hardware supply chains",
       products: [
         { name: "DDX", path: "/ddx" },
-        { name: "ONBOARD", path: "/onboard" }
+        { name: "ONBOARD", path: "/onboard" },
+        { name: "SECONDLOOK", path: "/secondlook" }
       ],
       color: "from-blue-500/20 to-blue-600/10",
       iconColor: "text-blue-600",
