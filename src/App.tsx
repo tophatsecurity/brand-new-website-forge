@@ -22,6 +22,7 @@ import SecondLook from "./pages/SecondLook";
 import Lightfoot from "./pages/Lightfoot";
 import Orange from "./pages/Orange";
 import OnboardProduct from "./pages/OnboardProduct";
+import AuroraSense from "./pages/AuroraSense";
 import Careers from "./pages/Careers";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
@@ -90,6 +91,7 @@ const App = () => (
               <Route path="/security-perpetual" element={<SecurityPerpetual />} />
               <Route path="/lightfoot" element={<Lightfoot />} />
               <Route path="/orange" element={<Orange />} />
+              <Route path="/aurorasense" element={<AuroraSense />} />
               <Route path="/onboard" element={<OnboardProduct />} />
               
               {/* Protected routes requiring authentication and approval */}
