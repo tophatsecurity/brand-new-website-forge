@@ -73,7 +73,7 @@ const SolutionCategories = () => {
     },
     {
       icon: Satellite,
-      title: "IoT & Satellite Monitoring",
+      title: "IoT & Aerospace",
       tagline: "Unified Sensor & Connectivity Platform",
       whatItDoes: [
         "Unifies disparate IoT sensors into a single monitoring dashboard",
