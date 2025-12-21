@@ -67,7 +67,7 @@ const SecondLookSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16 animate-slide-up opacity-0">
           <Badge className="mb-4">Security Service</Badge>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">SecondLook X</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">SECONDLOOK X</h2>
           <div className="w-20 h-1 bg-primary mx-auto mb-6"></div>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             A simple, cost-effective solution that provides passive monitoring and automated alerts 
@@ -97,7 +97,7 @@ const SecondLookSection = () => {
           <div className="prose prose-lg max-w-none animate-slide-up opacity-0" style={{ animationDelay: '400ms' }}>
             <h3 className="text-2xl font-bold mb-4">Our Solution</h3>
             <p className="text-muted-foreground">
-              SecondLook X is a security data mart as a service that provides your business with:
+              SECONDLOOK X is a security data mart as a service that provides your business with:
             </p>
             <ul className="space-y-2 text-muted-foreground">
               <li>Passive monitoring of your network traffic</li>
@@ -133,7 +133,7 @@ const SecondLookSection = () => {
 
         <div className="text-center mb-16 animate-slide-up opacity-0" style={{ animationDelay: '1300ms' }}>
           <Badge className="mb-4">BOM Intelligence</Badge>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">SecondLook XBOM Platform</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">SECONDLOOK XBOM Platform</h2>
           <div className="w-20 h-1 bg-primary mx-auto mb-6"></div>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             A comprehensive bill of materials intelligence platform for software, hardware, and firmware components
@@ -149,7 +149,7 @@ const SecondLookSection = () => {
               come from third-party suppliers. Without proper visibility, these components represent a significant security risk.
             </p>
             <p className="text-muted-foreground">
-              The SecondLook XBOM Platform provides comprehensive visibility across all components in your 
+              The SECONDLOOK XBOM Platform provides comprehensive visibility across all components in your 
               supply chain, helping you identify and mitigate risks before they impact your business.
             </p>
           </div>

@@ -31,7 +31,7 @@ const ProductTierFormFields: React.FC<ProductTierFormFieldsProps> = ({ form, tie
                 <SelectItem value="SEEKCAP">SEEKCAP</SelectItem>
                 <SelectItem value="DDX">DDX</SelectItem>
                 <SelectItem value="PARAGUARD">PARAGUARD</SelectItem>
-                <SelectItem value="SecondLook">SecondLook</SelectItem>
+                <SelectItem value="SECONDLOOK">SECONDLOOK</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />

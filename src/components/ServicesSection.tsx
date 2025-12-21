@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 const ServicesSection = () => {
   const services = [
     {
-      title: "SecondLook",
+      title: "SECONDLOOK",
       description: "Comprehensive device security analysis and passive monitoring with automated alerts for enhanced cybersecurity.",
       icon: <Shield className="h-8 w-8 text-primary" />,
       borderColor: "border-cyan-400",

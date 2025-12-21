@@ -73,7 +73,7 @@ const productIcons: Record<string, React.ElementType> = {
   'SeekCap': Search,
   'DDX': Network,
   'ParaGuard': Shield,
-  'SecondLook': Eye,
+  'SECONDLOOK': Eye,
   'Network Maintenance': Wrench,
   'Security Consulting': Briefcase,
   'Enterprise Bundle': Layers,

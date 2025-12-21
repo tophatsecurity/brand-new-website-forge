@@ -36,7 +36,7 @@ const HeroSection = () => {
     },
     {
       image: "/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png",
-      name: "SecondLook X",
+      name: "SECONDLOOK X",
       description: "Passive monitoring with automated alerts"
     }
   ];
