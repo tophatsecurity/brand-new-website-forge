@@ -27,7 +27,7 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
   const primaryLinks = getPrimaryNavLinks();
   const { userRoles, activeRole, setActiveRole } = useAuth();
   
-  // Only show role switcher for users with multiple roles or admin
+  // Show role switcher for admins (can view as any role) or users with multiple roles
   const showRoleSwitcher = isAdmin || userRoles.length > 1;
   
   return (
@@ -55,8 +55,9 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
         {user && showRoleSwitcher && (
           <RoleSwitcher 
             selectedRole={activeRole}
-            onRoleChange={(role) => setActiveRole(role as any)}
-            availableRoles={isAdmin ? ['admin', 'var', 'customer_rep', 'customer'] : userRoles}
+            onRoleChange={(role) => setActiveRole(role)}
+            availableRoles={userRoles}
+            isAdmin={isAdmin}
           />
         )}
         

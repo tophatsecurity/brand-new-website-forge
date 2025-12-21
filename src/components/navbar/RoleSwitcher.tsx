@@ -1,21 +1,24 @@
-
 import React from 'react';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Shield, User, Users, Briefcase, UserCheck } from 'lucide-react';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Shield, User, Users, Briefcase, UserCheck, ChevronDown, Check } from 'lucide-react';
+import { AppRole } from '@/hooks/useRolePermissions';
 
 interface RoleSwitcherProps {
-  selectedRole: string | null;
-  onRoleChange: (role: string) => void;
-  availableRoles?: string[];
+  selectedRole: AppRole | null;
+  onRoleChange: (role: AppRole) => void;
+  availableRoles: AppRole[];
+  isAdmin?: boolean;
 }
 
-const roleConfig = {
+const roleConfig: Record<AppRole, { label: string; icon: React.ElementType; description: string }> = {
   admin: { label: 'Admin', icon: Shield, description: 'Full access to all features' },
   var: { label: 'VAR', icon: Briefcase, description: 'Value Added Reseller access' },
   customer_rep: { label: 'Customer Rep', icon: UserCheck, description: 'Customer support access' },
@@ -24,35 +27,58 @@ const roleConfig = {
   moderator: { label: 'Moderator', icon: Shield, description: 'Moderation access' },
 };
 
+// All roles an admin can switch to for testing
+const allSwitchableRoles: AppRole[] = ['admin', 'var', 'customer_rep', 'customer'];
+
 const RoleSwitcher: React.FC<RoleSwitcherProps> = ({ 
   selectedRole, 
   onRoleChange,
-  availableRoles = ['admin', 'var', 'customer_rep', 'customer']
+  availableRoles,
+  isAdmin = false,
 }) => {
+  // If admin, show all switchable roles; otherwise show user's assigned roles
+  const displayRoles = isAdmin ? allSwitchableRoles : availableRoles;
+  
+  const currentConfig = selectedRole ? roleConfig[selectedRole] : null;
+  const CurrentIcon = currentConfig?.icon || User;
+
   return (
-    <div className="flex items-center">
-      <span className="text-sm font-medium mr-2 text-muted-foreground">View as:</span>
-      <Select value={selectedRole || undefined} onValueChange={onRoleChange}>
-        <SelectTrigger className="w-[150px] h-9">
-          <SelectValue placeholder="Select Role" />
-        </SelectTrigger>
-        <SelectContent>
-          {availableRoles.map((role) => {
-            const config = roleConfig[role as keyof typeof roleConfig];
-            if (!config) return null;
-            const IconComponent = config.icon;
-            return (
-              <SelectItem key={role} value={role} className="flex items-center">
-                <div className="flex items-center">
-                  <IconComponent className="mr-2 h-4 w-4" />
-                  <span>{config.label}</span>
-                </div>
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm" className="h-9 gap-2">
+          <CurrentIcon className="h-4 w-4" />
+          <span className="hidden sm:inline">{currentConfig?.label || 'Select Role'}</span>
+          <ChevronDown className="h-3 w-3 opacity-50" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56 bg-popover">
+        <DropdownMenuLabel className="text-xs text-muted-foreground">
+          {isAdmin ? 'View as Role' : 'Switch Role'}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {displayRoles.map((role) => {
+          const config = roleConfig[role];
+          if (!config) return null;
+          const IconComponent = config.icon;
+          const isSelected = selectedRole === role;
+          
+          return (
+            <DropdownMenuItem
+              key={role}
+              onClick={() => onRoleChange(role)}
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <IconComponent className="h-4 w-4" />
+              <div className="flex flex-col flex-1">
+                <span className="font-medium">{config.label}</span>
+                <span className="text-xs text-muted-foreground">{config.description}</span>
+              </div>
+              {isSelected && <Check className="h-4 w-4 text-primary" />}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
