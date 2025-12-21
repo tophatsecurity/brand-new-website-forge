@@ -31,6 +31,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 import AccountDetailDialog from '@/components/admin/crm/AccountDetailDialog';
+import BulkContactImportDialog from '@/components/admin/crm/BulkContactImportDialog';
 
 const CRMAdminPage = () => {
   const [activeTab, setActiveTab] = useState('accounts');
@@ -234,6 +235,9 @@ const CRMAdminPage = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
+              {activeTab === 'contacts' && (
+                <BulkContactImportDialog accounts={accounts.map(a => ({ id: a.id, name: a.name }))} />
+              )}
               <Button onClick={() => {
                 if (activeTab === 'accounts') setShowAccountDialog(true);
                 else if (activeTab === 'contacts') setShowContactDialog(true);
