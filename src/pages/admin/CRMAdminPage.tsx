@@ -22,7 +22,7 @@ import {
   Eye
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
-import { useCRMAccounts, useCRMContacts, useCRMDeals, useCRMActivities, useCRMStats, CRMAccount } from '@/hooks/useCRM';
+import { useCRMAccounts, useCRMContacts, useCRMDeals, useCRMActivities, useCRMStats, CRMAccount, CRMContact } from '@/hooks/useCRM';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -33,6 +33,7 @@ import { format } from 'date-fns';
 import AccountDetailDialog from '@/components/admin/crm/AccountDetailDialog';
 import BulkContactImportDialog from '@/components/admin/crm/BulkContactImportDialog';
 import ContactFilters, { ContactFiltersState } from '@/components/admin/crm/ContactFilters';
+import ContactDetailDialog from '@/components/admin/crm/ContactDetailDialog';
 
 const initialContactFilters: ContactFiltersState = {
   status: 'all',
@@ -55,6 +56,8 @@ const CRMAdminPage = () => {
   const [showActivityDialog, setShowActivityDialog] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<CRMAccount | null>(null);
   const [showAccountDetail, setShowAccountDetail] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<CRMContact | null>(null);
+  const [showContactDetail, setShowContactDetail] = useState(false);
   const [contactFilters, setContactFilters] = useState<ContactFiltersState>(initialContactFilters);
   
   const { data: stats, isLoading: statsLoading } = useCRMStats();
@@ -72,6 +75,11 @@ const CRMAdminPage = () => {
   const handleViewAccount = (account: CRMAccount) => {
     setSelectedAccount(account);
     setShowAccountDetail(true);
+  };
+
+  const handleViewContact = (contact: CRMContact) => {
+    setSelectedContact(contact);
+    setShowContactDetail(true);
   };
 
   const handleCreateAccount = async () => {
@@ -462,8 +470,14 @@ const CRMAdminPage = () => {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem>View Details</DropdownMenuItem>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleViewContact(contact)}>
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleViewContact(contact)}>
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
                               <DropdownMenuItem 
                                 className="text-destructive"
                                 onClick={() => deleteContact.mutate(contact.id)}
@@ -843,6 +857,14 @@ const CRMAdminPage = () => {
           account={selectedAccount}
           open={showAccountDetail}
           onOpenChange={setShowAccountDetail}
+        />
+
+        {/* Contact Detail Dialog */}
+        <ContactDetailDialog
+          contact={selectedContact}
+          accounts={accounts.map(a => ({ id: a.id, name: a.name }))}
+          open={showContactDetail}
+          onOpenChange={setShowContactDetail}
         />
       </div>
     </AdminLayout>
