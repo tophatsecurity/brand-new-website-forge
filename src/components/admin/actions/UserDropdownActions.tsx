@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -15,7 +14,8 @@ import {
   UserX,
   KeyRound,
   UserCog,
-  MoreHorizontal
+  MoreHorizontal,
+  Pencil
 } from 'lucide-react';
 
 interface UserDropdownActionsProps {
@@ -24,6 +24,7 @@ interface UserDropdownActionsProps {
   onOpenRoleDialog: () => void;
   onOpenDisableDialog: () => void;
   onOpenDeleteDialog: () => void;
+  onOpenEditDialog: () => void;
 }
 
 const UserDropdownActions = ({
@@ -31,7 +32,8 @@ const UserDropdownActions = ({
   onResetPassword,
   onOpenRoleDialog,
   onOpenDisableDialog,
-  onOpenDeleteDialog
+  onOpenDeleteDialog,
+  onOpenEditDialog
 }: UserDropdownActionsProps) => {
   return (
     <DropdownMenu>
@@ -43,6 +45,11 @@ const UserDropdownActions = ({
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>User Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        
+        <DropdownMenuItem onClick={onOpenEditDialog}>
+          <Pencil className="h-4 w-4 mr-2" />
+          Edit Details
+        </DropdownMenuItem>
         
         <DropdownMenuItem onClick={onOpenRoleDialog}>
           <UserCog className="h-4 w-4 mr-2" />

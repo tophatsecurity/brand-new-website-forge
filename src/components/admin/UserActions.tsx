@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import UserDropdownActions from './actions/UserDropdownActions';
 import ApprovalActions from './actions/ApprovalActions';
 import DeleteUserDialog from './dialogs/DeleteUserDialog';
 import DisableUserDialog from './dialogs/DisableUserDialog';
 import ChangeRoleDialog from './dialogs/ChangeRoleDialog';
+import EditUserDialog from './dialogs/EditUserDialog';
 
 interface UserActionsProps {
   user: any;
@@ -14,6 +14,7 @@ interface UserActionsProps {
   onDisableUser: (userId: string, isDisabled: boolean) => Promise<void>;
   onResetPassword: (userId: string, email: string) => Promise<void>;
   onUpdateRole: (userId: string, role: string) => Promise<void>;
+  onEditUser: (userId: string, metadata: any) => Promise<void>;
 }
 
 const UserActions = ({ 
@@ -23,11 +24,13 @@ const UserActions = ({
   onDeleteUser, 
   onDisableUser, 
   onResetPassword,
-  onUpdateRole
+  onUpdateRole,
+  onEditUser
 }: UserActionsProps) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openDisableDialog, setOpenDisableDialog] = useState(false);
   const [openRoleDialog, setOpenRoleDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
   
   const currentRole = user.user_metadata?.role || 'user';
   const [selectedRole, setSelectedRole] = useState(currentRole);
@@ -70,6 +73,7 @@ const UserActions = ({
         onOpenRoleDialog={handleOpenRoleDialog}
         onOpenDisableDialog={() => setOpenDisableDialog(true)}
         onOpenDeleteDialog={() => setOpenDeleteDialog(true)}
+        onOpenEditDialog={() => setOpenEditDialog(true)}
       />
 
       <DeleteUserDialog 
@@ -95,6 +99,13 @@ const UserActions = ({
         selectedRole={selectedRole}
         onRoleChange={setSelectedRole}
         currentRole={currentRole}
+      />
+
+      <EditUserDialog
+        open={openEditDialog}
+        onOpenChange={setOpenEditDialog}
+        onConfirm={onEditUser}
+        user={user}
       />
     </div>
   );
