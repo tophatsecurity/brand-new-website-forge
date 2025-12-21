@@ -21,11 +21,13 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
-  AlertCircle
+  AlertCircle,
+  History
 } from 'lucide-react';
 import { useCRMAccountDetails, useUnlinkedLicenses, useUnlinkedOnboarding, CRMAccount } from '@/hooks/useCRM';
 import { useCRMContacts, useCRMDeals } from '@/hooks/useCRM';
 import { format } from 'date-fns';
+import AccountTimeline from './AccountTimeline';
 
 interface AccountDetailDialogProps {
   account: CRMAccount | null;
@@ -108,10 +110,14 @@ const AccountDetailDialog = ({ account, open, onOpenChange }: AccountDetailDialo
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview" className="gap-1">
               <Building2 className="h-4 w-4" />
               Overview
+            </TabsTrigger>
+            <TabsTrigger value="timeline" className="gap-1">
+              <History className="h-4 w-4" />
+              Timeline
             </TabsTrigger>
             <TabsTrigger value="licenses" className="gap-1">
               <Key className="h-4 w-4" />
@@ -205,6 +211,12 @@ const AccountDetailDialog = ({ account, open, onOpenChange }: AccountDetailDialo
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          {/* Timeline Tab */}
+          <TabsContent value="timeline" className="space-y-4">
+            <h3 className="text-lg font-medium">Activity Timeline</h3>
+            <AccountTimeline accountId={account.id} />
           </TabsContent>
 
           {/* Licenses Tab */}
