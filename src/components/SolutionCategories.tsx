@@ -47,6 +47,7 @@ const SolutionCategories = () => {
       ],
       products: [
         { name: "DDX", path: "/ddx", desc: "Software Composition Analysis" },
+        { name: "ONBOARD", path: "/onboard", desc: "Hardware Board Forensics" },
         { name: "SeekCap", path: "/seekcap", desc: "Network Asset Discovery" }
       ],
       color: "from-blue-500/20 to-blue-600/10",
