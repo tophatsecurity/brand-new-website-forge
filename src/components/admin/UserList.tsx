@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import {
@@ -12,6 +11,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import UserActions from './UserActions';
 import UserPermissions from './UserPermissions';
+import { APP_ROLES } from './dialogs/ChangeRoleDialog';
 
 interface UserListProps {
   users: any[];
@@ -73,11 +73,17 @@ const UserList = ({
                 )}
               </TableCell>
               <TableCell>
-                <Badge variant="outline" className={user.user_metadata?.role === 'admin' 
-                  ? "bg-purple-100 text-purple-800 border-purple-200"
-                  : "bg-blue-100 text-blue-800 border-blue-200"}>
-                  {user.user_metadata?.role || 'User'}
-                </Badge>
+                {(() => {
+                  const userRole = user.user_metadata?.role || 'user';
+                  const roleInfo = APP_ROLES.find(r => r.value === userRole);
+                  const RoleIcon = roleInfo?.icon;
+                  return (
+                    <Badge variant="outline" className={roleInfo?.color || "bg-blue-100 text-blue-800"}>
+                      {RoleIcon && <RoleIcon className="h-3 w-3 mr-1" />}
+                      {roleInfo?.label || userRole}
+                    </Badge>
+                  );
+                })()}
               </TableCell>
               <TableCell>
                 <UserPermissions 
