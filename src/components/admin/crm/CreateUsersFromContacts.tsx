@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { UserPlus, Loader2, CheckCircle, AlertCircle, Key, Copy } from 'lucide-react';
+import { UserPlus, Loader2, CheckCircle, AlertCircle, Key, Copy, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -43,6 +43,7 @@ const CreateUsersFromContacts = ({
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [createLicenses, setCreateLicenses] = useState(false);
+  const [sendEmailNotification, setSendEmailNotification] = useState(true);
   const [userRole, setUserRole] = useState<string>('customer');
   const [licenseTiers, setLicenseTiers] = useState<{ id: string; name: string }[]>([]);
   const [selectedTierId, setSelectedTierId] = useState<string>('');
@@ -52,6 +53,7 @@ const CreateUsersFromContacts = ({
   const [results, setResults] = useState<{
     usersCreated: number;
     licensesCreated: number;
+    emailsSent: number;
     failed: number;
     errors: string[];
     created: CreatedUser[];
@@ -121,6 +123,8 @@ const CreateUsersFromContacts = ({
               seats,
               years: licenseYears,
             } : null,
+            sendEmailNotification,
+            loginUrl: `${window.location.origin}/login`,
           }),
         }
       );
@@ -139,7 +143,10 @@ const CreateUsersFromContacts = ({
         
         let message = `Created ${data.usersCreated} users`;
         if (data.licensesCreated > 0) {
-          message += ` and ${data.licensesCreated} licenses`;
+          message += `, ${data.licensesCreated} licenses`;
+        }
+        if (data.emailsSent > 0) {
+          message += `, sent ${data.emailsSent} emails`;
         }
         toast.success(message);
       }
@@ -211,6 +218,19 @@ const CreateUsersFromContacts = ({
                   <SelectItem value="customer_rep">Customer Rep</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Email notification option */}
+            <div className="flex items-center space-x-2 p-4 border rounded-lg bg-muted/30">
+              <Checkbox
+                id="sendEmail"
+                checked={sendEmailNotification}
+                onCheckedChange={(checked) => setSendEmailNotification(checked as boolean)}
+              />
+              <Label htmlFor="sendEmail" className="flex items-center gap-2 cursor-pointer">
+                <Mail className="h-4 w-4" />
+                Send login credentials via email
+              </Label>
             </div>
 
             {/* License creation option */}
@@ -302,6 +322,7 @@ const CreateUsersFromContacts = ({
               <span className="font-medium">
                 Created {results.usersCreated} users
                 {results.licensesCreated > 0 && `, ${results.licensesCreated} licenses`}
+                {results.emailsSent > 0 && `, sent ${results.emailsSent} emails`}
               </span>
             </div>
 

@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { action, userId, email, password, metadata, role, banDuration, users, contacts, createLicenses, licenseConfig } = await req.json()
+    const { action, userId, email, password, metadata, role, banDuration, users, contacts, createLicenses, licenseConfig, sendEmailNotification, loginUrl } = await req.json()
 
     let result
 
@@ -112,6 +112,7 @@ Deno.serve(async (req) => {
         const contactResults = {
           usersCreated: 0,
           licensesCreated: 0,
+          emailsSent: 0,
           failed: 0,
           errors: [] as string[],
           created: [] as any[]
@@ -178,6 +179,45 @@ Deno.serve(async (req) => {
             })
             console.log(`Created user from contact: ${contact.email} with role: ${userRole}`)
 
+            // Send email notification with credentials if requested
+            if (sendEmailNotification && createdUser.user) {
+              try {
+                const emailResponse = await fetch(
+                  `${supabaseUrl}/functions/v1/send-email-postmark`,
+                  {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${serviceRoleKey}`,
+                    },
+                    body: JSON.stringify({
+                      to: contact.email,
+                      subject: 'Your Top Hat Security Account Has Been Created',
+                      template: 'account_credentials',
+                      data: {
+                        firstName: contact.first_name,
+                        email: contact.email,
+                        tempPassword: tempPassword,
+                        loginUrl: loginUrl || null,
+                      },
+                    }),
+                  }
+                )
+
+                if (emailResponse.ok) {
+                  contactResults.emailsSent++
+                  console.log(`Sent credentials email to: ${contact.email}`)
+                } else {
+                  const emailError = await emailResponse.json()
+                  contactResults.errors.push(`Email to ${contact.email}: ${emailError.error || 'Failed to send'}`)
+                  console.error(`Failed to send email to ${contact.email}:`, emailError)
+                }
+              } catch (emailErr: any) {
+                contactResults.errors.push(`Email to ${contact.email}: ${emailErr.message}`)
+                console.error(`Error sending email to ${contact.email}:`, emailErr.message)
+              }
+            }
+
             // Create license if requested
             if (createLicenses && licenseConfig && createdUser.user) {
               try {
@@ -225,7 +265,7 @@ Deno.serve(async (req) => {
         }
 
         result = contactResults
-        console.log(`Create from contacts completed: ${contactResults.usersCreated} users, ${contactResults.licensesCreated} licenses, ${contactResults.failed} failed`)
+        console.log(`Create from contacts completed: ${contactResults.usersCreated} users, ${contactResults.licensesCreated} licenses, ${contactResults.emailsSent} emails, ${contactResults.failed} failed`)
         break
 
       case 'update':
