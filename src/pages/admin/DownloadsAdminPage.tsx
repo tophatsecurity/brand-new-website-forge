@@ -35,8 +35,9 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO } from 'date-fns';
-import { Trash, PencilIcon, Plus, Package } from 'lucide-react';
+import { Trash, PencilIcon, Plus, Package, TrendingUp, BarChart3, Users } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type CatalogItem = {
   id: string;
@@ -54,6 +55,14 @@ type Download = {
   is_latest: boolean;
   catalog_id: string | null;
   catalog?: CatalogItem | null;
+  download_count?: number;
+};
+
+type DownloadStats = {
+  download_id: string;
+  total_downloads: number;
+  unique_users: number;
+  last_downloaded_at: string | null;
 };
 
 const DownloadsAdminPage = () => {
@@ -109,6 +118,34 @@ const DownloadsAdminPage = () => {
       return data as Download[];
     }
   });
+
+  // Fetch download statistics
+  const { data: downloadStats } = useQuery({
+    queryKey: ['download-statistics'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('download_statistics')
+        .select('download_id');
+        
+      if (error) throw error;
+      
+      // Count downloads per download_id
+      const counts: Record<string, number> = {};
+      data?.forEach(stat => {
+        counts[stat.download_id] = (counts[stat.download_id] || 0) + 1;
+      });
+      return counts;
+    }
+  });
+
+  // Calculate totals
+  const totalDownloads = downloadStats ? Object.values(downloadStats).reduce((sum, count) => sum + count, 0) : 0;
+  const topDownload = downloads?.reduce((top, dl) => {
+    const count = downloadStats?.[dl.id] || 0;
+    const topCount = downloadStats?.[top?.id || ''] || 0;
+    return count > topCount ? dl : top;
+  }, downloads?.[0]);
+  const topDownloadCount = topDownload ? (downloadStats?.[topDownload.id] || 0) : 0;
 
   const handleCatalogChange = (catalogId: string) => {
     const selectedCatalog = catalogItems.find(c => c.id === catalogId);
@@ -279,6 +316,40 @@ const DownloadsAdminPage = () => {
 
   return (
     <AdminLayout title="Manage Downloads">
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Downloads</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalDownloads}</div>
+            <p className="text-xs text-muted-foreground">All time downloads</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Available Files</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{downloads?.length || 0}</div>
+            <p className="text-xs text-muted-foreground">Products available</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Most Popular</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg font-bold truncate">{topDownload?.product_name || 'N/A'}</div>
+            <p className="text-xs text-muted-foreground">{topDownloadCount} downloads</p>
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="flex justify-end mb-4">
         <Button className="flex items-center gap-2" onClick={handleAddNew}>
           <Plus className="h-4 w-4" />
@@ -414,6 +485,7 @@ const DownloadsAdminPage = () => {
                 <TableHead>Type</TableHead>
                 <TableHead>Version</TableHead>
                 <TableHead>Release Date</TableHead>
+                <TableHead>Downloads</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -421,19 +493,19 @@ const DownloadsAdminPage = () => {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={8} className="text-center py-8">
                     Loading downloads...
                   </TableCell>
                 </TableRow>
               ) : error ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-red-500">
+                  <TableCell colSpan={8} className="text-center py-8 text-red-500">
                     Error loading downloads: {(error as Error).message}
                   </TableCell>
                 </TableRow>
               ) : downloads && downloads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={8} className="text-center py-8">
                     No downloads found. Add your first download.
                   </TableCell>
                 </TableRow>
@@ -456,6 +528,11 @@ const DownloadsAdminPage = () => {
                     </TableCell>
                     <TableCell>v{download.version}</TableCell>
                     <TableCell>{format(parseISO(download.release_date), 'MMM dd, yyyy')}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="font-mono">
+                        {downloadStats?.[download.id] || 0}
+                      </Badge>
+                    </TableCell>
                     <TableCell>
                       {download.is_latest ? (
                         <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Latest</Badge>
