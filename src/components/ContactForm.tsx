@@ -12,7 +12,17 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Loader2, Send } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+
+const PRODUCT_OPTIONS = [
+  { value: "ALL", label: "All Products" },
+  { value: "LIGHTFOOT", label: "LIGHTFOOT" },
+  { value: "O-RANGE", label: "O-RANGE" },
+  { value: "SEEKCAP", label: "SEEKCAP" },
+  { value: "SECONDLOOK", label: "SECONDLOOK" },
+  { value: "DDX", label: "DDX" },
+  { value: "PARAGUARD", label: "PARAGUARD" },
+  { value: "PERPETUAL", label: "PERPETUAL" },
+];
 
 const contactFormSchema = z.object({
   firstName: z.string().trim().min(1, 'First name is required').max(50, 'First name must be less than 50 characters'),
@@ -30,20 +40,6 @@ type ContactFormData = z.infer<typeof contactFormSchema>;
 const ContactForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: products = [] } = useQuery({
-    queryKey: ['catalog-products'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('license_catalog')
-        .select('id, product_name')
-        .eq('is_active', true)
-        .order('product_name');
-      
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -52,7 +48,7 @@ const ContactForm = () => {
       email: '',
       phone: '',
       company: '',
-      productInterest: '',
+      productInterest: 'ALL',
       message: '',
       createDemoAccount: false,
     },
@@ -231,9 +227,9 @@ const ContactForm = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {products.map((product) => (
-                        <SelectItem key={product.id} value={product.product_name}>
-                          {product.product_name}
+                      {PRODUCT_OPTIONS.map((product) => (
+                        <SelectItem key={product.value} value={product.value}>
+                          {product.label}
                         </SelectItem>
                       ))}
                       <SelectItem value="General Inquiry">General Inquiry</SelectItem>
