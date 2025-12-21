@@ -38,6 +38,7 @@ import { format, parseISO } from 'date-fns';
 import { Trash, PencilIcon, Plus, Package, TrendingUp, BarChart3, Users } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DownloadTrendsChart } from '@/components/admin/downloads/DownloadTrendsChart';
 
 type CatalogItem = {
   id: string;
@@ -348,6 +349,11 @@ const DownloadsAdminPage = () => {
             <p className="text-xs text-muted-foreground">{topDownloadCount} downloads</p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Download Trends Chart */}
+      <div className="mb-6">
+        <DownloadTrendsChart />
       </div>
 
       <div className="flex justify-end mb-4">
