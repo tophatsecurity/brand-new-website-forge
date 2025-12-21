@@ -2,6 +2,7 @@
 import React from 'react';
 import MainLayout from '@/components/layouts/MainLayout';
 import HeroSection from '@/components/HeroSection';
+import SolutionCategories from '@/components/SolutionCategories';
 import ProductsSection from '@/components/ProductsSection';
 import ProductCategories from '@/components/ProductCategories';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,10 @@ const Index = () => {
     <MainLayout fullWidth paddingTop="none">
       <HeroSection />
       
-      <div className="bg-gray-50">
+      {/* Main Solution Categories - What We Do */}
+      <SolutionCategories />
+      
+      <div className="bg-muted/30">
         <div className="max-w-7xl mx-auto px-6 py-16">
           <ProductCategories />
           <div className="text-center mt-10">
