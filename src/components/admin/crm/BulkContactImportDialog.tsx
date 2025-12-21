@@ -248,7 +248,7 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
     URL.revokeObjectURL(url);
   };
 
-  // Helper function to create or get existing account from company name
+  // Helper function to create or get existing account from company name, populated with contact data
   const getOrCreateAccount = async (companyName: string, contact: ParsedContact): Promise<string | null> => {
     if (!companyName || !createAccountsFromCompany) return null;
 
@@ -278,21 +278,28 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
       return existingDbAccount.id;
     }
 
-    // Create new account
+    // Create new account populated with contact data
     const accountData: any = {
       name: companyName.trim(),
-      account_type: accountType === 'customer' ? 'customer' : 'free',
+      account_type: accountType === 'customer' ? 'customer' : 'prospect',
       status: 'active',
-      industry: defaultIndustry || contact.industry || null,
-      country: defaultCountry || contact.country || null,
-      city: contact.city || null,
-      state: contact.state || null,
-      postal_code: contact.postal_code || null,
-      address_line1: contact.address_line1 || null,
-      tags: [(customLeadSource || leadSource).replace(/\s+/g, '-').toLowerCase()],
-      notes: `Auto-created from contact import (${customLeadSource || leadSource})`,
     };
 
+    // Populate account fields from contact data
+    if (contact.industry || defaultIndustry) accountData.industry = defaultIndustry || contact.industry;
+    if (contact.country || defaultCountry) accountData.country = defaultCountry || contact.country;
+    if (contact.city) accountData.city = contact.city;
+    if (contact.state) accountData.state = contact.state;
+    if (contact.postal_code) accountData.postal_code = contact.postal_code;
+    if (contact.address_line1) accountData.address_line1 = contact.address_line1;
+    if (contact.phone) accountData.phone = contact.phone;
+    if (contact.email) accountData.email = contact.email;
+    
+    // Add tags and notes
+    accountData.tags = [(customLeadSource || leadSource).replace(/\s+/g, '-').toLowerCase()];
+    accountData.notes = `Auto-created from contact import (${customLeadSource || leadSource})`;
+
+    // Assign owner if specified
     if (defaultOwnerId && defaultOwnerId !== 'none') {
       accountData.owner_id = defaultOwnerId;
     }
