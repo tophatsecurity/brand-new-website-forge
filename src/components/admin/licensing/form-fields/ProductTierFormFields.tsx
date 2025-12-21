@@ -32,6 +32,10 @@ const ProductTierFormFields: React.FC<ProductTierFormFieldsProps> = ({ form, tie
                 <SelectItem value="DDX">DDX</SelectItem>
                 <SelectItem value="PARAGUARD">PARAGUARD</SelectItem>
                 <SelectItem value="SECONDLOOK">SECONDLOOK</SelectItem>
+                <SelectItem value="LIGHTFOOT">LIGHTFOOT</SelectItem>
+                <SelectItem value="O-RANGE">O-RANGE</SelectItem>
+                <SelectItem value="ONBOARD">ONBOARD</SelectItem>
+                <SelectItem value="AURORASENSE">AURORASENSE</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
