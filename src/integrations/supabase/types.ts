@@ -65,10 +65,14 @@ export type Database = {
           notes: string | null
           owner_id: string | null
           parent_account_id: string | null
+          payment_approved_by: string | null
+          payment_verified: boolean | null
+          payment_verified_at: string | null
           phone: string | null
           postal_code: string | null
           state: string | null
           status: string | null
+          stripe_customer_id: string | null
           tags: string[] | null
           updated_at: string
           website: string | null
@@ -90,10 +94,14 @@ export type Database = {
           notes?: string | null
           owner_id?: string | null
           parent_account_id?: string | null
+          payment_approved_by?: string | null
+          payment_verified?: boolean | null
+          payment_verified_at?: string | null
           phone?: string | null
           postal_code?: string | null
           state?: string | null
           status?: string | null
+          stripe_customer_id?: string | null
           tags?: string[] | null
           updated_at?: string
           website?: string | null
@@ -115,10 +123,14 @@ export type Database = {
           notes?: string | null
           owner_id?: string | null
           parent_account_id?: string | null
+          payment_approved_by?: string | null
+          payment_verified?: boolean | null
+          payment_verified_at?: string | null
           phone?: string | null
           postal_code?: string | null
           state?: string | null
           status?: string | null
+          stripe_customer_id?: string | null
           tags?: string[] | null
           updated_at?: string
           website?: string | null
@@ -449,6 +461,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "customer_onboarding_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "crm_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_payment_methods: {
+        Row: {
+          account_id: string | null
+          card_brand: string | null
+          card_exp_month: number | null
+          card_exp_year: number | null
+          card_last4: string | null
+          created_at: string
+          id: string
+          is_default: boolean | null
+          stripe_customer_id: string
+          stripe_payment_method_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id?: string | null
+          card_brand?: string | null
+          card_exp_month?: number | null
+          card_exp_year?: number | null
+          card_last4?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          stripe_customer_id: string
+          stripe_payment_method_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string | null
+          card_brand?: string | null
+          card_exp_month?: number | null
+          card_exp_year?: number | null
+          card_last4?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          stripe_customer_id?: string
+          stripe_payment_method_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_payment_methods_account_id_fkey"
             columns: ["account_id"]
             isOneToOne: false
             referencedRelation: "crm_accounts"

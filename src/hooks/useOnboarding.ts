@@ -169,6 +169,26 @@ export const useOnboarding = () => {
         })
         .eq('id', onboarding.id);
 
+      // If all steps completed, create CRM Account and Contact
+      if (allCompleted) {
+        try {
+          const { data, error: crmError } = await supabase.functions.invoke('create-crm-from-onboarding', {
+            body: {
+              onboarding_id: onboarding.id,
+              user_id: user?.id
+            }
+          });
+          
+          if (crmError) {
+            console.error('Error creating CRM records:', crmError);
+          } else {
+            console.log('CRM records created:', data);
+          }
+        } catch (error) {
+          console.error('Failed to create CRM records:', error);
+        }
+      }
+
       await fetchOnboarding();
     }
 
