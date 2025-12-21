@@ -47,6 +47,7 @@ import CreditsAdminPage from "./pages/admin/CreditsAdminPage";
 import OnboardingAdminPage from "./pages/admin/OnboardingAdminPage";
 import SettingsAdminPage from "./pages/admin/SettingsAdminPage";
 import CRMAdminPage from "./pages/admin/CRMAdminPage";
+import RoleAssignmentPage from "./pages/admin/RoleAssignmentPage";
 import Onboarding from "./pages/Onboarding";
 const queryClient = new QueryClient();
 
@@ -117,6 +118,11 @@ const App = () => (
               <Route path="/admin/users" element={
                 <AdminRoute>
                   <UsersPage />
+                </AdminRoute>
+              } />
+              <Route path="/admin/roles" element={
+                <AdminRoute>
+                  <RoleAssignmentPage />
                 </AdminRoute>
               } />
               <Route path="/admin/actions" element={

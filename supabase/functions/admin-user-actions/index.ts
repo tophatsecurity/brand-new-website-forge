@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { action, userId, email, password, metadata, role, banDuration, users, contacts, createLicenses, licenseConfig, sendEmailNotification, loginUrl, userIds } = await req.json()
+    const { action, userId, email, password, metadata, role, roles, banDuration, users, contacts, createLicenses, licenseConfig, sendEmailNotification, loginUrl, userIds } = await req.json()
 
     let result
 
@@ -400,6 +400,45 @@ Deno.serve(async (req) => {
           ...bulkResults 
         }
         console.log(`Bulk role update completed: ${bulkResults.success} success, ${bulkResults.failed} failed`)
+        break
+
+      case 'updateRoles':
+        // Update multiple roles for a single user
+        if (!userId) {
+          throw new Error('No user ID provided')
+        }
+        if (!roles || !Array.isArray(roles) || roles.length === 0) {
+          throw new Error('No roles provided')
+        }
+
+        // Delete all existing roles for the user
+        const { error: deleteRolesError } = await supabaseAdmin
+          .from('user_roles')
+          .delete()
+          .eq('user_id', userId)
+
+        if (deleteRolesError) throw deleteRolesError
+
+        // Insert new roles
+        const roleInserts = roles.map((r: string) => ({
+          user_id: userId,
+          role: r
+        }))
+
+        const { error: insertRolesError } = await supabaseAdmin
+          .from('user_roles')
+          .insert(roleInserts)
+
+        if (insertRolesError) throw insertRolesError
+
+        // Update auth metadata with primary role (first role in array, prefer admin)
+        const primaryRole = roles.includes('admin') ? 'admin' : roles[0]
+        await supabaseAdmin.auth.admin.updateUserById(userId, {
+          user_metadata: { role: primaryRole }
+        })
+
+        result = { message: `Updated ${roles.length} roles for user` }
+        console.log(`Updated roles for ${userId}: ${roles.join(', ')}`)
         break
 
       default:
