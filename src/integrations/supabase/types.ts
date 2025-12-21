@@ -974,34 +974,40 @@ export type Database = {
         Row: {
           catalog_id: string | null
           description: string | null
+          file_size: number | null
           file_url: string
           id: string
           is_latest: boolean
           product_name: string
           product_type: string
           release_date: string
+          sha256_hash: string | null
           version: string
         }
         Insert: {
           catalog_id?: string | null
           description?: string | null
+          file_size?: number | null
           file_url: string
           id?: string
           is_latest?: boolean
           product_name: string
           product_type: string
           release_date?: string
+          sha256_hash?: string | null
           version: string
         }
         Update: {
           catalog_id?: string | null
           description?: string | null
+          file_size?: number | null
           file_url?: string
           id?: string
           is_latest?: boolean
           product_name?: string
           product_type?: string
           release_date?: string
+          sha256_hash?: string | null
           version?: string
         }
         Relationships: [

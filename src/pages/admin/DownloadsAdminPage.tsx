@@ -35,10 +35,11 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO } from 'date-fns';
-import { Trash, PencilIcon, Plus, Package, TrendingUp, BarChart3, Users } from 'lucide-react';
+import { Trash, PencilIcon, Plus, Package, TrendingUp, BarChart3, Users, Upload, FileCheck, Loader2 } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DownloadTrendsChart } from '@/components/admin/downloads/DownloadTrendsChart';
+import { Progress } from '@/components/ui/progress';
 
 type CatalogItem = {
   id: string;
@@ -57,6 +58,8 @@ type Download = {
   catalog_id: string | null;
   catalog?: CatalogItem | null;
   download_count?: number;
+  sha256_hash?: string | null;
+  file_size?: number | null;
 };
 
 type DownloadStats = {
@@ -75,6 +78,8 @@ const DownloadsAdminPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [formData, setFormData] = useState({
     product_name: '',
     product_type: '',
@@ -83,7 +88,9 @@ const DownloadsAdminPage = () => {
     description: '',
     file_url: '',
     is_latest: false,
-    catalog_id: '' as string | null
+    catalog_id: '' as string | null,
+    sha256_hash: '' as string | null,
+    file_size: null as number | null
   });
   
   if (!user || user.user_metadata?.role !== 'admin') {
@@ -161,6 +168,72 @@ const DownloadsAdminPage = () => {
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+      formDataUpload.append('product_name', formData.product_name || 'unknown');
+      formDataUpload.append('version', formData.version || '1.0.0');
+
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 10, 90));
+      }, 200);
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+
+      const response = await fetch(
+        `https://saveabkhpaemynlfcgcy.supabase.co/functions/v1/upload-download-file`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formDataUpload,
+        }
+      );
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
+
+      const result = await response.json();
+
+      setFormData(prev => ({
+        ...prev,
+        file_url: result.file_url,
+        sha256_hash: result.sha256_hash,
+        file_size: result.file_size
+      }));
+
+      toast({
+        title: "File Uploaded",
+        description: `SHA256: ${result.sha256_hash.substring(0, 16)}...`,
+      });
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      toast({
+        title: "Upload Failed",
+        description: err.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
   const handleSetLatest = async (id: string, productName: string, productType: string) => {
     try {
       const { error: updateError } = await supabase
@@ -205,7 +278,9 @@ const DownloadsAdminPage = () => {
         description: formData.description,
         file_url: formData.file_url,
         is_latest: formData.is_latest,
-        catalog_id: formData.catalog_id || null
+        catalog_id: formData.catalog_id || null,
+        sha256_hash: formData.sha256_hash || null,
+        file_size: formData.file_size || null
       };
 
       if (editingDownload) {
@@ -241,7 +316,9 @@ const DownloadsAdminPage = () => {
         description: '',
         file_url: '',
         is_latest: false,
-        catalog_id: null
+        catalog_id: null,
+        sha256_hash: null,
+        file_size: null
       });
       setEditingDownload(null);
       setIsDialogOpen(false);
@@ -295,7 +372,9 @@ const DownloadsAdminPage = () => {
       description: download.description || '',
       file_url: download.file_url,
       is_latest: download.is_latest,
-      catalog_id: download.catalog_id
+      catalog_id: download.catalog_id,
+      sha256_hash: download.sha256_hash || null,
+      file_size: download.file_size || null
     });
     setIsDialogOpen(true);
   };
@@ -310,7 +389,9 @@ const DownloadsAdminPage = () => {
       description: '',
       file_url: '',
       is_latest: false,
-      catalog_id: null
+      catalog_id: null,
+      sha256_hash: null,
+      file_size: null
     });
     setIsDialogOpen(true);
   };
@@ -443,15 +524,86 @@ const DownloadsAdminPage = () => {
                 />
               </div>
             </div>
+            {/* File Upload Section */}
+            <div className="space-y-2">
+              <Label>Upload File</Label>
+              <div className="border-2 border-dashed border-border rounded-lg p-4">
+                <div className="flex flex-col items-center gap-2">
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">Uploading...</p>
+                      <Progress value={uploadProgress} className="w-full" />
+                    </>
+                  ) : formData.file_url ? (
+                    <>
+                      <FileCheck className="h-8 w-8 text-green-500" />
+                      <p className="text-sm text-muted-foreground">File uploaded successfully</p>
+                      <label className="cursor-pointer">
+                        <span className="text-sm text-primary hover:underline">Replace file</span>
+                        <input
+                          type="file"
+                          className="hidden"
+                          onChange={handleFileUpload}
+                          disabled={isUploading}
+                        />
+                      </label>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-8 w-8 text-muted-foreground" />
+                      <label className="cursor-pointer">
+                        <span className="text-sm text-primary hover:underline">Click to upload file</span>
+                        <input
+                          type="file"
+                          className="hidden"
+                          onChange={handleFileUpload}
+                          disabled={isUploading}
+                        />
+                      </label>
+                      <p className="text-xs text-muted-foreground">Or enter URL manually below</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="file_url">File URL</Label>
               <Input 
                 id="file_url"
                 value={formData.file_url}
                 onChange={(e) => setFormData({...formData, file_url: e.target.value})}
+                placeholder="https://..."
                 required
               />
             </div>
+
+            {/* SHA256 Hash Display */}
+            {formData.sha256_hash && (
+              <div className="space-y-2">
+                <Label>SHA256 Hash</Label>
+                <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
+                  <code className="text-xs break-all flex-1">{formData.sha256_hash}</code>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(formData.sha256_hash || '');
+                      toast({ title: "Copied", description: "SHA256 hash copied to clipboard" });
+                    }}
+                  >
+                    Copy
+                  </Button>
+                </div>
+                {formData.file_size && (
+                  <p className="text-xs text-muted-foreground">
+                    File size: {(formData.file_size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                )}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea 
