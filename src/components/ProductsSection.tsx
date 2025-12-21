@@ -41,9 +41,9 @@ const ProductsSection = () => {
           link: "/ddx"
         },
         {
-          title: "SecondLook XBOM",
+          title: "SECONDLOOK XBOM",
           description: "Comprehensive Bill of Materials Intelligence for software, hardware, and firmware components.",
-          longDescription: "SecondLook XBOM platform provides detailed analysis and risk assessment for Software, Hardware, and Firmware Bills of Materials, ensuring complete transparency in your supply chain components.",
+          longDescription: "SECONDLOOK XBOM platform provides detailed analysis and risk assessment for Software, Hardware, and Firmware Bills of Materials, ensuring complete transparency in your supply chain components.",
           icon: <FileCheck className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/secondlook"

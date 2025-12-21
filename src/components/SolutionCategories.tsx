@@ -30,7 +30,7 @@ const SolutionCategories = () => {
       ],
       products: [
         { name: "PARAGUARD", path: "/paraguard", desc: "AI-Native Endpoint Security" },
-        { name: "SecondLook", path: "/secondlook", desc: "AI Forensics & Detection" }
+        { name: "SECONDLOOK", path: "/secondlook", desc: "AI Forensics & Detection" }
       ],
       color: "from-purple-500/20 to-purple-600/10",
       iconColor: "text-purple-600"

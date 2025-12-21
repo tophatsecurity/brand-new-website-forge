@@ -19,7 +19,7 @@ const SecondLook = () => {
             <Badge variant="outline" className="mb-4 px-3 py-1 text-sm font-medium text-[#cc0c1a] border-[#cc0c1a]">
               Advanced Security Solutions
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">SecondLook Security Platform</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">SECONDLOOK Security Platform</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
               Comprehensive security monitoring and supply chain intelligence
             </p>
@@ -40,7 +40,7 @@ const SecondLook = () => {
                 <div className="relative bg-white rounded-xl overflow-hidden border p-8 shadow-md">
                   <img 
                     src="/lovable-uploads/1428d007-5f52-4f4a-bd6a-d65352b9db3d.png" 
-                    alt="SecondLook Security Dashboard" 
+                    alt="SECONDLOOK Security Dashboard" 
                     className="w-full h-auto rounded-lg shadow-md"
                   />
                 </div>
@@ -52,7 +52,7 @@ const SecondLook = () => {
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="passive" className="flex items-center gap-2">
                 <Shield className="h-4 w-4" />
-                <span>SecondLook X</span>
+                <span>SECONDLOOK X</span>
               </TabsTrigger>
               <TabsTrigger value="sbom" className="flex items-center gap-2">
                 <FileCheck className="h-4 w-4" />
@@ -68,11 +68,11 @@ const SecondLook = () => {
                     <div className="bg-white p-2 rounded-full mb-6">
                       <img 
                         src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
-                        alt="SecondLook Security" 
+                        alt="SECONDLOOK Security" 
                         className="h-40 md:h-48"
                       />
                     </div>
-                    <h3 className="text-2xl font-bold mb-2">SecondLook X</h3>
+                    <h3 className="text-2xl font-bold mb-2">SECONDLOOK X</h3>
                     <p className="text-center text-muted-foreground">
                       Protection against the 65% of attacks that traditional systems miss
                     </p>
@@ -89,11 +89,11 @@ const SecondLook = () => {
                     <div className="bg-white p-2 rounded-full mb-6">
                       <img 
                         src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png" 
-                        alt="SecondLook XBOM Platform" 
+                        alt="SECONDLOOK XBOM Platform" 
                         className="h-40 md:h-48"
                       />
                     </div>
-                    <h3 className="text-2xl font-bold mb-2">SecondLook XBOM Platform</h3>
+                    <h3 className="text-2xl font-bold mb-2">SECONDLOOK XBOM Platform</h3>
                     <p className="text-center text-muted-foreground">
                       Comprehensive bill of materials intelligence for software, hardware, and firmware
                     </p>
@@ -106,7 +106,7 @@ const SecondLook = () => {
           <div className="text-center mb-8">
             <Link to="/contact">
               <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
-                Learn More About SecondLook
+                Learn More About SECONDLOOK
               </Button>
             </Link>
           </div>
@@ -118,7 +118,7 @@ const SecondLook = () => {
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">Ready to secure your supply chain?</h2>
             <p className="mb-8 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Contact us today to learn how our SecondLook platform can help identify and mitigate risks in your software supply chain.
+              Contact us today to learn how our SECONDLOOK platform can help identify and mitigate risks in your software supply chain.
             </p>
             <Link 
               to="/contact" 
@@ -127,7 +127,7 @@ const SecondLook = () => {
               Request a Demo
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
-              © 2025 Tophat Security Inc - SecondLook - www.tophatsecurity.com
+              © 2025 Tophat Security Inc - SECONDLOOK - www.tophatsecurity.com
             </p>
           </div>
         </div>

@@ -12,7 +12,7 @@ const Services = () => {
     {
       title: "Cyber Defense Services",
       description: "Our cyber defense services help organizations identify, prevent, and respond to security threats across their digital landscape.",
-      services: ["SecondLook", "Device Assessment", "Technical Cyber Supply Chain Analysis"]
+      services: ["SECONDLOOK", "Device Assessment", "Technical Cyber Supply Chain Analysis"]
     },
     {
       title: "Compliance & Regulatory Services",
