@@ -26,6 +26,8 @@ const APP_ROLES = [
   { value: 'var', label: 'VAR', description: 'Value Added Reseller partner', icon: Briefcase, color: 'bg-orange-100 text-orange-800' },
   { value: 'customer_rep', label: 'Customer Rep', description: 'Customer support representative', icon: Headphones, color: 'bg-cyan-100 text-cyan-800' },
   { value: 'customer', label: 'Customer', description: 'Licensed customer account', icon: Users, color: 'bg-indigo-100 text-indigo-800' },
+  { value: 'account_rep', label: 'Account Rep', description: 'Account representative', icon: Briefcase, color: 'bg-emerald-100 text-emerald-800' },
+  { value: 'marketing', label: 'Marketing', description: 'Marketing team member', icon: Users, color: 'bg-pink-100 text-pink-800' },
 ] as const;
 
 export type AppRole = typeof APP_ROLES[number]['value'];
