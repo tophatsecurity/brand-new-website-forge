@@ -454,6 +454,7 @@ const CRMAdminPage = () => {
               <ContactBulkActions
                 selectedIds={selectedContactIds}
                 accounts={accounts.map(a => ({ id: a.id, name: a.name }))}
+                contacts={contacts}
                 onClearSelection={clearContactSelection}
                 onDelete={(ids) => ids.forEach(id => deleteContact.mutate(id))}
               />

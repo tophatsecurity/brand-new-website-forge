@@ -11,10 +11,12 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building2, UserCheck, Users, X, Trash2 } from 'lucide-react';
+import { Building2, UserCheck, Users, X, Trash2, UserPlus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { CRMContact } from '@/hooks/useCRM';
+import CreateUsersFromContacts from './CreateUsersFromContacts';
 
 interface TeamMember {
   id: string;
@@ -25,6 +27,7 @@ interface TeamMember {
 interface ContactBulkActionsProps {
   selectedIds: string[];
   accounts: { id: string; name: string }[];
+  contacts?: CRMContact[];
   onClearSelection: () => void;
   onDelete: (ids: string[]) => void;
 }
@@ -32,6 +35,7 @@ interface ContactBulkActionsProps {
 const ContactBulkActions = ({ 
   selectedIds, 
   accounts, 
+  contacts = [],
   onClearSelection,
   onDelete 
 }: ContactBulkActionsProps) => {
@@ -39,11 +43,15 @@ const ContactBulkActions = ({
   const [showAssignAccountDialog, setShowAssignAccountDialog] = useState(false);
   const [showAssignOwnerDialog, setShowAssignOwnerDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showCreateUsersDialog, setShowCreateUsersDialog] = useState(false);
   const [selectedAccountId, setSelectedAccountId] = useState<string>('');
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>('');
   const [ownerRole, setOwnerRole] = useState<string>('all');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Get selected contacts
+  const selectedContacts = contacts.filter(c => selectedIds.includes(c.id));
 
   // Fetch team members (VARs and CSRs)
   useEffect(() => {
@@ -207,6 +215,14 @@ const ContactBulkActions = ({
           <Button 
             variant="outline" 
             size="sm"
+            onClick={() => setShowCreateUsersDialog(true)}
+          >
+            <UserPlus className="h-4 w-4 mr-1" />
+            Create Users
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
             className="text-destructive hover:text-destructive"
             onClick={() => setShowDeleteDialog(true)}
           >
@@ -335,6 +351,14 @@ const ContactBulkActions = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Create Users Dialog */}
+      <CreateUsersFromContacts
+        selectedContacts={selectedContacts}
+        open={showCreateUsersDialog}
+        onOpenChange={setShowCreateUsersDialog}
+        onComplete={onClearSelection}
+      />
     </>
   );
 };

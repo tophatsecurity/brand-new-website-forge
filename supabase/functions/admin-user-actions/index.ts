@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { action, userId, email, password, metadata, role, banDuration, users } = await req.json()
+    const { action, userId, email, password, metadata, role, banDuration, users, contacts, createLicenses, licenseConfig } = await req.json()
 
     let result
 
@@ -101,6 +101,131 @@ Deno.serve(async (req) => {
 
         result = results
         console.log(`Bulk create completed: ${results.success} success, ${results.failed} failed`)
+        break
+
+      case 'createFromContacts':
+        // Create users from CRM contacts with optional licenses
+        if (!contacts || !Array.isArray(contacts) || contacts.length === 0) {
+          throw new Error('No contacts provided')
+        }
+
+        const contactResults = {
+          usersCreated: 0,
+          licensesCreated: 0,
+          failed: 0,
+          errors: [] as string[],
+          created: [] as any[]
+        }
+
+        for (const contact of contacts) {
+          try {
+            if (!contact.email) {
+              contactResults.failed++
+              contactResults.errors.push(`${contact.first_name} ${contact.last_name}: No email address`)
+              continue
+            }
+
+            // Generate a random password
+            const tempPassword = crypto.randomUUID().substring(0, 16) + 'Aa1!'
+            const userRole = contact.role || 'customer'
+
+            // Create auth user
+            const { data: createdUser, error: createUserError } = await supabaseAdmin.auth.admin.createUser({
+              email: contact.email,
+              password: tempPassword,
+              email_confirm: true,
+              user_metadata: { 
+                role: userRole, 
+                approved: true,
+                first_name: contact.first_name,
+                last_name: contact.last_name,
+                contact_id: contact.id
+              }
+            })
+
+            if (createUserError) {
+              contactResults.failed++
+              contactResults.errors.push(`${contact.email}: ${createUserError.message}`)
+              console.error(`Failed to create user for contact ${contact.email}:`, createUserError.message)
+              continue
+            }
+
+            // Add user role to user_roles table
+            if (createdUser.user) {
+              await supabaseAdmin
+                .from('user_roles')
+                .upsert({ user_id: createdUser.user.id, role: userRole }, { onConflict: 'user_id,role' })
+
+              // Update the contact with the user link info
+              await supabaseAdmin
+                .from('crm_contacts')
+                .update({ 
+                  custom_fields: { 
+                    ...contact.custom_fields,
+                    system_user_id: createdUser.user.id,
+                    system_user_created_at: new Date().toISOString()
+                  }
+                })
+                .eq('id', contact.id)
+            }
+
+            contactResults.usersCreated++
+            contactResults.created.push({ 
+              email: contact.email, 
+              userId: createdUser.user?.id,
+              contactId: contact.id,
+              tempPassword 
+            })
+            console.log(`Created user from contact: ${contact.email} with role: ${userRole}`)
+
+            // Create license if requested
+            if (createLicenses && licenseConfig && createdUser.user) {
+              try {
+                // Generate license key
+                const licenseKey = `LIC-${crypto.randomUUID().substring(0, 8).toUpperCase()}`
+                
+                // Calculate expiry date
+                const expiryDate = new Date()
+                expiryDate.setFullYear(expiryDate.getFullYear() + (licenseConfig.years || 1))
+
+                const licenseData = {
+                  license_key: licenseKey,
+                  product_name: licenseConfig.product_name || 'Default Product',
+                  tier_id: licenseConfig.tier_id,
+                  assigned_to: contact.email,
+                  status: 'active',
+                  seats: licenseConfig.seats || 1,
+                  expiry_date: expiryDate.toISOString(),
+                  account_id: contact.account_id || null,
+                  features: licenseConfig.features || [],
+                  addons: licenseConfig.addons || []
+                }
+
+                const { error: licenseError } = await supabaseAdmin
+                  .from('product_licenses')
+                  .insert(licenseData)
+
+                if (licenseError) {
+                  contactResults.errors.push(`License for ${contact.email}: ${licenseError.message}`)
+                  console.error(`Failed to create license for ${contact.email}:`, licenseError.message)
+                } else {
+                  contactResults.licensesCreated++
+                  console.log(`Created license for: ${contact.email}`)
+                }
+              } catch (licErr: any) {
+                contactResults.errors.push(`License for ${contact.email}: ${licErr.message}`)
+              }
+            }
+
+          } catch (err: any) {
+            contactResults.failed++
+            contactResults.errors.push(`${contact.email || contact.first_name}: ${err.message}`)
+            console.error(`Error processing contact:`, err.message)
+          }
+        }
+
+        result = contactResults
+        console.log(`Create from contacts completed: ${contactResults.usersCreated} users, ${contactResults.licensesCreated} licenses, ${contactResults.failed} failed`)
         break
 
       case 'update':
