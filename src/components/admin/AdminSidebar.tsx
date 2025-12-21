@@ -11,7 +11,8 @@ import {
   ChevronRight,
   LogOut,
   Package,
-  UserPlus
+  UserPlus,
+  Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,7 @@ const navItems = [
   { title: 'Catalog', url: '/admin/catalog', icon: Package },
   { title: 'Downloads', url: '/admin/downloads', icon: Download },
   { title: 'Actions', url: '/admin/actions', icon: Wrench },
+  { title: 'Settings', url: '/admin/settings', icon: Settings },
 ];
 
 export function AdminSidebar() {
