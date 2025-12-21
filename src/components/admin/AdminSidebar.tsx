@@ -13,29 +13,63 @@ import {
   Package,
   UserPlus,
   Settings,
-  Building2
+  Building2,
+  CreditCard,
+  ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
-const navItems = [
-  { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
-  { title: 'CRM', url: '/admin/crm', icon: Building2 },
-  { title: 'Users', url: '/admin/users', icon: Users },
-  { title: 'Onboarding', url: '/admin/onboarding', icon: UserPlus },
-  { title: 'Permissions', url: '/admin/permissions', icon: Shield },
-  { title: 'Licensing', url: '/admin/licensing', icon: Key },
-  { title: 'Catalog', url: '/admin/catalog', icon: Package },
-  { title: 'Downloads', url: '/admin/downloads', icon: Download },
-  { title: 'Actions', url: '/admin/actions', icon: Wrench },
-  { title: 'Settings', url: '/admin/settings', icon: Settings },
+interface NavSection {
+  title: string;
+  items: { title: string; url: string; icon: any }[];
+}
+
+const navSections: NavSection[] = [
+  {
+    title: 'Overview',
+    items: [
+      { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
+    ]
+  },
+  {
+    title: 'Sales & Support',
+    items: [
+      { title: 'CRM', url: '/admin/crm', icon: Building2 },
+      { title: 'Customer Onboarding', url: '/admin/onboarding', icon: UserPlus },
+      { title: 'License Management', url: '/admin/licensing', icon: Key },
+    ]
+  },
+  {
+    title: 'Administration',
+    items: [
+      { title: 'Users', url: '/admin/users', icon: Users },
+      { title: 'Permissions', url: '/admin/permissions', icon: Shield },
+      { title: 'Catalog', url: '/admin/catalog', icon: Package },
+      { title: 'Downloads', url: '/admin/downloads', icon: Download },
+      { title: 'Credits', url: '/admin/credits', icon: CreditCard },
+    ]
+  },
+  {
+    title: 'System',
+    items: [
+      { title: 'Actions', url: '/admin/actions', icon: Wrench },
+      { title: 'Settings', url: '/admin/settings', icon: Settings },
+    ]
+  }
 ];
 
 export function AdminSidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [openSections, setOpenSections] = useState<string[]>(['Overview', 'Sales & Support', 'Administration', 'System']);
   const location = useLocation();
   const { user, signOut } = useAuth();
 
@@ -46,6 +80,21 @@ export function AdminSidebar() {
     .map(part => part[0]?.toUpperCase())
     .join('')
     .slice(0, 2) || 'U';
+
+  const toggleSection = (title: string) => {
+    setOpenSections(prev => 
+      prev.includes(title) 
+        ? prev.filter(s => s !== title)
+        : [...prev, title]
+    );
+  };
+
+  const isItemActive = (url: string) => {
+    if (url === '/admin') {
+      return location.pathname === '/admin';
+    }
+    return location.pathname.startsWith(url);
+  };
 
   return (
     <aside 
@@ -101,29 +150,73 @@ export function AdminSidebar() {
         </div>
       </div>
       
-      {/* Navigation items */}
-      <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.url || 
-            (item.url !== '/admin' && location.pathname.startsWith(item.url));
-          
-          return (
-            <NavLink
-              key={item.url}
-              to={item.url}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
-                "hover:bg-accent hover:text-accent-foreground",
-                isActive 
-                  ? "bg-primary text-primary-foreground" 
-                  : "text-muted-foreground"
-              )}
-            >
-              <item.icon className="h-5 w-5 flex-shrink-0" />
-              {!collapsed && <span className="font-medium">{item.title}</span>}
-            </NavLink>
-          );
-        })}
+      {/* Navigation items with sections */}
+      <nav className="flex-1 p-2 overflow-y-auto">
+        {navSections.map((section) => (
+          <div key={section.title} className="mb-2">
+            {collapsed ? (
+              // Collapsed: just show icons
+              <div className="space-y-1">
+                {section.items.map((item) => {
+                  const isActive = isItemActive(item.url);
+                  return (
+                    <NavLink
+                      key={item.url}
+                      to={item.url}
+                      title={item.title}
+                      className={cn(
+                        "flex items-center justify-center p-2.5 rounded-lg transition-colors",
+                        "hover:bg-accent hover:text-accent-foreground",
+                        isActive 
+                          ? "bg-primary text-primary-foreground" 
+                          : "text-muted-foreground"
+                      )}
+                    >
+                      <item.icon className="h-5 w-5" />
+                    </NavLink>
+                  );
+                })}
+              </div>
+            ) : (
+              // Expanded: show collapsible sections
+              <Collapsible
+                open={openSections.includes(section.title)}
+                onOpenChange={() => toggleSection(section.title)}
+              >
+                <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors">
+                  {section.title}
+                  <ChevronDown className={cn(
+                    "h-3 w-3 transition-transform",
+                    openSections.includes(section.title) ? "rotate-180" : ""
+                  )} />
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="space-y-1 mt-1">
+                    {section.items.map((item) => {
+                      const isActive = isItemActive(item.url);
+                      return (
+                        <NavLink
+                          key={item.url}
+                          to={item.url}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
+                            "hover:bg-accent hover:text-accent-foreground",
+                            isActive 
+                              ? "bg-primary text-primary-foreground" 
+                              : "text-muted-foreground"
+                          )}
+                        >
+                          <item.icon className="h-5 w-5 flex-shrink-0" />
+                          <span className="font-medium">{item.title}</span>
+                        </NavLink>
+                      );
+                    })}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+          </div>
+        ))}
       </nav>
 
       {/* Bottom section - Sign out only */}
