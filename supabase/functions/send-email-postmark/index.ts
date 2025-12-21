@@ -126,6 +126,91 @@ const getEmailTemplate = (template: string, data: Record<string, any> = {}): str
         <p>Best regards,<br>The Top Hat Security Team</p>
       </div>
     `,
+    contact_confirmation: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #333;">Thank You for Contacting Us!</h1>
+        <p>Hello ${data.firstName || 'there'},</p>
+        <p>We have received your inquiry and appreciate you reaching out to Top Hat Security.</p>
+        <div style="background-color: #f3f4f6; padding: 16px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0 0 10px 0;"><strong>Product Interest:</strong> ${data.productInterest || 'General Inquiry'}</p>
+          ${data.createDemoAccount ? '<p style="margin: 0; color: #16a34a;"><strong>✓ Demo Account Requested</strong></p>' : ''}
+        </div>
+        <p>Our team will review your message and get back to you within 1-2 business days.</p>
+        ${data.createDemoAccount ? `
+          <div style="border-left: 4px solid #2563eb; padding-left: 16px; margin: 20px 0;">
+            <p style="margin: 0; color: #333;"><strong>Demo Account Request</strong></p>
+            <p style="margin: 8px 0 0 0; color: #666;">We'll set up your 14-day demo account and send you the credentials separately.</p>
+          </div>
+        ` : ''}
+        <p>In the meantime, feel free to explore our products and resources:</p>
+        <ul style="color: #666;">
+          <li>Visit our <a href="https://tophatsecurity.com/products" style="color: #2563eb;">Products page</a></li>
+          <li>Read our <a href="https://tophatsecurity.com/support" style="color: #2563eb;">Documentation</a></li>
+        </ul>
+        <p>Best regards,<br>The Top Hat Security Team</p>
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+        <p style="color: #666; font-size: 12px;">
+          Top Hat Security<br>
+          1-800-989-5718 | sales@tophatsecurity.com
+        </p>
+      </div>
+    `,
+    contact_admin_notification: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #2563eb;">📬 New Contact Form Submission</h1>
+        <p>A new inquiry has been submitted through the website contact form.</p>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Contact Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #666; width: 140px;"><strong>Name:</strong></td>
+              <td style="padding: 8px 0;">${data.firstName || ''} ${data.lastName || ''}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Email:</strong></td>
+              <td style="padding: 8px 0;"><a href="mailto:${data.email}" style="color: #2563eb;">${data.email || 'N/A'}</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Phone:</strong></td>
+              <td style="padding: 8px 0;">${data.phone || 'Not provided'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Company:</strong></td>
+              <td style="padding: 8px 0;">${data.company || 'Not provided'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Product Interest:</strong></td>
+              <td style="padding: 8px 0; font-weight: bold; color: #333;">${data.productInterest || 'General Inquiry'}</td>
+            </tr>
+          </table>
+        </div>
+
+        ${data.createDemoAccount ? `
+          <div style="background-color: #dcfce7; border: 1px solid #16a34a; padding: 16px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 0; color: #16a34a;"><strong>🎯 Demo Account Requested</strong></p>
+            <p style="margin: 8px 0 0 0; color: #166534;">This lead has requested a demo account. Please follow up to set up their trial.</p>
+          </div>
+        ` : ''}
+
+        <div style="background-color: #fff; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Message</h3>
+          <p style="color: #666; white-space: pre-wrap;">${data.message || 'No message provided'}</p>
+        </div>
+
+        ${data.contactId ? `
+          <p style="margin-top: 20px;">
+            <a href="https://tophatsecurity.com/admin/crm" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View in CRM</a>
+          </p>
+          <p style="color: #666; font-size: 12px;">CRM Contact ID: ${data.contactId}</p>
+        ` : ''}
+
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+        <p style="color: #666; font-size: 12px;">
+          This is an automated notification from the Top Hat Security website.
+        </p>
+      </div>
+    `,
   };
   
   return templates[template] || templates.welcome;
