@@ -82,7 +82,7 @@ const SolutionCategories = () => {
         "Air-gapped deployment with complete data sovereignty and edge processing"
       ],
       products: [
-        { name: "AURORASENSE", path: "/aurorasense", desc: "IoT & Aerospace Platform" }
+        { name: "AURORA SENSE", path: "/aurorasense", desc: "IoT & Aerospace Platform" }
       ],
       color: "from-cyan-500/20 to-cyan-600/10",
       iconColor: "text-cyan-600"

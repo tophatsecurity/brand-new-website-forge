@@ -148,7 +148,7 @@ const AuroraSense = () => {
               <Satellite className="w-12 h-12 text-white" />
             </div>
           </div>
-          <h1 className="hero-title">AURORASENSE</h1>
+          <h1 className="hero-title">AURORA SENSE</h1>
           <p className="hero-description mt-4 max-w-4xl mx-auto">
             Transform disparate IoT sensors into a unified, secure, and accessible monitoring platform 
             with enterprise-grade reliability and user-friendly dashboards. Satellite technology for 
@@ -172,10 +172,10 @@ const AuroraSense = () => {
       {/* Problems & Solutions */}
       <section className="py-16 px-6 bg-muted/30">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-4">Why AURORASENSE Exists</h2>
+          <h2 className="text-3xl font-bold text-center mb-4">Why AURORA SENSE Exists</h2>
           <p className="text-center text-muted-foreground mb-12 max-w-3xl mx-auto">
             Modern IoT deployments face fragmented ecosystems, monitoring gaps, and security challenges. 
-            AURORASENSE solves these critical problems.
+            AURORA SENSE solves these critical problems.
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {problems.map((problem, index) => (
@@ -209,7 +209,7 @@ const AuroraSense = () => {
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-4">Deployment Options</h2>
           <p className="text-center text-muted-foreground mb-12 max-w-3xl mx-auto">
-            From satellite terminals to drone payloads, AURORASENSE adapts to any deployment scenario.
+            From satellite terminals to drone payloads, AURORA SENSE adapts to any deployment scenario.
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {deploymentTypes.map((type, index) => (
@@ -236,7 +236,7 @@ const AuroraSense = () => {
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-4">Real-World Impact</h2>
           <p className="text-center text-muted-foreground mb-12 max-w-3xl mx-auto">
-            See how AURORASENSE transforms operations across industries.
+            See how AURORA SENSE transforms operations across industries.
           </p>
           <div className="grid md:grid-cols-2 gap-6">
             {scenarios.map((scenario, index) => (
@@ -257,7 +257,7 @@ const AuroraSense = () => {
                   </div>
                   <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950/30">
                     <p className="font-medium text-green-600 mb-2 flex items-center gap-2">
-                      <Zap className="w-4 h-4" /> With AURORASENSE
+                      <Zap className="w-4 h-4" /> With AURORA SENSE
                     </p>
                     <ul className="space-y-1">
                       {scenario.after.map((item, i) => (
@@ -277,7 +277,7 @@ const AuroraSense = () => {
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-4">Why Self-Hosted?</h2>
           <p className="text-center text-muted-foreground mb-12 max-w-3xl mx-auto">
-            Unlike cloud IoT platforms, AURORASENSE gives you complete control over your data and infrastructure.
+            Unlike cloud IoT platforms, AURORA SENSE gives you complete control over your data and infrastructure.
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {whySelfHosted.map((reason, index) => (
@@ -308,7 +308,7 @@ const AuroraSense = () => {
                   <strong>Cloud IoT Platform:</strong> 10 sensors × 86,400 samples/day × $0.01/1000 = $8.64/day = <span className="text-destructive font-medium">$3,154/year</span>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  <strong>AURORASENSE:</strong> $75 Raspberry Pi + $0/month = <span className="text-green-600 font-medium">$75 total</span>
+                  <strong>AURORA SENSE:</strong> $75 Raspberry Pi + $0/month = <span className="text-green-600 font-medium">$75 total</span>
                 </p>
               </div>
             </div>

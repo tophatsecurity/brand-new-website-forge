@@ -171,7 +171,7 @@ export const PRODUCT_OPTIONS = [
   { value: 'LIGHTFOOT', label: 'LIGHTFOOT' },
   { value: 'O-RANGE', label: 'O-RANGE' },
   { value: 'ONBOARD', label: 'ONBOARD' },
-  { value: 'AURORASENSE', label: 'AURORASENSE' },
+  { value: 'AURORA SENSE', label: 'AURORA SENSE' },
 ];
 
 export const STATUS_OPTIONS = [

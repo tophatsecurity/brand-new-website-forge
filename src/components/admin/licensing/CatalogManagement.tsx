@@ -77,7 +77,7 @@ const productIcons: Record<string, React.ElementType> = {
   'LIGHTFOOT': Wrench,
   'O-RANGE': Network,
   'ONBOARD': Briefcase,
-  'AURORASENSE': Package,
+  'AURORA SENSE': Package,
   'Network Maintenance': Wrench,
   'Security Consulting': Briefcase,
   'Enterprise Bundle': Layers,
