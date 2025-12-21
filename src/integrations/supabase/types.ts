@@ -393,6 +393,7 @@ export type Database = {
       }
       customer_onboarding: {
         Row: {
+          account_id: string | null
           assigned_rep: string | null
           company_name: string | null
           completed_at: string | null
@@ -410,6 +411,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          account_id?: string | null
           assigned_rep?: string | null
           company_name?: string | null
           completed_at?: string | null
@@ -427,6 +429,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          account_id?: string | null
           assigned_rep?: string | null
           company_name?: string | null
           completed_at?: string | null
@@ -443,7 +446,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "customer_onboarding_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "crm_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       license_activations: {
         Row: {
@@ -767,6 +778,7 @@ export type Database = {
       }
       product_licenses: {
         Row: {
+          account_id: string | null
           activation_date: string | null
           addons: string[] | null
           allowed_networks: string[] | null
@@ -787,6 +799,7 @@ export type Database = {
           usage_hours_limit: number | null
         }
         Insert: {
+          account_id?: string | null
           activation_date?: string | null
           addons?: string[] | null
           allowed_networks?: string[] | null
@@ -807,6 +820,7 @@ export type Database = {
           usage_hours_limit?: number | null
         }
         Update: {
+          account_id?: string | null
           activation_date?: string | null
           addons?: string[] | null
           allowed_networks?: string[] | null
@@ -827,6 +841,13 @@ export type Database = {
           usage_hours_limit?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "product_licenses_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "crm_accounts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "product_licenses_tier_id_fkey"
             columns: ["tier_id"]

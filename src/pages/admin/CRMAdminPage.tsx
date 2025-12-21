@@ -18,17 +18,19 @@ import {
   TrendingUp,
   Target,
   Calendar,
-  CheckCircle2
+  CheckCircle2,
+  Eye
 } from 'lucide-react';
 import { useState } from 'react';
-import { useCRMAccounts, useCRMContacts, useCRMDeals, useCRMActivities, useCRMStats } from '@/hooks/useCRM';
+import { useCRMAccounts, useCRMContacts, useCRMDeals, useCRMActivities, useCRMStats, CRMAccount } from '@/hooks/useCRM';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
+import AccountDetailDialog from '@/components/admin/crm/AccountDetailDialog';
 
 const CRMAdminPage = () => {
   const [activeTab, setActiveTab] = useState('accounts');
@@ -37,6 +39,8 @@ const CRMAdminPage = () => {
   const [showContactDialog, setShowContactDialog] = useState(false);
   const [showDealDialog, setShowDealDialog] = useState(false);
   const [showActivityDialog, setShowActivityDialog] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<CRMAccount | null>(null);
+  const [showAccountDetail, setShowAccountDetail] = useState(false);
   
   const { data: stats, isLoading: statsLoading } = useCRMStats();
   const { data: accounts = [], isLoading: accountsLoading, createAccount, deleteAccount } = useCRMAccounts();
@@ -49,6 +53,11 @@ const CRMAdminPage = () => {
   const [contactForm, setContactForm] = useState({ first_name: '', last_name: '', email: '', phone: '', job_title: '', account_id: '' });
   const [dealForm, setDealForm] = useState({ name: '', amount: 0, stage: 'qualification' as const, account_id: '', expected_close_date: '' });
   const [activityForm, setActivityForm] = useState({ subject: '', activity_type: 'call' as const, description: '', account_id: '', due_date: '' });
+
+  const handleViewAccount = (account: CRMAccount) => {
+    setSelectedAccount(account);
+    setShowAccountDetail(true);
+  };
 
   const handleCreateAccount = async () => {
     await createAccount.mutateAsync(accountForm);
@@ -267,8 +276,12 @@ const CRMAdminPage = () => {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem>View Details</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleViewAccount(account)}>
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Details
+                              </DropdownMenuItem>
                               <DropdownMenuItem>Edit</DropdownMenuItem>
+                              <DropdownMenuSeparator />
                               <DropdownMenuItem 
                                 className="text-destructive"
                                 onClick={() => deleteAccount.mutate(account.id)}
@@ -706,6 +719,13 @@ const CRMAdminPage = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Account Detail Dialog */}
+        <AccountDetailDialog
+          account={selectedAccount}
+          open={showAccountDetail}
+          onOpenChange={setShowAccountDetail}
+        />
       </div>
     </AdminLayout>
   );
