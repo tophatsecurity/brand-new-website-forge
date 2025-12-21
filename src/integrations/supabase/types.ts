@@ -521,6 +521,51 @@ export type Database = {
           },
         ]
       }
+      download_statistics: {
+        Row: {
+          download_id: string
+          downloaded_at: string
+          id: string
+          ip_address: string | null
+          referrer: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          download_id: string
+          downloaded_at?: string
+          id?: string
+          ip_address?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          download_id?: string
+          downloaded_at?: string
+          id?: string
+          ip_address?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "download_statistics_download_id_fkey"
+            columns: ["download_id"]
+            isOneToOne: false
+            referencedRelation: "download_counts"
+            referencedColumns: ["download_id"]
+          },
+          {
+            foreignKeyName: "download_statistics_download_id_fkey"
+            columns: ["download_id"]
+            isOneToOne: false
+            referencedRelation: "product_downloads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_requests: {
         Row: {
           assigned_to: string | null
@@ -1297,7 +1342,18 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      download_counts: {
+        Row: {
+          download_id: string | null
+          last_downloaded_at: string | null
+          product_name: string | null
+          product_type: string | null
+          total_downloads: number | null
+          unique_users: number | null
+          version: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_my_roles: {

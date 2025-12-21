@@ -1,10 +1,12 @@
-
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
+import { useDownloadTracking } from "@/hooks/useDownloadTracking";
 
 const productTypes = [
   "Virtual Machine",
@@ -18,6 +20,7 @@ const productTypes = [
 const Downloads = () => {
   const [downloads, setDownloads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { trackDownload } = useDownloadTracking();
 
   useEffect(() => {
     fetchDownloads();
@@ -80,15 +83,15 @@ const Downloads = () => {
                         <TableCell>{dl.release_date ? new Date(dl.release_date).toLocaleDateString() : ""}</TableCell>
                         <TableCell>{dl.description}</TableCell>
                         <TableCell>
-                          <a
-                            href={dl.file_url}
-                            className="underline text-blue-600 hover:text-blue-800"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            download
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => trackDownload(dl.id, dl.file_url)}
+                            className="flex items-center gap-2"
                           >
+                            <Download className="h-4 w-4" />
                             Download
-                          </a>
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
