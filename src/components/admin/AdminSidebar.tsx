@@ -15,7 +15,8 @@ import {
   Settings,
   Building2,
   CreditCard,
-  ChevronDown
+  ChevronDown,
+  UserCog
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -52,6 +53,7 @@ const navSections: NavSection[] = [
     title: 'Administration',
     items: [
       { title: 'Users', url: '/admin/users', icon: Users },
+      { title: 'Role Assignment', url: '/admin/roles', icon: UserCog },
       { title: 'Permissions', url: '/admin/permissions', icon: Shield },
       { title: 'Catalog', url: '/admin/catalog', icon: Package },
       { title: 'Downloads', url: '/admin/downloads', icon: Download },
