@@ -35,6 +35,7 @@ import BulkContactImportDialog from '@/components/admin/crm/BulkContactImportDia
 import ContactFilters, { ContactFiltersState } from '@/components/admin/crm/ContactFilters';
 import ContactDetailDialog from '@/components/admin/crm/ContactDetailDialog';
 import ContactBulkActions from '@/components/admin/crm/ContactBulkActions';
+import CreateAccountsFromContacts from '@/components/admin/crm/CreateAccountsFromContacts';
 import { Checkbox } from '@/components/ui/checkbox';
 
 const initialContactFilters: ContactFiltersState = {
@@ -355,7 +356,10 @@ const CRMAdminPage = () => {
                 />
               </div>
               {activeTab === 'contacts' && (
-                <BulkContactImportDialog accounts={accounts.map(a => ({ id: a.id, name: a.name }))} />
+                <>
+                  <CreateAccountsFromContacts />
+                  <BulkContactImportDialog accounts={accounts.map(a => ({ id: a.id, name: a.name }))} />
+                </>
               )}
               <Button onClick={() => {
                 if (activeTab === 'accounts') setShowAccountDialog(true);
