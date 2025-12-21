@@ -13,7 +13,59 @@ interface EmailRequest {
   from?: string;
   tag?: string;
   replyTo?: string;
+  template?: string;
+  data?: {
+    customMessage?: string;
+    testMode?: boolean;
+    [key: string]: any;
+  };
 }
+
+// Email templates
+const getEmailTemplate = (template: string, data: Record<string, any> = {}): string => {
+  const templates: Record<string, string> = {
+    welcome: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #333;">Welcome to Top Hat Security!</h1>
+        <p>Thank you for joining us. We're excited to have you on board.</p>
+        ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
+        ${data.testMode ? '<p style="color: #666; font-style: italic;">(This is a test email)</p>' : ''}
+        <p>Best regards,<br>The Top Hat Security Team</p>
+      </div>
+    `,
+    password_reset: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #333;">Password Reset Request</h1>
+        <p>You have requested to reset your password.</p>
+        ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
+        ${data.testMode ? '<p style="color: #666; font-style: italic;">(This is a test email)</p>' : ''}
+        <p>If you didn't request this, please ignore this email.</p>
+        <p>Best regards,<br>The Top Hat Security Team</p>
+      </div>
+    `,
+    notification: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #333;">Notification</h1>
+        <p>You have a new notification from Top Hat Security.</p>
+        ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
+        ${data.testMode ? '<p style="color: #666; font-style: italic;">(This is a test email)</p>' : ''}
+        <p>Best regards,<br>The Top Hat Security Team</p>
+      </div>
+    `,
+    license_expiry: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #333;">License Expiry Notice</h1>
+        <p>Your license is approaching its expiry date.</p>
+        ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
+        ${data.testMode ? '<p style="color: #666; font-style: italic;">(This is a test email)</p>' : ''}
+        <p>Please contact us to renew your license.</p>
+        <p>Best regards,<br>The Top Hat Security Team</p>
+      </div>
+    `,
+  };
+  
+  return templates[template] || templates.welcome;
+};
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -29,14 +81,22 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Email service is not configured");
     }
 
-    const { to, subject, htmlBody, textBody, from, tag, replyTo }: EmailRequest = await req.json();
+    const { to, subject, htmlBody, textBody, from, tag, replyTo, template, data }: EmailRequest = await req.json();
 
     if (!to || !subject) {
       throw new Error("Missing required fields: 'to' and 'subject' are required");
     }
 
+    // Generate HTML from template if no htmlBody/textBody provided
+    let finalHtmlBody = htmlBody;
+    let finalTextBody = textBody;
+    
     if (!htmlBody && !textBody) {
-      throw new Error("Either 'htmlBody' or 'textBody' must be provided");
+      if (template) {
+        finalHtmlBody = getEmailTemplate(template, data || {});
+      } else {
+        throw new Error("Either 'htmlBody', 'textBody', or 'template' must be provided");
+      }
     }
 
     console.log(`Sending email to: ${to}, subject: ${subject}`);
@@ -47,12 +107,12 @@ const handler = async (req: Request): Promise<Response> => {
       Subject: subject,
     };
 
-    if (htmlBody) {
-      emailPayload.HtmlBody = htmlBody;
+    if (finalHtmlBody) {
+      emailPayload.HtmlBody = finalHtmlBody;
     }
 
-    if (textBody) {
-      emailPayload.TextBody = textBody;
+    if (finalTextBody) {
+      emailPayload.TextBody = finalTextBody;
     }
 
     if (tag) {
