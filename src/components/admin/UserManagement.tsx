@@ -2,14 +2,17 @@
 import React, { useState } from 'react';
 import UserList from './UserList';
 import AddUserDialog from './dialogs/AddUserDialog';
+import BulkAddUsersDialog from './dialogs/BulkAddUsersDialog';
 import { useUserManagement } from '@/hooks/useUserManagement';
 
 const UserManagement = () => {
   const [addUserOpen, setAddUserOpen] = useState(false);
+  const [bulkAddOpen, setBulkAddOpen] = useState(false);
   const {
     users,
     loading,
     handleAddUser,
+    handleBulkAddUsers,
     handleApproveUser,
     handleRejectUser,
     handleDeleteUser,
@@ -22,7 +25,12 @@ const UserManagement = () => {
 
   return (
     <div className="bg-card rounded-lg shadow-md p-6">
-      <div className="flex justify-end mb-6">
+      <div className="flex justify-end gap-2 mb-6">
+        <BulkAddUsersDialog
+          open={bulkAddOpen}
+          onOpenChange={setBulkAddOpen}
+          onBulkAddUsers={handleBulkAddUsers}
+        />
         <AddUserDialog 
           open={addUserOpen} 
           onOpenChange={setAddUserOpen} 
