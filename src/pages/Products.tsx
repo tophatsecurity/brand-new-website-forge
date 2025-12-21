@@ -29,8 +29,7 @@ const Products = () => {
       description: "Secure software & hardware supply chains",
       products: [
         { name: "DDX", path: "/ddx" },
-        { name: "ONBOARD", path: "/onboard" },
-        { name: "SeekCap", path: "/seekcap" }
+        { name: "ONBOARD", path: "/onboard" }
       ],
       color: "from-blue-500/20 to-blue-600/10",
       iconColor: "text-blue-600",
@@ -42,7 +41,8 @@ const Products = () => {
       description: "Industrial network simulation & assessment",
       products: [
         { name: "LIGHTFOOT", path: "/lightfoot" },
-        { name: "O-RANGE", path: "/orange" }
+        { name: "O-RANGE", path: "/orange" },
+        { name: "SEEKCAP", path: "/seekcap" }
       ],
       color: "from-orange-500/20 to-orange-600/10",
       iconColor: "text-orange-600",
