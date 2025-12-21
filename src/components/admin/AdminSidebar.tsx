@@ -17,7 +17,9 @@ import {
   CreditCard,
   ChevronDown,
   UserCog,
-  HeadphonesIcon
+  HeadphonesIcon,
+  BadgeCheck,
+  ClipboardList
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -56,8 +58,10 @@ const navSections: NavSection[] = [
     items: [
       { title: 'CRM', url: '/admin/crm', icon: Building2 },
       { title: 'License Management', url: '/admin/licensing', icon: Key },
+      { title: 'Payment Approvals', url: '/admin/payment-approvals', icon: BadgeCheck },
       { title: 'Catalog', url: '/admin/catalog', icon: Package },
       { title: 'Credits', url: '/admin/credits', icon: CreditCard },
+      { title: 'Feature Requests', url: '/admin/feature-requests', icon: ClipboardList },
     ]
   },
   {

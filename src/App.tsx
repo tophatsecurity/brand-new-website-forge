@@ -49,6 +49,9 @@ import SettingsAdminPage from "./pages/admin/SettingsAdminPage";
 import CRMAdminPage from "./pages/admin/CRMAdminPage";
 import RoleAssignmentPage from "./pages/admin/RoleAssignmentPage";
 import SupportTeamPage from "./pages/admin/SupportTeamPage";
+import PaymentApprovalsPage from "./pages/admin/PaymentApprovalsPage";
+import FeatureRequestsAdminPage from "./pages/admin/FeatureRequestsAdminPage";
+import FeatureRequests from "./pages/FeatureRequests";
 import Onboarding from "./pages/Onboarding";
 const queryClient = new QueryClient();
 
@@ -176,6 +179,24 @@ const App = () => (
                   <SupportTeamPage />
                 </AdminRoute>
               } />
+              <Route path="/admin/payment-approvals" element={
+                <AdminRoute>
+                  <PaymentApprovalsPage />
+                </AdminRoute>
+              } />
+              <Route path="/admin/feature-requests" element={
+                <AdminRoute>
+                  <FeatureRequestsAdminPage />
+                </AdminRoute>
+              } />
+              
+              {/* User feature requests route */}
+              <Route path="/feature-requests" element={
+                <ProtectedRoute>
+                  <FeatureRequests />
+                </ProtectedRoute>
+              } />
+              
               {/* Public onboarding route - accessible without login */}
               <Route path="/onboarding" element={<Onboarding />} />
               
