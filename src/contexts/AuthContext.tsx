@@ -4,7 +4,7 @@ import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-type AppRole = 'admin' | 'user' | 'moderator' | 'var' | 'customer_rep' | 'customer' | 'account_rep' | 'marketing';
+type AppRole = 'admin' | 'user' | 'moderator' | 'var' | 'customer_rep' | 'customer' | 'account_rep' | 'marketing' | 'free';
 
 interface UserRole {
   id: string;
@@ -99,6 +99,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setActiveRole('customer_rep');
         } else if (roles.includes('customer')) {
           setActiveRole('customer');
+        } else if (roles.includes('free')) {
+          setActiveRole('free');
         } else if (roles.length > 0) {
           setActiveRole(roles[0] as AppRole);
         }

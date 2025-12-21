@@ -170,11 +170,8 @@ const App = () => (
                   <CRMAdminPage />
                 </AdminRoute>
               } />
-              <Route path="/onboarding" element={
-                <ProtectedRoute>
-                  <Onboarding />
-                </ProtectedRoute>
-              } />
+              {/* Public onboarding route - accessible without login */}
+              <Route path="/onboarding" element={<Onboarding />} />
               
               {/* Settings route */}
               <Route path="/settings" element={
