@@ -46,6 +46,7 @@ import CatalogAdminPage from "./pages/admin/CatalogAdminPage";
 import CreditsAdminPage from "./pages/admin/CreditsAdminPage";
 import OnboardingAdminPage from "./pages/admin/OnboardingAdminPage";
 import SettingsAdminPage from "./pages/admin/SettingsAdminPage";
+import CRMAdminPage from "./pages/admin/CRMAdminPage";
 import Onboarding from "./pages/Onboarding";
 const queryClient = new QueryClient();
 
@@ -156,6 +157,11 @@ const App = () => (
               <Route path="/admin/settings" element={
                 <AdminRoute>
                   <SettingsAdminPage />
+                </AdminRoute>
+              } />
+              <Route path="/admin/crm" element={
+                <AdminRoute>
+                  <CRMAdminPage />
                 </AdminRoute>
               } />
               <Route path="/onboarding" element={
