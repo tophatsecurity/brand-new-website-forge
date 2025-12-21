@@ -163,6 +163,7 @@ const ContactFilters = ({ filters, onFilterChange, onClearFilters, activeFilterC
                 <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="prospect">Prospect</SelectItem>
                 <SelectItem value="customer">Customer</SelectItem>
+                <SelectItem value="demo">Demo</SelectItem>
                 <SelectItem value="partner">Partner</SelectItem>
                 <SelectItem value="vendor">Vendor</SelectItem>
                 <SelectItem value="lead">Lead</SelectItem>

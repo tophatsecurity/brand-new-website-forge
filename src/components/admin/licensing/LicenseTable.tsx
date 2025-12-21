@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { 
   Table, 
@@ -9,11 +9,13 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import LicenseStatusBadge from './LicenseStatusBadge';
 import LicenseFeatureDisplay from './LicenseFeatureDisplay';
 import LicenseActionMenu from './LicenseActionMenu';
 import LicenseKeyCell from './LicenseKeyCell';
 import LicenseEmptyState from './LicenseEmptyState';
+import BulkActionBar from '../BulkActionBar';
 import { User, Calendar, Server, Network } from "lucide-react";
 import {
   Tooltip,
@@ -47,10 +49,50 @@ type LicenseTableProps = {
   licenses: License[];
   loading: boolean;
   onCopyKey: (key: string) => void;
+  onBulkAction?: (action: string, licenseIds: string[]) => void;
 };
 
-const LicenseTable: React.FC<LicenseTableProps> = ({ licenses, loading, onCopyKey }) => {
-  const colSpan = 10; // Total number of columns in the table
+const BULK_ACTIONS = [
+  { value: 'activate', label: 'Activate', variant: 'default' as const },
+  { value: 'suspend', label: 'Suspend', variant: 'secondary' as const },
+  { value: 'revoke', label: 'Revoke', variant: 'destructive' as const },
+  { value: 'extend_30', label: 'Extend 30 Days', variant: 'outline' as const },
+  { value: 'extend_90', label: 'Extend 90 Days', variant: 'outline' as const },
+  { value: 'export', label: 'Export Selected', variant: 'outline' as const },
+];
+
+const LicenseTable: React.FC<LicenseTableProps> = ({ licenses, loading, onCopyKey, onBulkAction }) => {
+  const colSpan = 11; // Total number of columns in the table (added checkbox column)
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(licenses.map(l => l.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectOne = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedIds(prev => [...prev, id]);
+    } else {
+      setSelectedIds(prev => prev.filter(i => i !== id));
+    }
+  };
+
+  const handleBulkAction = async (action: string) => {
+    if (onBulkAction) {
+      setIsProcessing(true);
+      await onBulkAction(action, selectedIds);
+      setIsProcessing(false);
+      setSelectedIds([]);
+    }
+  };
+
+  const allSelected = licenses.length > 0 && selectedIds.length === licenses.length;
+  const someSelected = selectedIds.length > 0 && selectedIds.length < licenses.length;
 
   const renderConstraints = (license: License) => {
     const hasConstraints = license.max_hosts || license.allowed_networks?.length > 0;
@@ -99,75 +141,101 @@ const LicenseTable: React.FC<LicenseTableProps> = ({ licenses, loading, onCopyKe
   };
 
   return (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[250px]">License Key</TableHead>
-            <TableHead>Product</TableHead>
-            <TableHead>Tier</TableHead>
-            <TableHead>Assigned To</TableHead>
-            <TableHead>Seats</TableHead>
-            <TableHead>Constraints</TableHead>
-            <TableHead>Expiry Date</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Features & Add-ons</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {loading || licenses.length === 0 ? (
-            <LicenseEmptyState loading={loading} colSpan={colSpan} />
-          ) : (
-            licenses.map((license) => (
-              <TableRow key={license.id}>
-                <TableCell className="font-mono text-xs">
-                  <LicenseKeyCell 
-                    licenseKey={license.license_key}
-                    onCopyKey={onCopyKey}
-                  />
-                </TableCell>
-                <TableCell>{license.product_name}</TableCell>
-                <TableCell>{license.tier?.name}</TableCell>
-                <TableCell>
-                  {license.assigned_to ? (
+    <div className="space-y-4">
+      <BulkActionBar
+        selectedItems={selectedIds}
+        actions={BULK_ACTIONS}
+        onAction={handleBulkAction}
+        isProcessing={isProcessing}
+      />
+      
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[50px]">
+                <Checkbox
+                  checked={allSelected}
+                  ref={(el) => {
+                    if (el) (el as any).indeterminate = someSelected;
+                  }}
+                  onCheckedChange={handleSelectAll}
+                  aria-label="Select all"
+                />
+              </TableHead>
+              <TableHead className="w-[250px]">License Key</TableHead>
+              <TableHead>Product</TableHead>
+              <TableHead>Tier</TableHead>
+              <TableHead>Assigned To</TableHead>
+              <TableHead>Seats</TableHead>
+              <TableHead>Constraints</TableHead>
+              <TableHead>Expiry Date</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Features & Add-ons</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading || licenses.length === 0 ? (
+              <LicenseEmptyState loading={loading} colSpan={colSpan} />
+            ) : (
+              licenses.map((license) => (
+                <TableRow key={license.id} className={selectedIds.includes(license.id) ? 'bg-muted/50' : ''}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedIds.includes(license.id)}
+                      onCheckedChange={(checked) => handleSelectOne(license.id, !!checked)}
+                      aria-label={`Select license ${license.license_key}`}
+                    />
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">
+                    <LicenseKeyCell 
+                      licenseKey={license.license_key}
+                      onCopyKey={onCopyKey}
+                    />
+                  </TableCell>
+                  <TableCell>{license.product_name}</TableCell>
+                  <TableCell>{license.tier?.name}</TableCell>
+                  <TableCell>
+                    {license.assigned_to ? (
+                      <div className="flex items-center">
+                        <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                        {license.assigned_to}
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground italic">Unassigned</span>
+                    )}
+                  </TableCell>
+                  <TableCell>{license.seats}</TableCell>
+                  <TableCell>{renderConstraints(license)}</TableCell>
+                  <TableCell>
                     <div className="flex items-center">
-                      <User className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {license.assigned_to}
+                      <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                      {format(parseISO(license.expiry_date), 'MMM dd, yyyy')}
                     </div>
-                  ) : (
-                    <span className="text-muted-foreground italic">Unassigned</span>
-                  )}
-                </TableCell>
-                <TableCell>{license.seats}</TableCell>
-                <TableCell>{renderConstraints(license)}</TableCell>
-                <TableCell>
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {format(parseISO(license.expiry_date), 'MMM dd, yyyy')}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <LicenseStatusBadge status={license.status} />
-                </TableCell>
-                <TableCell>
-                  <LicenseFeatureDisplay 
-                    features={license.features} 
-                    addons={license.addons} 
-                  />
-                </TableCell>
-                <TableCell className="text-right">
-                  <LicenseActionMenu 
-                    licenseKey={license.license_key}
-                    status={license.status}
-                    onCopyKey={onCopyKey}
-                  />
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+                  </TableCell>
+                  <TableCell>
+                    <LicenseStatusBadge status={license.status} />
+                  </TableCell>
+                  <TableCell>
+                    <LicenseFeatureDisplay 
+                      features={license.features} 
+                      addons={license.addons} 
+                    />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <LicenseActionMenu 
+                      licenseKey={license.license_key}
+                      status={license.status}
+                      onCopyKey={onCopyKey}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };
