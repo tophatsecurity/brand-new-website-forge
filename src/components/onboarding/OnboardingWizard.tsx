@@ -101,7 +101,7 @@ const StepForm: React.FC<StepFormProps> = ({ step, onComplete, onBack, isFirst, 
               Select the products you're interested in:
             </p>
             <div className="grid gap-3">
-              {['DDX', 'SEEKCAP', 'PARAGUARD', 'SECONDLOOK', 'O-RANGE', 'LIGHTFOOT', 'ONBOARD', 'AURORASENSE'].map((product) => (
+              {['DDX', 'SEEKCAP', 'PARAGUARD', 'SECONDLOOK', 'O-RANGE', 'LIGHTFOOT', 'ONBOARD', 'AURORA SENSE'].map((product) => (
                 <label key={product} className="flex items-center space-x-3 cursor-pointer">
                   <input
                     type="checkbox"
