@@ -21,7 +21,7 @@ import {
   CheckCircle2,
   Eye
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useCRMAccounts, useCRMContacts, useCRMDeals, useCRMActivities, useCRMStats, CRMAccount } from '@/hooks/useCRM';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -32,6 +32,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 import AccountDetailDialog from '@/components/admin/crm/AccountDetailDialog';
 import BulkContactImportDialog from '@/components/admin/crm/BulkContactImportDialog';
+import ContactFilters, { ContactFiltersState } from '@/components/admin/crm/ContactFilters';
+
+const initialContactFilters: ContactFiltersState = {
+  status: 'all',
+  leadSource: 'all',
+  industry: 'all',
+  priority: 'all',
+  interactionType: 'all',
+  accountType: 'all',
+  hasEmail: 'all',
+  hasPhone: 'all',
+  tags: 'all',
+};
 
 const CRMAdminPage = () => {
   const [activeTab, setActiveTab] = useState('accounts');
@@ -42,6 +55,7 @@ const CRMAdminPage = () => {
   const [showActivityDialog, setShowActivityDialog] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<CRMAccount | null>(null);
   const [showAccountDetail, setShowAccountDetail] = useState(false);
+  const [contactFilters, setContactFilters] = useState<ContactFiltersState>(initialContactFilters);
   
   const { data: stats, isLoading: statsLoading } = useCRMStats();
   const { data: accounts = [], isLoading: accountsLoading, createAccount, deleteAccount } = useCRMAccounts();
@@ -89,10 +103,75 @@ const CRMAdminPage = () => {
     a.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredContacts = contacts.filter(c => 
-    `${c.first_name} ${c.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Contact filter logic
+  const handleContactFilterChange = (key: keyof ContactFiltersState, value: string) => {
+    setContactFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const clearContactFilters = () => {
+    setContactFilters(initialContactFilters);
+  };
+
+  const activeContactFilterCount = useMemo(() => {
+    return Object.values(contactFilters).filter(v => v !== 'all').length;
+  }, [contactFilters]);
+
+  const filteredContacts = useMemo(() => {
+    return contacts.filter(c => {
+      // Search filter
+      const matchesSearch = 
+        `${c.first_name} ${c.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      if (!matchesSearch) return false;
+
+      // Status filter
+      if (contactFilters.status !== 'all' && c.status !== contactFilters.status) return false;
+
+      // Lead source filter
+      if (contactFilters.leadSource !== 'all' && c.lead_source !== contactFilters.leadSource) return false;
+
+      // Industry filter (from custom_fields)
+      if (contactFilters.industry !== 'all') {
+        const industry = (c.custom_fields as any)?.industry || (c.custom_fields as any)?.industry_override;
+        if (industry !== contactFilters.industry) return false;
+      }
+
+      // Priority filter (from custom_fields)
+      if (contactFilters.priority !== 'all') {
+        const priority = (c.custom_fields as any)?.priority;
+        if (priority !== contactFilters.priority) return false;
+      }
+
+      // Interaction type filter (from custom_fields)
+      if (contactFilters.interactionType !== 'all') {
+        const interactionType = (c.custom_fields as any)?.interaction_type;
+        if (interactionType !== contactFilters.interactionType) return false;
+      }
+
+      // Account type filter (from custom_fields)
+      if (contactFilters.accountType !== 'all') {
+        const accountType = (c.custom_fields as any)?.account_type;
+        if (accountType !== contactFilters.accountType) return false;
+      }
+
+      // Has email filter
+      if (contactFilters.hasEmail === 'yes' && !c.email) return false;
+      if (contactFilters.hasEmail === 'no' && c.email) return false;
+
+      // Has phone filter
+      if (contactFilters.hasPhone === 'yes' && !c.phone) return false;
+      if (contactFilters.hasPhone === 'no' && c.phone) return false;
+
+      // Tags filter
+      if (contactFilters.tags !== 'all') {
+        const tags = c.tags || [];
+        if (!tags.includes(contactFilters.tags)) return false;
+      }
+
+      return true;
+    });
+  }, [contacts, searchTerm, contactFilters]);
 
   const filteredDeals = deals.filter(d => 
     d.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -319,9 +398,28 @@ const CRMAdminPage = () => {
 
           {/* Contacts Tab */}
           <TabsContent value="contacts">
-            <Card>
-              <CardContent className="p-0">
-                <Table>
+            <div className="space-y-4">
+              <ContactFilters
+                filters={contactFilters}
+                onFilterChange={handleContactFilterChange}
+                onClearFilters={clearContactFilters}
+                activeFilterCount={activeContactFilterCount}
+              />
+              <Card>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Account</TableHead>
+                        <TableHead>Job Title</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Phone</TableHead>
+                        <TableHead>Lead Source</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="w-12"></TableHead>
+                      </TableRow>
+                    </TableHeader>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
@@ -344,6 +442,13 @@ const CRMAdminPage = () => {
                         <TableCell>{contact.job_title || '-'}</TableCell>
                         <TableCell>{contact.email || '-'}</TableCell>
                         <TableCell>{contact.phone || '-'}</TableCell>
+                        <TableCell>
+                          {contact.lead_source ? (
+                            <Badge variant="outline" className="text-xs">
+                              {contact.lead_source}
+                            </Badge>
+                          ) : '-'}
+                        </TableCell>
                         <TableCell>
                           <Badge variant={contact.status === 'active' ? 'default' : 'secondary'}>
                             {contact.status}
@@ -372,8 +477,8 @@ const CRMAdminPage = () => {
                     ))}
                     {filteredContacts.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                          No contacts found
+                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                          No contacts found {activeContactFilterCount > 0 && '(try adjusting filters)'}
                         </TableCell>
                       </TableRow>
                     )}
@@ -381,6 +486,7 @@ const CRMAdminPage = () => {
                 </Table>
               </CardContent>
             </Card>
+            </div>
           </TabsContent>
 
           {/* Deals Tab */}
