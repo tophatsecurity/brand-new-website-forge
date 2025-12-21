@@ -298,11 +298,11 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
           ...(lastTouchPointDate && { last_contacted_at: new Date(lastTouchPointDate).toISOString() }),
         };
 
-        if (selectedAccountId) {
+        if (selectedAccountId && selectedAccountId !== 'none') {
           contactData.account_id = selectedAccountId;
         }
 
-        if (defaultOwnerId) {
+        if (defaultOwnerId && defaultOwnerId !== 'none') {
           contactData.owner_id = defaultOwnerId;
         }
 
@@ -388,7 +388,7 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
                     <SelectValue placeholder="No account selected" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover max-h-60">
-                    <SelectItem value="">No account</SelectItem>
+                    <SelectItem value="none">No account</SelectItem>
                     {accounts.map(account => (
                       <SelectItem key={account.id} value={account.id}>
                         {account.name}
@@ -463,7 +463,7 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
                     <SelectValue placeholder="Select customer rep" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover max-h-60">
-                    <SelectItem value="">No rep assigned</SelectItem>
+                    <SelectItem value="none">No rep assigned</SelectItem>
                     {teamMembers.map(member => (
                       <SelectItem key={member.id} value={member.id}>
                         <div className="flex items-center gap-2">
