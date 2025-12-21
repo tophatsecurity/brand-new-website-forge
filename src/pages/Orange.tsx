@@ -19,13 +19,25 @@ import {
   Building2,
   FlaskConical,
   CheckCircle2,
-  Crosshair
+  Crosshair,
+  FileVideo,
+  Upload,
+  Wand2,
+  Network,
+  ArrowRight,
+  Database
 } from 'lucide-react';
 
 const Orange = () => {
   useScrollToTop();
   
   const features = [
+    {
+      icon: <FileVideo className="h-6 w-6" />,
+      title: "PCAP to Simulator",
+      description: "Create fully functional simulators directly from real-world packet captures. Import your PCAPs and O-RANGE builds the digital twin automatically.",
+      highlight: true
+    },
     {
       icon: <Copy className="h-6 w-6" />,
       title: "Digital Twin Technology",
@@ -45,11 +57,6 @@ const Orange = () => {
       icon: <Play className="h-6 w-6" />,
       title: "Scenario Playback",
       description: "Record, replay, and modify attack scenarios to understand threat impact and test defensive measures."
-    },
-    {
-      icon: <Workflow className="h-6 w-6" />,
-      title: "Process Emulation",
-      description: "Accurately emulate industrial processes including PLC logic, sensor data, and control system behaviors."
     },
     {
       icon: <Shield className="h-6 w-6" />,
@@ -96,6 +103,15 @@ const Orange = () => {
     "Insider threat scenarios"
   ];
 
+  const pcapFeatures = [
+    { icon: <Upload className="h-5 w-5" />, text: "Import PCAP/PCAPNG files from your production network" },
+    { icon: <Wand2 className="h-5 w-5" />, text: "Automatic protocol detection and device fingerprinting" },
+    { icon: <Network className="h-5 w-5" />, text: "Reconstruct network topology from traffic patterns" },
+    { icon: <Database className="h-5 w-5" />, text: "Extract register values, setpoints, and process data" },
+    { icon: <Play className="h-5 w-5" />, text: "Generate responsive simulators that behave like real devices" },
+    { icon: <Workflow className="h-5 w-5" />, text: "Replay traffic patterns with timing accuracy" },
+  ];
+
   return (
     <MainLayout containerClassName="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
       {/* Hero Section */}
@@ -108,11 +124,11 @@ const Orange = () => {
           Digital twin platform for OT networks — Red teaming without the risk
         </p>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-          Simulate factories, plants, assembly lines, railroads, and any automation system 
-          to test security without impacting production.
+          Create simulators from real-world packet captures. Simulate factories, plants, assembly lines, 
+          railroads, and any automation system to test security without impacting production.
         </p>
         
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 flex-wrap">
           <Link to="/contact">
             <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
               Request a Demo
@@ -130,27 +146,109 @@ const Orange = () => {
       <div className="mb-16">
         <Card className="bg-gradient-to-br from-muted/50 to-background border-border/50">
           <CardContent className="p-8">
-            <div className="grid md:grid-cols-4 gap-8 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
               <div>
-                <div className="text-4xl font-bold text-[#cc0c1a] mb-2">∞</div>
-                <div className="text-muted-foreground">Attack Scenarios</div>
+                <div className="text-3xl font-bold text-[#cc0c1a] mb-2">PCAP</div>
+                <div className="text-muted-foreground text-sm">To Simulator</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-[#cc0c1a] mb-2">Zero</div>
-                <div className="text-muted-foreground">Production Risk</div>
+                <div className="text-3xl font-bold text-[#cc0c1a] mb-2">∞</div>
+                <div className="text-muted-foreground text-sm">Attack Scenarios</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-[#cc0c1a] mb-2">100%</div>
-                <div className="text-muted-foreground">Environment Fidelity</div>
+                <div className="text-3xl font-bold text-[#cc0c1a] mb-2">Zero</div>
+                <div className="text-muted-foreground text-sm">Production Risk</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-[#cc0c1a] mb-2">Real</div>
-                <div className="text-muted-foreground">Protocol Simulation</div>
+                <div className="text-3xl font-bold text-[#cc0c1a] mb-2">100%</div>
+                <div className="text-muted-foreground text-sm">Environment Fidelity</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-[#cc0c1a] mb-2">Real</div>
+                <div className="text-muted-foreground text-sm">Protocol Simulation</div>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* PCAP to Simulator - Major Feature */}
+      <section className="mb-16">
+        <Card className="border-2 border-[#cc0c1a]/30 bg-gradient-to-br from-[#cc0c1a]/5 to-background overflow-hidden">
+          <CardContent className="p-0">
+            <div className="grid md:grid-cols-2 gap-0">
+              <div className="p-8">
+                <Badge className="mb-4 bg-[#cc0c1a] text-white">
+                  <FileVideo className="h-3 w-3 mr-1" /> Major Feature
+                </Badge>
+                <h2 className="text-3xl font-bold mb-4">PCAP to Simulator</h2>
+                <p className="text-lg text-muted-foreground mb-6">
+                  Transform real-world packet captures into fully functional OT/ICS simulators. 
+                  O-RANGE analyzes your PCAP files and automatically generates digital twins that 
+                  behave exactly like your production environment.
+                </p>
+                
+                <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg mb-6">
+                  <div className="flex items-center gap-2">
+                    <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center">
+                      <FileVideo className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <span className="font-medium">.pcap</span>
+                  </div>
+                  <ArrowRight className="h-6 w-6 text-[#cc0c1a]" />
+                  <div className="flex items-center gap-2">
+                    <div className="h-12 w-12 rounded-lg bg-[#cc0c1a]/10 flex items-center justify-center">
+                      <Cpu className="h-6 w-6 text-[#cc0c1a]" />
+                    </div>
+                    <span className="font-medium">Simulator</span>
+                  </div>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  No manual configuration required. O-RANGE learns device behaviors, protocol patterns, 
+                  and process logic directly from your network traffic.
+                </p>
+              </div>
+              
+              <div className="bg-muted/30 p-8 border-l border-border/50">
+                <h3 className="font-semibold text-lg mb-6">How It Works</h3>
+                <div className="space-y-4">
+                  {pcapFeatures.map((feature, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className="h-8 w-8 rounded-full bg-[#cc0c1a]/10 flex items-center justify-center text-[#cc0c1a] flex-shrink-0">
+                        {feature.icon}
+                      </div>
+                      <span className="text-sm pt-1">{feature.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Supported Protocols for PCAP */}
+      <section className="mb-16">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold mb-4">Protocols Extracted from PCAPs</h2>
+          <p className="text-muted-foreground">O-RANGE understands and simulates 40+ industrial protocols</p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-2">
+          {[
+            "Modbus TCP/RTU", "Siemens S7", "EtherNet/IP", "DNP3", "OPC-UA", 
+            "BACnet", "Profinet", "IEC 61850", "IEC 104", "HART-IP",
+            "CIP", "FINS", "Mitsubishi MELSEC", "GE SRTP", "CODESYS"
+          ].map((protocol, index) => (
+            <Badge key={index} variant="outline" className="px-3 py-1">
+              {protocol}
+            </Badge>
+          ))}
+          <Badge variant="outline" className="px-3 py-1 border-[#cc0c1a] text-[#cc0c1a]">
+            + 25 more
+          </Badge>
+        </div>
+      </section>
 
       {/* Features Grid */}
       <section className="mb-16">
@@ -162,12 +260,22 @@ const Orange = () => {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
-            <Card key={index} className="border-border/50 hover:border-[#cc0c1a]/30 transition-colors">
+            <Card 
+              key={index} 
+              className={`border-border/50 hover:border-[#cc0c1a]/30 transition-colors ${
+                feature.highlight ? 'ring-2 ring-[#cc0c1a]/20 bg-[#cc0c1a]/5' : ''
+              }`}
+            >
               <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-[#cc0c1a]/10 flex items-center justify-center text-[#cc0c1a] mb-4">
+                <div className={`h-12 w-12 rounded-lg flex items-center justify-center mb-4 ${
+                  feature.highlight ? 'bg-[#cc0c1a] text-white' : 'bg-[#cc0c1a]/10 text-[#cc0c1a]'
+                }`}>
                   {feature.icon}
                 </div>
-                <CardTitle className="text-lg">{feature.title}</CardTitle>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  {feature.title}
+                  {feature.highlight && <Badge className="bg-[#cc0c1a] text-white text-xs">New</Badge>}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">{feature.description}</p>
@@ -254,10 +362,10 @@ const Orange = () => {
         </div>
         <div className="grid md:grid-cols-4 gap-4">
           {[
-            { step: "1", title: "Import", description: "Import network topology and device configurations from your real environment" },
-            { step: "2", title: "Build", description: "Automatically generate digital twin with accurate protocol emulation" },
-            { step: "3", title: "Attack", description: "Run red team scenarios, penetration tests, and attack simulations" },
-            { step: "4", title: "Analyze", description: "Review impact analysis and refine your defenses" },
+            { step: "1", title: "Capture", description: "Record network traffic from your OT environment or import existing PCAP files" },
+            { step: "2", title: "Analyze", description: "O-RANGE automatically identifies devices, protocols, and communication patterns" },
+            { step: "3", title: "Generate", description: "Build digital twin simulators that respond like your real infrastructure" },
+            { step: "4", title: "Attack", description: "Run red team scenarios, penetration tests, and security training exercises" },
           ].map((item, index) => (
             <Card key={index} className="border-border/50 text-center">
               <CardContent className="p-6">
@@ -277,9 +385,10 @@ const Orange = () => {
         <Cpu className="h-12 w-12 text-[#cc0c1a] mx-auto mb-4" />
         <h2 className="text-2xl font-bold mb-4">Build Your Digital Twin Today</h2>
         <p className="text-muted-foreground max-w-xl mx-auto mb-6">
-          Stop guessing about your OT security posture. Test it with O-RANGE.
+          Got a PCAP? Turn it into a fully functional OT simulator in minutes. 
+          Stop guessing about your security posture — test it with O-RANGE.
         </p>
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 flex-wrap">
           <Link to="/contact">
             <Button className="bg-[#cc0c1a] hover:bg-[#a80916] text-white">
               Schedule a Demo
