@@ -7,6 +7,7 @@ import {
   Brain, 
   Shield, 
   Factory, 
+  Satellite,
   ArrowRight, 
   Scan, 
   AlertTriangle, 
@@ -29,8 +30,7 @@ const SolutionCategories = () => {
         "Prevents unauthorized AI model access and data exfiltration"
       ],
       products: [
-        { name: "PARAGUARD", path: "/paraguard", desc: "AI-Native Endpoint Security" },
-        { name: "SECONDLOOK", path: "/secondlook", desc: "AI Forensics & Detection" }
+        { name: "PARAGUARD", path: "/paraguard", desc: "AI-Native Endpoint Security" }
       ],
       color: "from-purple-500/20 to-purple-600/10",
       iconColor: "text-purple-600"
@@ -47,6 +47,7 @@ const SolutionCategories = () => {
       ],
       products: [
         { name: "DDX", path: "/ddx", desc: "Software Composition Analysis" },
+        { name: "SECONDLOOK", path: "/secondlook", desc: "XBOM Intelligence Platform" },
         { name: "ONBOARD", path: "/onboard", desc: "Hardware Board Forensics" }
       ],
       color: "from-blue-500/20 to-blue-600/10",
@@ -69,6 +70,22 @@ const SolutionCategories = () => {
       ],
       color: "from-orange-500/20 to-orange-600/10",
       iconColor: "text-orange-600"
+    },
+    {
+      icon: Satellite,
+      title: "IoT & Satellite Monitoring",
+      tagline: "Unified Sensor & Connectivity Platform",
+      whatItDoes: [
+        "Unifies disparate IoT sensors into a single monitoring dashboard",
+        "Real-time Starlink and satellite terminal monitoring and alerting",
+        "Supports aerospace, drone, maritime, and remote site deployments",
+        "Self-hosted with complete data sovereignty and offline operation"
+      ],
+      products: [
+        { name: "AURORASENSE", path: "/aurorasense", desc: "IoT Sensor Platform" }
+      ],
+      color: "from-cyan-500/20 to-cyan-600/10",
+      iconColor: "text-cyan-600"
     }
   ];
 
@@ -78,11 +95,11 @@ const SolutionCategories = () => {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">What Do We Protect?</h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Three specialized security domains. Purpose-built solutions. Complete protection.
+            Four specialized security domains. Purpose-built solutions. Complete protection.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {categories.map((category, index) => (
             <Card 
               key={index} 
