@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { action, userId, email, password, metadata, role, banDuration } = await req.json()
+    const { action, userId, email, password, metadata, role, banDuration, users } = await req.json()
 
     let result
 
@@ -52,6 +52,55 @@ Deno.serve(async (req) => {
         if (createError) throw createError
         result = { user: newUser.user, message: 'User created successfully' }
         console.log(`Created user: ${email}`)
+        break
+
+      case 'bulkCreate':
+        if (!users || !Array.isArray(users) || users.length === 0) {
+          throw new Error('No users provided for bulk creation')
+        }
+
+        const results = {
+          success: 0,
+          failed: 0,
+          errors: [] as string[],
+          created: [] as any[]
+        }
+
+        for (const user of users) {
+          try {
+            const userRole = user.role || 'user'
+            const { data: createdUser, error: bulkCreateError } = await supabaseAdmin.auth.admin.createUser({
+              email: user.email,
+              password: user.password,
+              email_confirm: true,
+              user_metadata: { role: userRole, approved: false }
+            })
+
+            if (bulkCreateError) {
+              results.failed++
+              results.errors.push(`${user.email}: ${bulkCreateError.message}`)
+              console.error(`Failed to create user ${user.email}:`, bulkCreateError.message)
+            } else {
+              // Add user role to user_roles table
+              if (createdUser.user) {
+                await supabaseAdmin
+                  .from('user_roles')
+                  .upsert({ user_id: createdUser.user.id, role: userRole }, { onConflict: 'user_id,role' })
+              }
+              
+              results.success++
+              results.created.push({ email: user.email, id: createdUser.user?.id })
+              console.log(`Created user: ${user.email} with role: ${userRole}`)
+            }
+          } catch (err: any) {
+            results.failed++
+            results.errors.push(`${user.email}: ${err.message}`)
+            console.error(`Error creating user ${user.email}:`, err.message)
+          }
+        }
+
+        result = results
+        console.log(`Bulk create completed: ${results.success} success, ${results.failed} failed`)
         break
 
       case 'update':

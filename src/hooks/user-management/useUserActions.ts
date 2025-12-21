@@ -51,6 +51,31 @@ export const useUserActions = (fetchUsers: () => Promise<void>) => {
     }
   };
 
+  const handleBulkAddUsers = async (users: { email: string; password: string; role?: string }[]): Promise<{ success: number; failed: number; errors: string[] }> => {
+    try {
+      const result = await callAdminAction('bulkCreate', { users });
+      
+      if (result.success > 0) {
+        toast({
+          title: 'Bulk import completed',
+          description: `${result.success} users created successfully${result.failed > 0 ? `, ${result.failed} failed` : ''}.`,
+          variant: result.failed > 0 ? 'destructive' : 'default',
+        });
+      }
+
+      fetchUsers();
+      return { success: result.success, failed: result.failed, errors: result.errors || [] };
+    } catch (error: any) {
+      console.error('Error bulk creating users:', error);
+      toast({
+        title: 'Error creating users',
+        description: error.message || 'Please try again later.',
+        variant: 'destructive',
+      });
+      return { success: 0, failed: users.length, errors: [error.message] };
+    }
+  };
+
   const handleApproveUser = async (userId: string) => {
     try {
       await callAdminAction('update', {
@@ -116,6 +141,7 @@ export const useUserActions = (fetchUsers: () => Promise<void>) => {
 
   return {
     handleAddUser,
+    handleBulkAddUsers,
     handleApproveUser,
     handleRejectUser,
     handleDeleteUser
