@@ -32,6 +32,16 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
   
   return (
     <div className="hidden md:flex items-center space-x-4">
+      {/* Role Switcher - Left of Features */}
+      {user && showRoleSwitcher && (
+        <RoleSwitcher 
+          selectedRole={activeRole}
+          onRoleChange={(role) => setActiveRole(role)}
+          availableRoles={userRoles}
+          isAdmin={isAdmin}
+        />
+      )}
+
       {/* Primary Navigation Links */}
       <div className="flex items-center space-x-6 mr-2">
         <NavigationMenu>
@@ -52,15 +62,6 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
 
       {/* User menu and theme toggle */}
       <div className="flex items-center space-x-3">
-        {user && showRoleSwitcher && (
-          <RoleSwitcher 
-            selectedRole={activeRole}
-            onRoleChange={(role) => setActiveRole(role)}
-            availableRoles={userRoles}
-            isAdmin={isAdmin}
-          />
-        )}
-        
         {user && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground hidden lg:inline max-w-[200px] truncate">
