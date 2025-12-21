@@ -1,4 +1,3 @@
-
 import { useUserFetch } from './useUserFetch';
 import { useUserActions } from './useUserActions';
 import { useUserStatusActions } from './useUserStatusActions';
@@ -10,7 +9,7 @@ export type { User, AddUserValues };
 export const useUserManagement = () => {
   const { users, loading, fetchUsers } = useUserFetch();
   const { handleAddUser, handleBulkAddUsers, handleApproveUser, handleRejectUser, handleDeleteUser } = useUserActions(fetchUsers);
-  const { handleDisableUser, handleResetPassword, handleUpdateRole } = useUserStatusActions(fetchUsers);
+  const { handleDisableUser, handleResetPassword, handleUpdateRole, handleEditUser, handleBulkUpdateRole } = useUserStatusActions(fetchUsers);
   const { handleGrantPermission, handleRevokePermission } = useUserPermissions(fetchUsers);
 
   return {
@@ -24,6 +23,8 @@ export const useUserManagement = () => {
     handleDisableUser,
     handleResetPassword,
     handleUpdateRole,
+    handleEditUser,
+    handleBulkUpdateRole,
     handleGrantPermission,
     handleRevokePermission,
   };

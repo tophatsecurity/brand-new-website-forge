@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { action, userId, email, password, metadata, role, banDuration, users, contacts, createLicenses, licenseConfig, sendEmailNotification, loginUrl } = await req.json()
+    const { action, userId, email, password, metadata, role, banDuration, users, contacts, createLicenses, licenseConfig, sendEmailNotification, loginUrl, userIds } = await req.json()
 
     let result
 
@@ -325,6 +325,81 @@ Deno.serve(async (req) => {
         }
         result = { message: `Role updated to ${role}` }
         console.log(`Updated role for ${userId} to ${role}`)
+        break
+
+      case 'updateMetadata':
+        // Update user metadata (name, phone, etc.)
+        const { data: currentUserData } = await supabaseAdmin.auth.admin.getUserById(userId)
+        const existingMetadata = currentUserData?.user?.user_metadata || {}
+        
+        const updatedMetadata = {
+          ...existingMetadata,
+          ...metadata,
+        }
+        
+        const { error: metadataError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+          user_metadata: updatedMetadata
+        })
+        if (metadataError) throw metadataError
+        
+        result = { message: 'User metadata updated' }
+        console.log(`Updated metadata for ${userId}`)
+        break
+
+      case 'bulkUpdateRole':
+        // Bulk update roles for multiple users
+        if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+          throw new Error('No user IDs provided for bulk role update')
+        }
+
+        const bulkResults = {
+          success: 0,
+          failed: 0,
+          errors: [] as string[]
+        }
+
+        for (const uid of userIds) {
+          try {
+            // Update auth metadata
+            const { error: bulkRoleError } = await supabaseAdmin.auth.admin.updateUserById(uid, {
+              user_metadata: { role }
+            })
+            if (bulkRoleError) throw bulkRoleError
+
+            // Get user email for promote function
+            const { data: bulkUserData } = await supabaseAdmin.auth.admin.getUserById(uid)
+            const bulkUserEmail = bulkUserData.user?.email
+
+            if (role === 'admin' && bulkUserEmail) {
+              await supabaseAdmin.rpc('promote_to_admin', { user_email: bulkUserEmail })
+            } else {
+              // Remove admin role if demoting
+              await supabaseAdmin
+                .from('user_roles')
+                .delete()
+                .eq('user_id', uid)
+                .eq('role', 'admin')
+              
+              // Ensure user has the new role
+              await supabaseAdmin
+                .from('user_roles')
+                .upsert({ user_id: uid, role }, { onConflict: 'user_id,role' })
+            }
+
+            bulkResults.success++
+            console.log(`Updated role for ${uid} to ${role}`)
+          } catch (err: any) {
+            bulkResults.failed++
+            bulkResults.errors.push(`${uid}: ${err.message}`)
+            console.error(`Error updating role for ${uid}:`, err.message)
+          }
+        }
+
+        result = { 
+          message: `Updated ${bulkResults.success} users to ${role}`,
+          ...bulkResults 
+        }
+        console.log(`Bulk role update completed: ${bulkResults.success} success, ${bulkResults.failed} failed`)
         break
 
       default:

@@ -103,9 +103,60 @@ export const useUserStatusActions = (fetchUsers: () => Promise<void>) => {
     }
   };
 
+  const handleEditUser = async (userId: string, metadata: any) => {
+    try {
+      await callAdminAction('updateMetadata', { userId, metadata });
+      
+      toast({
+        title: 'User updated',
+        description: 'User details have been saved successfully.',
+      });
+      
+      fetchUsers();
+    } catch (error: any) {
+      console.error('Error updating user:', error);
+      toast({
+        title: 'Error updating user',
+        description: error.message || 'Please try again later.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleBulkUpdateRole = async (userIds: string[], role: string) => {
+    try {
+      await callAdminAction('bulkUpdateRole', { userIds, role });
+      
+      const roleLabels: Record<string, string> = {
+        admin: 'Admin',
+        user: 'User',
+        moderator: 'Moderator',
+        var: 'VAR',
+        customer_rep: 'Customer Rep',
+        customer: 'Customer'
+      };
+      
+      toast({
+        title: 'Roles updated',
+        description: `Updated ${userIds.length} user${userIds.length !== 1 ? 's' : ''} to ${roleLabels[role] || role}.`,
+      });
+      
+      fetchUsers();
+    } catch (error: any) {
+      console.error('Error bulk updating roles:', error);
+      toast({
+        title: 'Error updating roles',
+        description: error.message || 'Please try again later.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return {
     handleDisableUser,
     handleResetPassword,
-    handleUpdateRole
+    handleUpdateRole,
+    handleEditUser,
+    handleBulkUpdateRole
   };
 };

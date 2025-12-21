@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import UserList from './UserList';
 import AddUserDialog from './dialogs/AddUserDialog';
@@ -19,6 +18,8 @@ const UserManagement = () => {
     handleDisableUser,
     handleResetPassword,
     handleUpdateRole,
+    handleEditUser,
+    handleBulkUpdateRole,
     handleGrantPermission,
     handleRevokePermission,
   } = useUserManagement();
@@ -53,6 +54,8 @@ const UserManagement = () => {
               onDisableUser={handleDisableUser}
               onResetPassword={handleResetPassword}
               onUpdateRole={handleUpdateRole}
+              onEditUser={handleEditUser}
+              onBulkUpdateRole={handleBulkUpdateRole}
               onGrantPermission={handleGrantPermission}
               onRevokePermission={handleRevokePermission}
             />
