@@ -16,7 +16,7 @@ export interface CRMAccount {
   state: string | null;
   postal_code: string | null;
   country: string | null;
-  account_type: 'free' | 'customer' | 'var' | 'customer_service' | 'admin' | 'demo';
+  account_type: 'free' | 'customer' | 'var' | 'customer_service' | 'admin' | 'demo' | 'partner';
   status: 'active' | 'inactive' | 'churned';
   annual_revenue: number | null;
   employee_count: number | null;
