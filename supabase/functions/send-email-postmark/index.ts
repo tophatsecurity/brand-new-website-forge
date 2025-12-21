@@ -25,7 +25,7 @@ interface EmailRequest {
 const getEmailTemplate = (template: string, data: Record<string, any> = {}): string => {
   const templates: Record<string, string> = {
     welcome: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h1 style="color: #333;">Welcome to Top Hat Security!</h1>
         <p>Thank you for joining us. We're excited to have you on board.</p>
         ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
@@ -34,7 +34,7 @@ const getEmailTemplate = (template: string, data: Record<string, any> = {}): str
       </div>
     `,
     password_reset: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h1 style="color: #333;">Password Reset Request</h1>
         <p>You have requested to reset your password.</p>
         ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
@@ -44,7 +44,7 @@ const getEmailTemplate = (template: string, data: Record<string, any> = {}): str
       </div>
     `,
     notification: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h1 style="color: #333;">Notification</h1>
         <p>You have a new notification from Top Hat Security.</p>
         ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
@@ -53,12 +53,59 @@ const getEmailTemplate = (template: string, data: Record<string, any> = {}): str
       </div>
     `,
     license_expiry: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #333;">License Expiry Notice</h1>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #d97706;">License Expiry Notice</h1>
         <p>Your license is approaching its expiry date.</p>
+        ${data.productName ? `<p><strong>Product:</strong> ${data.productName}</p>` : ''}
+        ${data.expiryDate ? `<p><strong>Expiry Date:</strong> ${data.expiryDate}</p>` : ''}
         ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
         ${data.testMode ? '<p style="color: #666; font-style: italic;">(This is a test email)</p>' : ''}
         <p>Please contact us to renew your license.</p>
+        <p>Best regards,<br>The Top Hat Security Team</p>
+      </div>
+    `,
+    account_verification: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #333;">Verify Your Account</h1>
+        <p>Please verify your email address to complete your account setup.</p>
+        ${data.verificationLink ? `<p style="margin: 20px 0;"><a href="${data.verificationLink}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Verify Email</a></p>` : ''}
+        ${data.verificationCode ? `<p>Or use this verification code: <strong style="font-size: 18px; letter-spacing: 2px;">${data.verificationCode}</strong></p>` : ''}
+        ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
+        ${data.testMode ? '<p style="color: #666; font-style: italic;">(This is a test email)</p>' : ''}
+        <p style="color: #666; font-size: 12px;">If you didn't create an account, please ignore this email.</p>
+        <p>Best regards,<br>The Top Hat Security Team</p>
+      </div>
+    `,
+    license_renewal: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #16a34a;">License Renewal Confirmation</h1>
+        <p>Great news! Your license has been successfully renewed.</p>
+        ${data.productName ? `<p><strong>Product:</strong> ${data.productName}</p>` : ''}
+        ${data.licenseKey ? `<p><strong>License Key:</strong> ${data.licenseKey}</p>` : ''}
+        ${data.newExpiryDate ? `<p><strong>New Expiry Date:</strong> ${data.newExpiryDate}</p>` : ''}
+        ${data.seats ? `<p><strong>Seats:</strong> ${data.seats}</p>` : ''}
+        ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
+        ${data.testMode ? '<p style="color: #666; font-style: italic;">(This is a test email)</p>' : ''}
+        <p>Thank you for your continued trust in Top Hat Security.</p>
+        <p>Best regards,<br>The Top Hat Security Team</p>
+      </div>
+    `,
+    onboarding_complete: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #16a34a;">🎉 Onboarding Complete!</h1>
+        <p>Congratulations! You have successfully completed your onboarding process.</p>
+        ${data.companyName ? `<p><strong>Company:</strong> ${data.companyName}</p>` : ''}
+        ${data.completedSteps ? `<p><strong>Completed Steps:</strong> ${data.completedSteps}</p>` : ''}
+        <div style="background-color: #f3f4f6; padding: 16px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">What's Next?</h3>
+          <ul style="color: #666;">
+            <li>Access your product downloads from your dashboard</li>
+            <li>Review our documentation and support resources</li>
+            <li>Contact your dedicated account representative for assistance</li>
+          </ul>
+        </div>
+        ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
+        ${data.testMode ? '<p style="color: #666; font-style: italic;">(This is a test email)</p>' : ''}
         <p>Best regards,<br>The Top Hat Security Team</p>
       </div>
     `,
