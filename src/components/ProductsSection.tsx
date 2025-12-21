@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Lock, Search, Radio, Server, Database, FileCheck, Eye, Footprints, Copy } from "lucide-react";
+import { Shield, Lock, Search, Radio, Server, Database, FileCheck, Eye, Footprints, Copy, CircuitBoard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +47,14 @@ const ProductsSection = () => {
           icon: <FileCheck className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/secondlook"
+        },
+        {
+          title: "ONBOARD",
+          description: "Supply chain board forensics and complete chain enumeration.",
+          longDescription: "ONBOARD provides deep hardware forensics for circuit boards, enumerating complete supply chains and detecting counterfeit components, hardware trojans, and unauthorized modifications.",
+          icon: <CircuitBoard className="h-8 w-8 text-primary" />,
+          borderColor: "border-primary",
+          link: "/onboard"
         }
       ]
     },
