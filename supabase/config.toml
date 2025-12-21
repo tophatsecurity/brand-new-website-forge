@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.license-activation]
 verify_jwt = false
+
+[functions.stripe-payment]
+verify_jwt = true
+
+[functions.create-crm-from-onboarding]
+verify_jwt = true

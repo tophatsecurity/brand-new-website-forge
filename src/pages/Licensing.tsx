@@ -29,7 +29,9 @@ import {
   Shield,
   Network,
   Eye,
-  Search
+  Search,
+  Lock,
+  CreditCard
 } from "lucide-react";
 import {
   Tooltip,
@@ -49,6 +51,16 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useAccountPayment } from '@/hooks/useAccountPayment';
+import { PaymentStatusBadge } from '@/components/PaymentGatedFeature';
+import AddPaymentMethodForm from '@/components/AddPaymentMethodForm';
 
 type License = {
   id: string;
@@ -84,12 +96,14 @@ const productIcons: Record<string, React.ElementType> = {
 const Licensing = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { data: paymentStatus, isFreeUser, canAccessPaidFeatures, refetch: refetchPayment } = useAccountPayment();
   const [licenses, setLicenses] = useState<License[]>([]);
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [generatingDemo, setGeneratingDemo] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<'all' | 'licenses' | string>('all');
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   
   const hasLicenseForProduct = (productName: string) => {
     return licenses.some(l => l.product_name === productName);
@@ -331,6 +345,13 @@ const Licensing = () => {
 
   const isServiceProduct = (item: CatalogItem) => item.product_type === 'service';
 
+  // Check if a product is paid (non-demo)
+  const isPaidProduct = (item: CatalogItem) => {
+    return item.product_type === 'service' || 
+           (item.product_type === 'software' && 
+            !['demo', 'alpha', 'beta'].includes(item.product_name.toLowerCase()));
+  };
+
   const renderProductCard = (item: CatalogItem) => {
     const hasLicense = hasLicenseForProduct(item.product_name);
     const IconComponent = productIcons[item.product_name] || Package;
@@ -388,9 +409,20 @@ const Licensing = () => {
         </CardContent>
         <CardFooter>
           {isService ? (
-            <Button className="w-full" variant="outline" asChild>
-              <a href="/contact">Contact Sales</a>
-            </Button>
+            isFreeUser ? (
+              <Button 
+                className="w-full" 
+                variant="outline" 
+                onClick={() => setShowPaymentDialog(true)}
+              >
+                <Lock className="h-4 w-4 mr-2" />
+                Add Payment to Contact Sales
+              </Button>
+            ) : (
+              <Button className="w-full" variant="outline" asChild>
+                <a href="/contact">Contact Sales</a>
+              </Button>
+            )
           ) : (
             <Button 
               className="w-full" 
@@ -506,13 +538,42 @@ const Licensing = () => {
                       {activeView === 'licenses' && 'My Licenses'}
                       {activeView !== 'all' && activeView !== 'licenses' && activeView}
                     </h1>
+                    <PaymentStatusBadge />
                   </div>
-                  {user?.user_metadata?.role === 'admin' && (
-                    <Button asChild size="sm">
-                      <a href="/admin/licensing">Admin Panel</a>
-                    </Button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {isFreeUser && (
+                      <Button size="sm" onClick={() => setShowPaymentDialog(true)}>
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Add Payment
+                      </Button>
+                    )}
+                    {user?.user_metadata?.role === 'admin' && (
+                      <Button asChild size="sm" variant="outline">
+                        <a href="/admin/licensing">Admin Panel</a>
+                      </Button>
+                    )}
+                  </div>
                 </div>
+
+                {/* Payment Method Dialog */}
+                <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Add Payment Method</DialogTitle>
+                      <DialogDescription>
+                        Add a payment method to unlock paid features and convert from free tier.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <AddPaymentMethodForm
+                      accountId={paymentStatus?.accountId || undefined}
+                      onSuccess={() => {
+                        setShowPaymentDialog(false);
+                        refetchPayment();
+                      }}
+                      onCancel={() => setShowPaymentDialog(false)}
+                    />
+                  </DialogContent>
+                </Dialog>
 
                 {activeView === 'licenses' ? (
                   <div className="bg-card rounded-lg shadow-md p-6">
