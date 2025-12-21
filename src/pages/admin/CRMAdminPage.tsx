@@ -222,6 +222,7 @@ const CRMAdminPage = () => {
     const variants: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
       free: 'secondary',
       customer: 'default',
+      demo: 'outline',
       var: 'outline',
       customer_service: 'outline',
       admin: 'destructive'
@@ -229,6 +230,7 @@ const CRMAdminPage = () => {
     const labels: Record<string, string> = {
       free: 'Free',
       customer: 'Customer',
+      demo: 'Demo',
       var: 'VAR',
       customer_service: 'Customer Service',
       admin: 'Admin'

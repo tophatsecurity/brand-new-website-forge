@@ -41,75 +41,75 @@ export const useLicenses = () => {
   const [featureFilter, setFeatureFilter] = useState<string | null>(null);
   const [addonFilter, setAddonFilter] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchLicensesAndTiers = async () => {
-      setLoading(true);
-      try {
-        // Fetch licenses with tier details
-        const { data: licensesData, error: licensesError } = await supabase
-          .from('product_licenses')
-          .select(`
-            id,
-            license_key,
-            product_name,
-            tier_id,
-            tier:license_tiers(name),
-            assigned_to,
-            seats,
-            expiry_date,
-            status,
-            features,
-            addons,
-            created_at,
-            last_active,
-            max_hosts,
-            allowed_networks,
-            concurrent_sessions,
-            usage_hours_limit
-          `)
-          .order('created_at', { ascending: false });
-          
-        if (licensesError) {
-          console.error('Error fetching licenses:', licensesError);
-          toast({
-            title: "Error loading licenses",
-            description: licensesError.message,
-            variant: "destructive"
-          });
-        } else {
-          // Ensure features, addons, and allowed_networks are arrays
-          const processedLicenses = licensesData?.map(license => ({
-            ...license,
-            features: Array.isArray(license.features) ? license.features : [],
-            addons: Array.isArray(license.addons) ? license.addons : [],
-            allowed_networks: Array.isArray(license.allowed_networks) ? license.allowed_networks : [],
-            max_hosts: license.max_hosts ?? null,
-            concurrent_sessions: license.concurrent_sessions ?? 1,
-            usage_hours_limit: license.usage_hours_limit ?? null,
-          })) || [];
-          
-          setLicenses(processedLicenses);
-          setFilteredLicenses(processedLicenses);
-        }
+  const fetchLicensesAndTiers = async () => {
+    setLoading(true);
+    try {
+      // Fetch licenses with tier details
+      const { data: licensesData, error: licensesError } = await supabase
+        .from('product_licenses')
+        .select(`
+          id,
+          license_key,
+          product_name,
+          tier_id,
+          tier:license_tiers(name),
+          assigned_to,
+          seats,
+          expiry_date,
+          status,
+          features,
+          addons,
+          created_at,
+          last_active,
+          max_hosts,
+          allowed_networks,
+          concurrent_sessions,
+          usage_hours_limit
+        `)
+        .order('created_at', { ascending: false });
         
-        // Fetch license tiers
-        const { data: tiersData, error: tiersError } = await supabase
-          .from('license_tiers')
-          .select('*')
-          .order('max_seats', { ascending: true });
-          
-        if (tiersError) {
-          console.error('Error fetching license tiers:', tiersError);
-        } else {
-          setTiers(tiersData || []);
-        }
-      } catch (err) {
-        console.error('Exception fetching license data:', err);
-      } finally {
-        setLoading(false);
+      if (licensesError) {
+        console.error('Error fetching licenses:', licensesError);
+        toast({
+          title: "Error loading licenses",
+          description: licensesError.message,
+          variant: "destructive"
+        });
+      } else {
+        // Ensure features, addons, and allowed_networks are arrays
+        const processedLicenses = licensesData?.map(license => ({
+          ...license,
+          features: Array.isArray(license.features) ? license.features : [],
+          addons: Array.isArray(license.addons) ? license.addons : [],
+          allowed_networks: Array.isArray(license.allowed_networks) ? license.allowed_networks : [],
+          max_hosts: license.max_hosts ?? null,
+          concurrent_sessions: license.concurrent_sessions ?? 1,
+          usage_hours_limit: license.usage_hours_limit ?? null,
+        })) || [];
+        
+        setLicenses(processedLicenses);
+        setFilteredLicenses(processedLicenses);
       }
-    };
-    
+      
+      // Fetch license tiers
+      const { data: tiersData, error: tiersError } = await supabase
+        .from('license_tiers')
+        .select('*')
+        .order('max_seats', { ascending: true });
+        
+      if (tiersError) {
+        console.error('Error fetching license tiers:', tiersError);
+      } else {
+        setTiers(tiersData || []);
+      }
+    } catch (err) {
+      console.error('Exception fetching license data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchLicensesAndTiers();
   }, [toast]);
 
@@ -184,6 +184,7 @@ export const useLicenses = () => {
     tiers,
     loading,
     addLicense,
+    refetch: fetchLicensesAndTiers,
     searchTerm,
     setSearchTerm,
     featureFilter,
