@@ -16,10 +16,11 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Shield, User, Users, Briefcase, Headphones, UserCheck } from 'lucide-react';
+import { Shield, User, Users, Briefcase, Headphones, UserCheck, Gift } from 'lucide-react';
 
 // All roles from the app_role enum
 const APP_ROLES = [
+  { value: 'free', label: 'Free', description: 'Free tier with limited access', icon: Gift, color: 'bg-gray-100 text-gray-800' },
   { value: 'user', label: 'User', description: 'Standard user with basic access', icon: User, color: 'bg-blue-100 text-blue-800' },
   { value: 'admin', label: 'Admin', description: 'Full administrative access', icon: Shield, color: 'bg-purple-100 text-purple-800' },
   { value: 'moderator', label: 'Moderator', description: 'Content and user moderation', icon: UserCheck, color: 'bg-green-100 text-green-800' },

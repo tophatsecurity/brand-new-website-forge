@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Shield, User, Users, Briefcase, UserCheck, ChevronDown, Check, TrendingUp, Megaphone } from 'lucide-react';
+import { Shield, User, Users, Briefcase, UserCheck, ChevronDown, Check, TrendingUp, Megaphone, Gift } from 'lucide-react';
 import { AppRole } from '@/hooks/useRolePermissions';
 
 interface RoleSwitcherProps {
@@ -27,10 +27,11 @@ const roleConfig: Record<AppRole, { label: string; icon: React.ElementType; desc
   customer: { label: 'Customer', icon: Users, description: 'Customer portal access' },
   user: { label: 'User', icon: User, description: 'Standard user access' },
   moderator: { label: 'Moderator', icon: Shield, description: 'Moderation access' },
+  free: { label: 'Free', icon: Gift, description: 'Free tier access' },
 };
 
 // All roles an admin can switch to for testing
-const allSwitchableRoles: AppRole[] = ['admin', 'account_rep', 'marketing', 'var', 'customer_rep', 'customer'];
+const allSwitchableRoles: AppRole[] = ['admin', 'account_rep', 'marketing', 'var', 'customer_rep', 'customer', 'free'];
 
 const RoleSwitcher: React.FC<RoleSwitcherProps> = ({ 
   selectedRole, 

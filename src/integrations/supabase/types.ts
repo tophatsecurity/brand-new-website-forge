@@ -456,6 +456,60 @@ export type Database = {
           },
         ]
       }
+      guest_onboarding: {
+        Row: {
+          company_name: string | null
+          completed_at: string | null
+          contact_email: string
+          contact_name: string | null
+          contact_phone: string | null
+          converted_user_id: string | null
+          created_at: string
+          current_step: number
+          data: Json | null
+          id: string
+          session_id: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["onboarding_status"]
+          total_steps: number
+          updated_at: string
+        }
+        Insert: {
+          company_name?: string | null
+          completed_at?: string | null
+          contact_email: string
+          contact_name?: string | null
+          contact_phone?: string | null
+          converted_user_id?: string | null
+          created_at?: string
+          current_step?: number
+          data?: Json | null
+          id?: string
+          session_id: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["onboarding_status"]
+          total_steps?: number
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string | null
+          completed_at?: string | null
+          contact_email?: string
+          contact_name?: string | null
+          contact_phone?: string | null
+          converted_user_id?: string | null
+          created_at?: string
+          current_step?: number
+          data?: Json | null
+          id?: string
+          session_id?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["onboarding_status"]
+          total_steps?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       license_activations: {
         Row: {
           activated_at: string
@@ -1131,6 +1185,7 @@ export type Database = {
         | "customer"
         | "account_rep"
         | "marketing"
+        | "free"
       onboarding_status: "not_started" | "in_progress" | "completed" | "on_hold"
       permission_type: "downloads" | "support" | "admin"
     }
@@ -1269,6 +1324,7 @@ export const Constants = {
         "customer",
         "account_rep",
         "marketing",
+        "free",
       ],
       onboarding_status: ["not_started", "in_progress", "completed", "on_hold"],
       permission_type: ["downloads", "support", "admin"],
