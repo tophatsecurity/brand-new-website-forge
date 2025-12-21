@@ -50,6 +50,7 @@ type Download = {
   id: string;
   product_name: string;
   product_type: string;
+  package_format: string | null;
   version: string;
   release_date: string;
   description: string | null;
@@ -83,6 +84,7 @@ const DownloadsAdminPage = () => {
   const [formData, setFormData] = useState({
     product_name: '',
     product_type: '',
+    package_format: '',
     version: '',
     release_date: new Date().toISOString().split('T')[0],
     description: '',
@@ -273,6 +275,7 @@ const DownloadsAdminPage = () => {
       const submitData = {
         product_name: formData.product_name,
         product_type: formData.product_type,
+        package_format: formData.package_format || null,
         version: formData.version,
         release_date: formData.release_date,
         description: formData.description,
@@ -311,6 +314,7 @@ const DownloadsAdminPage = () => {
       setFormData({
         product_name: '',
         product_type: '',
+        package_format: '',
         version: '',
         release_date: new Date().toISOString().split('T')[0],
         description: '',
@@ -367,6 +371,7 @@ const DownloadsAdminPage = () => {
     setFormData({
       product_name: download.product_name,
       product_type: download.product_type,
+      package_format: download.package_format || '',
       version: download.version,
       release_date: new Date(download.release_date).toISOString().split('T')[0],
       description: download.description || '',
@@ -384,6 +389,7 @@ const DownloadsAdminPage = () => {
     setFormData({
       product_name: '',
       product_type: '',
+      package_format: '',
       version: '',
       release_date: new Date().toISOString().split('T')[0],
       description: '',
@@ -502,6 +508,33 @@ const DownloadsAdminPage = () => {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="package_format">Package Format</Label>
+              <Select 
+                value={formData.package_format || ''} 
+                onValueChange={(value) => setFormData({...formData, package_format: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select package format" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="exe">EXE (Windows Installer)</SelectItem>
+                  <SelectItem value="msi">MSI (Windows Installer)</SelectItem>
+                  <SelectItem value="deb">DEB (Debian/Ubuntu)</SelectItem>
+                  <SelectItem value="rpm">RPM (Red Hat/CentOS/Fedora)</SelectItem>
+                  <SelectItem value="dmg">DMG (macOS)</SelectItem>
+                  <SelectItem value="pkg">PKG (macOS)</SelectItem>
+                  <SelectItem value="appimage">AppImage (Linux)</SelectItem>
+                  <SelectItem value="tar.gz">TAR.GZ (Linux/Unix)</SelectItem>
+                  <SelectItem value="zip">ZIP (Cross-platform)</SelectItem>
+                  <SelectItem value="ova">OVA (Virtual Appliance)</SelectItem>
+                  <SelectItem value="iso">ISO (Disk Image)</SelectItem>
+                  <SelectItem value="docker">Docker Image</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
