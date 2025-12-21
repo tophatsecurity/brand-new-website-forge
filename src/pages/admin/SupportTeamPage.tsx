@@ -1,14 +1,20 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import AdminLayout from '@/components/layouts/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
-import { useSupportTeam, getRoleLabel, SUPPORT_ROLES } from '@/hooks/useSupportTeam';
-import { useCRMAccounts } from '@/hooks/useCRM';
-import { Users, Building2, BarChart3, UserCheck, Briefcase, HeadphonesIcon, Store } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useSupportTeam, getRoleLabel } from '@/hooks/useSupportTeam';
+import { useCRMAccounts, CRMAccount } from '@/hooks/useCRM';
+import { Users, Building2, BarChart3, UserCheck, Briefcase, HeadphonesIcon, Store, ArrowRight, X, Loader2 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 const ROLE_COLORS: Record<string, string> = {
   customer_rep: 'hsl(var(--chart-1))',
@@ -25,8 +31,15 @@ const ROLE_ICONS: Record<string, React.ElementType> = {
 };
 
 const SupportTeamPage = () => {
+  const queryClient = useQueryClient();
   const { data: supportTeam = [], isLoading: teamLoading } = useSupportTeam();
   const { data: accounts = [], isLoading: accountsLoading } = useCRMAccounts();
+  
+  // Selection state
+  const [selectedAccountIds, setSelectedAccountIds] = useState<string[]>([]);
+  const [targetMemberId, setTargetMemberId] = useState<string>('');
+  const [isAssigning, setIsAssigning] = useState(false);
+  const [viewMode, setViewMode] = useState<'unassigned' | 'all' | string>('unassigned');
 
   // Calculate workload for each team member
   const teamWorkload = useMemo(() => {
@@ -39,6 +52,18 @@ const SupportTeamPage = () => {
       };
     });
   }, [supportTeam, accounts]);
+
+  // Filter accounts based on view mode
+  const displayedAccounts = useMemo(() => {
+    if (viewMode === 'unassigned') {
+      return accounts.filter(acc => !acc.owner_id);
+    } else if (viewMode === 'all') {
+      return accounts;
+    } else {
+      // View specific team member's accounts
+      return accounts.filter(acc => acc.owner_id === viewMode);
+    }
+  }, [accounts, viewMode]);
 
   // Unassigned accounts
   const unassignedAccounts = useMemo(() => {
@@ -58,9 +83,7 @@ const SupportTeamPage = () => {
     }));
   }, [supportTeam]);
 
-  // Workload distribution data
   const maxAccounts = Math.max(...teamWorkload.map(t => t.accountCount), 1);
-
   const totalAssigned = accounts.length - unassignedAccounts.length;
   const avgWorkload = supportTeam.length > 0 ? Math.round(totalAssigned / supportTeam.length) : 0;
 
@@ -76,7 +99,64 @@ const SupportTeamPage = () => {
     }
   };
 
+  const handleSelectAccount = (accountId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedAccountIds(prev => [...prev, accountId]);
+    } else {
+      setSelectedAccountIds(prev => prev.filter(id => id !== accountId));
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedAccountIds(displayedAccounts.map(acc => acc.id));
+    } else {
+      setSelectedAccountIds([]);
+    }
+  };
+
+  const handleAssignAccounts = async () => {
+    if (selectedAccountIds.length === 0) {
+      toast.error('Please select accounts to assign');
+      return;
+    }
+
+    setIsAssigning(true);
+    try {
+      const ownerId = targetMemberId === 'unassign' ? null : targetMemberId || null;
+      
+      const { error } = await supabase
+        .from('crm_accounts')
+        .update({ owner_id: ownerId })
+        .in('id', selectedAccountIds);
+
+      if (error) throw error;
+
+      toast.success(
+        ownerId 
+          ? `${selectedAccountIds.length} account(s) assigned successfully`
+          : `${selectedAccountIds.length} account(s) unassigned`
+      );
+      
+      setSelectedAccountIds([]);
+      setTargetMemberId('');
+      queryClient.invalidateQueries({ queryKey: ['crm-accounts'] });
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to assign accounts');
+    } finally {
+      setIsAssigning(false);
+    }
+  };
+
+  const getOwnerName = (ownerId: string | null) => {
+    if (!ownerId) return 'Unassigned';
+    const member = supportTeam.find(m => m.id === ownerId);
+    return member?.email || 'Unknown';
+  };
+
   const loading = teamLoading || accountsLoading;
+  const allSelected = displayedAccounts.length > 0 && selectedAccountIds.length === displayedAccounts.length;
+  const someSelected = selectedAccountIds.length > 0 && selectedAccountIds.length < displayedAccounts.length;
 
   return (
     <AdminLayout title="Support Team">
@@ -168,7 +248,7 @@ const SupportTeamPage = () => {
           <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle className="text-lg">Workload Distribution</CardTitle>
-              <CardDescription>Accounts assigned per team member</CardDescription>
+              <CardDescription>Click on a team member to view their accounts</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -180,8 +260,15 @@ const SupportTeamPage = () => {
                   teamWorkload.map(member => {
                     const Icon = ROLE_ICONS[member.role] || Users;
                     const percentage = maxAccounts > 0 ? (member.accountCount / maxAccounts) * 100 : 0;
+                    const isSelected = viewMode === member.id;
                     return (
-                      <div key={member.id} className="flex items-center gap-4">
+                      <div 
+                        key={member.id} 
+                        className={`flex items-center gap-4 p-2 rounded-lg cursor-pointer transition-colors ${
+                          isSelected ? 'bg-primary/10 ring-1 ring-primary' : 'hover:bg-muted/50'
+                        }`}
+                        onClick={() => setViewMode(isSelected ? 'unassigned' : member.id)}
+                      >
                         <Avatar className="h-8 w-8">
                           <AvatarFallback className="text-xs">{getInitials(member.email)}</AvatarFallback>
                         </Avatar>
@@ -209,112 +296,162 @@ const SupportTeamPage = () => {
           </Card>
         </div>
 
-        {/* Team Members Table */}
+        {/* Account Assignment Section */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Team Members</CardTitle>
-            <CardDescription>All support team members and their assigned accounts</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg">Account Assignment</CardTitle>
+                <CardDescription>
+                  Select accounts and assign them to team members
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Select value={viewMode} onValueChange={setViewMode}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Filter accounts" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="unassigned">Unassigned Only</SelectItem>
+                    <SelectItem value="all">All Accounts</SelectItem>
+                    {teamWorkload.map(member => (
+                      <SelectItem key={member.id} value={member.id}>
+                        {member.email.split('@')[0]} ({member.accountCount})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
+            {/* Bulk Action Bar */}
+            {selectedAccountIds.length > 0 && (
+              <div className="flex items-center gap-4 p-3 mb-4 bg-muted rounded-lg">
+                <span className="text-sm font-medium">
+                  {selectedAccountIds.length} account{selectedAccountIds.length !== 1 ? 's' : ''} selected
+                </span>
+                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                <Select value={targetMemberId} onValueChange={setTargetMemberId}>
+                  <SelectTrigger className="w-[220px]">
+                    <SelectValue placeholder="Assign to..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="unassign">
+                      <span className="text-destructive">Unassign</span>
+                    </SelectItem>
+                    {supportTeam.map(member => (
+                      <SelectItem key={member.id} value={member.id}>
+                        {member.email} ({getRoleLabel(member.role)})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button 
+                  onClick={handleAssignAccounts} 
+                  disabled={!targetMemberId || isAssigning}
+                  size="sm"
+                >
+                  {isAssigning ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Assigning...
+                    </>
+                  ) : (
+                    'Apply'
+                  )}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setSelectedAccountIds([])}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Team Member</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Assigned Accounts</TableHead>
-                  <TableHead>Account List</TableHead>
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={allSelected}
+                      ref={(el) => {
+                        if (el) (el as any).indeterminate = someSelected;
+                      }}
+                      onCheckedChange={handleSelectAll}
+                      aria-label="Select all"
+                    />
+                  </TableHead>
+                  <TableHead>Account Name</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Industry</TableHead>
+                  <TableHead>Current Owner</TableHead>
+                  <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                      Loading team members...
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      Loading accounts...
                     </TableCell>
                   </TableRow>
-                ) : teamWorkload.length === 0 ? (
+                ) : displayedAccounts.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                      No support team members found. Assign users the customer_rep, account_rep, or var role.
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      {viewMode === 'unassigned' 
+                        ? 'No unassigned accounts. All accounts have been assigned!'
+                        : 'No accounts found for this filter.'
+                      }
                     </TableCell>
                   </TableRow>
                 ) : (
-                  teamWorkload.map(member => {
-                    const Icon = ROLE_ICONS[member.role] || Users;
-                    return (
-                      <TableRow key={member.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-9 w-9">
-                              <AvatarFallback>{getInitials(member.email)}</AvatarFallback>
-                            </Avatar>
-                            <span className="font-medium">{member.email}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={getRoleBadgeVariant(member.role)}>
-                            <Icon className="h-3 w-3 mr-1" />
-                            {getRoleLabel(member.role)}
+                  displayedAccounts.map(account => (
+                    <TableRow 
+                      key={account.id}
+                      className={selectedAccountIds.includes(account.id) ? 'bg-primary/5' : ''}
+                    >
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedAccountIds.includes(account.id)}
+                          onCheckedChange={(checked) => handleSelectAccount(account.id, !!checked)}
+                          aria-label={`Select ${account.name}`}
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">{account.name}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">
+                          {account.account_type || 'Unknown'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {account.industry || '-'}
+                      </TableCell>
+                      <TableCell>
+                        {account.owner_id ? (
+                          <Badge variant="secondary" className="text-xs">
+                            {getOwnerName(account.owner_id)}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{member.accountCount}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1 max-w-md">
-                            {member.accounts.length === 0 ? (
-                              <span className="text-muted-foreground text-sm">No accounts assigned</span>
-                            ) : (
-                              member.accounts.slice(0, 5).map(acc => (
-                                <Badge key={acc.id} variant="secondary" className="text-xs">
-                                  {acc.name}
-                                </Badge>
-                              ))
-                            )}
-                            {member.accounts.length > 5 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{member.accounts.length - 5} more
-                              </Badge>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
+                        ) : (
+                          <Badge variant="destructive" className="text-xs">
+                            Unassigned
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={account.status === 'active' ? 'default' : 'secondary'}>
+                          {account.status}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
               </TableBody>
             </Table>
           </CardContent>
         </Card>
-
-        {/* Unassigned Accounts */}
-        {unassignedAccounts.length > 0 && (
-          <Card className="border-destructive/50">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-destructive" />
-                Unassigned Accounts
-              </CardTitle>
-              <CardDescription>
-                These accounts need to be assigned to a support team member
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {unassignedAccounts.slice(0, 20).map(acc => (
-                  <Badge key={acc.id} variant="outline" className="text-sm">
-                    {acc.name}
-                  </Badge>
-                ))}
-                {unassignedAccounts.length > 20 && (
-                  <Badge variant="secondary">
-                    +{unassignedAccounts.length - 20} more
-                  </Badge>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </AdminLayout>
   );
