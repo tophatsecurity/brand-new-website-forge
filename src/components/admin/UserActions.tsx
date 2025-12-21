@@ -28,11 +28,18 @@ const UserActions = ({
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openDisableDialog, setOpenDisableDialog] = useState(false);
   const [openRoleDialog, setOpenRoleDialog] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(user.user_metadata?.role || 'user');
+  
+  const currentRole = user.user_metadata?.role || 'user';
+  const [selectedRole, setSelectedRole] = useState(currentRole);
 
   const handleRoleChange = async () => {
     await onUpdateRole(user.id, selectedRole);
     setOpenRoleDialog(false);
+  };
+  
+  const handleOpenRoleDialog = () => {
+    setSelectedRole(currentRole); // Reset to current role when opening
+    setOpenRoleDialog(true);
   };
 
   const handleDisableUser = () => {
@@ -60,7 +67,7 @@ const UserActions = ({
       <UserDropdownActions 
         user={user}
         onResetPassword={handleResetPassword}
-        onOpenRoleDialog={() => setOpenRoleDialog(true)}
+        onOpenRoleDialog={handleOpenRoleDialog}
         onOpenDisableDialog={() => setOpenDisableDialog(true)}
         onOpenDeleteDialog={() => setOpenDeleteDialog(true)}
       />
@@ -87,6 +94,7 @@ const UserActions = ({
         userEmail={user.email}
         selectedRole={selectedRole}
         onRoleChange={setSelectedRole}
+        currentRole={currentRole}
       />
     </div>
   );

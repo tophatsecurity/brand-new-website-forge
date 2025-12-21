@@ -74,13 +74,22 @@ export const useUserStatusActions = (fetchUsers: () => Promise<void>) => {
     }
   };
 
-  const handleUpdateRole = async (userId: string, role: "admin" | "user" | "moderator") => {
+  const handleUpdateRole = async (userId: string, role: "admin" | "user" | "moderator" | "var" | "customer_rep" | "customer") => {
     try {
       await callAdminAction('updateRole', { userId, role });
       
+      const roleLabels: Record<string, string> = {
+        admin: 'Admin',
+        user: 'User',
+        moderator: 'Moderator',
+        var: 'VAR',
+        customer_rep: 'Customer Rep',
+        customer: 'Customer'
+      };
+      
       toast({
         title: 'User role updated',
-        description: `The user's role has been changed to ${role}.`,
+        description: `The user's role has been changed to ${roleLabels[role] || role}.`,
       });
       
       fetchUsers();
