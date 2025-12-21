@@ -16,6 +16,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -62,6 +64,10 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
   const [leadSource, setLeadSource] = useState<string>('Black Hat 2022');
   const [defaultOwnerId, setDefaultOwnerId] = useState<string>('');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [accountType, setAccountType] = useState<string>('prospect');
+  const [contactStatus, setContactStatus] = useState<string>('active');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [lastTouchPointDate, setLastTouchPointDate] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
 
@@ -277,10 +283,19 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
           postal_code: contact.postal_code,
           country: contact.country,
           lead_source: contact.lead_source || leadSource,
-          status: 'active',
+          status: contactStatus,
           notes: notesParts.length > 0 ? notesParts.join('\n') : null,
-          custom_fields: Object.keys(customFields).length > 0 ? customFields : {},
-          tags: [leadSource.replace(/\s+/g, '-').toLowerCase()],
+          custom_fields: {
+            ...customFields,
+            account_type: accountType,
+            ...(lastTouchPointDate && { last_touch_point: lastTouchPointDate }),
+            ...(defaultOwnerId && { assigned_customer_rep_id: defaultOwnerId }),
+          },
+          tags: [
+            leadSource.replace(/\s+/g, '-').toLowerCase(),
+            ...selectedTags,
+          ],
+          ...(lastTouchPointDate && { last_contacted_at: new Date(lastTouchPointDate).toISOString() }),
         };
 
         if (selectedAccountId) {
@@ -404,16 +419,51 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
               </div>
             </div>
 
-            {/* Options Row 2 - Owner Assignment */}
+            {/* Options Row 2 - Account Type & Status */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Assign to Team Member</Label>
+                <Label>Account Type</Label>
+                <Select value={accountType} onValueChange={setAccountType}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="prospect">Prospect</SelectItem>
+                    <SelectItem value="customer">Customer</SelectItem>
+                    <SelectItem value="partner">Partner</SelectItem>
+                    <SelectItem value="vendor">Vendor</SelectItem>
+                    <SelectItem value="lead">Lead</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Contact Status</Label>
+                <Select value={contactStatus} onValueChange={setContactStatus}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="nurturing">Nurturing</SelectItem>
+                    <SelectItem value="qualified">Qualified</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Options Row 3 - Customer Rep & Last Touch Point */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Assign Customer Rep</Label>
                 <Select value={defaultOwnerId} onValueChange={setDefaultOwnerId}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select owner (optional)" />
+                    <SelectValue placeholder="Select customer rep" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover max-h-60">
-                    <SelectItem value="">No owner assigned</SelectItem>
+                    <SelectItem value="">No rep assigned</SelectItem>
                     {teamMembers.map(member => (
                       <SelectItem key={member.id} value={member.id}>
                         <div className="flex items-center gap-2">
@@ -425,8 +475,44 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Assign all imported contacts to a customer service rep, VAR, or admin
+                  Assign to customer service, VAR, or admin
                 </p>
+              </div>
+              <div>
+                <Label>Last Touch Point Date</Label>
+                <Input 
+                  type="datetime-local" 
+                  value={lastTouchPointDate}
+                  onChange={(e) => setLastTouchPointDate(e.target.value)}
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  When was the last interaction with these contacts
+                </p>
+              </div>
+            </div>
+
+            {/* Options Row 4 - Tags Multi-select */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Additional Tags</Label>
+                <MultiSelect
+                  options={[
+                    { label: 'Hot Lead', value: 'hot-lead' },
+                    { label: 'Cold Lead', value: 'cold-lead' },
+                    { label: 'Follow Up', value: 'follow-up' },
+                    { label: 'Demo Requested', value: 'demo-requested' },
+                    { label: 'Pricing Sent', value: 'pricing-sent' },
+                    { label: 'Decision Maker', value: 'decision-maker' },
+                    { label: 'Technical Contact', value: 'technical-contact' },
+                    { label: 'VIP', value: 'vip' },
+                    { label: 'Enterprise', value: 'enterprise' },
+                    { label: 'SMB', value: 'smb' },
+                  ]}
+                  selected={selectedTags}
+                  onChange={setSelectedTags}
+                  placeholder="Select tags..."
+                />
               </div>
               <div className="flex items-end">
                 <Button variant="outline" size="sm" onClick={downloadTemplate} className="w-full">
