@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Shield, User, Users, Briefcase, UserCheck, ChevronDown, Check } from 'lucide-react';
+import { Shield, User, Users, Briefcase, UserCheck, ChevronDown, Check, TrendingUp, Megaphone } from 'lucide-react';
 import { AppRole } from '@/hooks/useRolePermissions';
 
 interface RoleSwitcherProps {
@@ -20,7 +20,9 @@ interface RoleSwitcherProps {
 
 const roleConfig: Record<AppRole, { label: string; icon: React.ElementType; description: string }> = {
   admin: { label: 'Admin', icon: Shield, description: 'Full access to all features' },
-  var: { label: 'VAR', icon: Briefcase, description: 'Value Added Reseller access' },
+  account_rep: { label: 'Account Rep', icon: Briefcase, description: 'Account management access' },
+  marketing: { label: 'Marketing', icon: Megaphone, description: 'Marketing and campaigns access' },
+  var: { label: 'VAR', icon: TrendingUp, description: 'Value Added Reseller access' },
   customer_rep: { label: 'Customer Rep', icon: UserCheck, description: 'Customer support access' },
   customer: { label: 'Customer', icon: Users, description: 'Customer portal access' },
   user: { label: 'User', icon: User, description: 'Standard user access' },
@@ -28,7 +30,7 @@ const roleConfig: Record<AppRole, { label: string; icon: React.ElementType; desc
 };
 
 // All roles an admin can switch to for testing
-const allSwitchableRoles: AppRole[] = ['admin', 'var', 'customer_rep', 'customer'];
+const allSwitchableRoles: AppRole[] = ['admin', 'account_rep', 'marketing', 'var', 'customer_rep', 'customer'];
 
 const RoleSwitcher: React.FC<RoleSwitcherProps> = ({ 
   selectedRole, 

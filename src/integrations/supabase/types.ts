@@ -1129,6 +1129,8 @@ export type Database = {
         | "var"
         | "customer_rep"
         | "customer"
+        | "account_rep"
+        | "marketing"
       onboarding_status: "not_started" | "in_progress" | "completed" | "on_hold"
       permission_type: "downloads" | "support" | "admin"
     }
@@ -1265,6 +1267,8 @@ export const Constants = {
         "var",
         "customer_rep",
         "customer",
+        "account_rep",
+        "marketing",
       ],
       onboarding_status: ["not_started", "in_progress", "completed", "on_hold"],
       permission_type: ["downloads", "support", "admin"],

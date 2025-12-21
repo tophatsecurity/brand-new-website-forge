@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-export type AppRole = 'admin' | 'user' | 'moderator' | 'var' | 'customer_rep' | 'customer';
+export type AppRole = 'admin' | 'user' | 'moderator' | 'var' | 'customer_rep' | 'customer' | 'account_rep' | 'marketing';
 
 export interface RolePermissions {
   canAccessAdmin: boolean;
@@ -15,6 +15,7 @@ export interface RolePermissions {
   canViewCredits: boolean;
   canManageCustomers: boolean;
   canViewReports: boolean;
+  canViewMarketing: boolean;
 }
 
 const rolePermissionsMap: Record<AppRole, RolePermissions> = {
@@ -31,6 +32,37 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canViewCredits: true,
     canManageCustomers: true,
     canViewReports: true,
+    canViewMarketing: true,
+  },
+  account_rep: {
+    canAccessAdmin: true,
+    canManageUsers: false,
+    canManageLicenses: true,
+    canManageCredits: false,
+    canManageDownloads: false,
+    canManageCatalog: false,
+    canViewSupport: true,
+    canViewDownloads: true,
+    canViewLicensing: true,
+    canViewCredits: true,
+    canManageCustomers: true,
+    canViewReports: true,
+    canViewMarketing: false,
+  },
+  marketing: {
+    canAccessAdmin: true,
+    canManageUsers: false,
+    canManageLicenses: false,
+    canManageCredits: false,
+    canManageDownloads: false,
+    canManageCatalog: false,
+    canViewSupport: true,
+    canViewDownloads: true,
+    canViewLicensing: false,
+    canViewCredits: false,
+    canManageCustomers: true,
+    canViewReports: true,
+    canViewMarketing: true,
   },
   var: {
     canAccessAdmin: true,
@@ -45,6 +77,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canViewCredits: true,
     canManageCustomers: true,
     canViewReports: true,
+    canViewMarketing: false,
   },
   customer_rep: {
     canAccessAdmin: true,
@@ -59,6 +92,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canViewCredits: true,
     canManageCustomers: true,
     canViewReports: false,
+    canViewMarketing: false,
   },
   customer: {
     canAccessAdmin: false,
@@ -73,6 +107,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canViewCredits: true,
     canManageCustomers: false,
     canViewReports: false,
+    canViewMarketing: false,
   },
   user: {
     canAccessAdmin: false,
@@ -87,6 +122,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canViewCredits: true,
     canManageCustomers: false,
     canViewReports: false,
+    canViewMarketing: false,
   },
   moderator: {
     canAccessAdmin: true,
@@ -101,6 +137,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canViewCredits: true,
     canManageCustomers: false,
     canViewReports: false,
+    canViewMarketing: false,
   },
 };
 
@@ -120,6 +157,7 @@ export const useRolePermissions = (roles: AppRole[]): RolePermissions => {
       canViewCredits: false,
       canManageCustomers: false,
       canViewReports: false,
+      canViewMarketing: false,
     };
 
     roles.forEach((role) => {
@@ -141,6 +179,8 @@ export const useRolePermissions = (roles: AppRole[]): RolePermissions => {
 export const getRoleLabel = (role: AppRole): string => {
   const labels: Record<AppRole, string> = {
     admin: 'Admin',
+    account_rep: 'Account Rep',
+    marketing: 'Marketing',
     var: 'VAR',
     customer_rep: 'Customer Rep',
     customer: 'Customer',
@@ -151,5 +191,5 @@ export const getRoleLabel = (role: AppRole): string => {
 };
 
 export const getAllRoles = (): AppRole[] => {
-  return ['admin', 'var', 'customer_rep', 'customer', 'user', 'moderator'];
+  return ['admin', 'account_rep', 'marketing', 'var', 'customer_rep', 'customer', 'user', 'moderator'];
 };
