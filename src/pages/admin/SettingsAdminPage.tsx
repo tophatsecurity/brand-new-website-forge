@@ -297,102 +297,200 @@ const SettingsAdminPage = () => {
 
           {/* Email Testing Tab */}
           <TabsContent value="email-testing" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mail className="h-5 w-5" />
-                  Send Test Email
-                </CardTitle>
-                <CardDescription>
-                  Test your email configuration by sending a test email
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="sender">Sender Email</Label>
-                    <Input
-                      id="sender"
-                      type="email"
-                      placeholder="noreply@example.com"
-                      value={emailTest.sender}
-                      onChange={(e) => setEmailTest(prev => ({ ...prev, sender: e.target.value }))}
-                    />
-                    <p className="text-xs text-muted-foreground">Must be a verified sender in Postmark</p>
+            <div className="grid gap-6 lg:grid-cols-2">
+              {/* Email Form */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Mail className="h-5 w-5" />
+                    Send Test Email
+                  </CardTitle>
+                  <CardDescription>
+                    Test your email configuration by sending a test email
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="sender">Sender Email</Label>
+                      <Input
+                        id="sender"
+                        type="email"
+                        placeholder="noreply@example.com"
+                        value={emailTest.sender}
+                        onChange={(e) => setEmailTest(prev => ({ ...prev, sender: e.target.value }))}
+                      />
+                      <p className="text-xs text-muted-foreground">Must be a verified sender in Postmark</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="recipient">Recipient Email</Label>
+                      <Input
+                        id="recipient"
+                        type="email"
+                        placeholder="test@example.com"
+                        value={emailTest.recipient}
+                        onChange={(e) => setEmailTest(prev => ({ ...prev, recipient: e.target.value }))}
+                      />
+                    </div>
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="recipient">Recipient Email</Label>
+                    <Label htmlFor="subject">Subject</Label>
                     <Input
-                      id="recipient"
-                      type="email"
-                      placeholder="test@example.com"
-                      value={emailTest.recipient}
-                      onChange={(e) => setEmailTest(prev => ({ ...prev, recipient: e.target.value }))}
+                      id="subject"
+                      placeholder="Email subject"
+                      value={emailTest.subject}
+                      onChange={(e) => setEmailTest(prev => ({ ...prev, subject: e.target.value }))}
                     />
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="subject">Subject</Label>
-                  <Input
-                    id="subject"
-                    placeholder="Email subject"
-                    value={emailTest.subject}
-                    onChange={(e) => setEmailTest(prev => ({ ...prev, subject: e.target.value }))}
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="template">Email Template</Label>
+                    <Select
+                      value={emailTest.template}
+                      onValueChange={(value) => setEmailTest(prev => ({ ...prev, template: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a template" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="welcome">Welcome Email</SelectItem>
+                        <SelectItem value="onboarding_reminder">Onboarding Reminder</SelectItem>
+                        <SelectItem value="license_expiry">License Expiry Notice</SelectItem>
+                        <SelectItem value="password_reset">Password Reset</SelectItem>
+                        <SelectItem value="custom">Custom Message</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="template">Email Template</Label>
-                  <Select
-                    value={emailTest.template}
-                    onValueChange={(value) => setEmailTest(prev => ({ ...prev, template: value }))}
+                  <div className="space-y-2">
+                    <Label htmlFor="customMessage">
+                      {emailTest.template === 'custom' ? 'Email Body' : 'Additional Message (Optional)'}
+                    </Label>
+                    <Textarea
+                      id="customMessage"
+                      placeholder={emailTest.template === 'custom' 
+                        ? "Enter your full email message..." 
+                        : "Add an optional message to the template..."}
+                      value={emailTest.customMessage}
+                      onChange={(e) => setEmailTest(prev => ({ ...prev, customMessage: e.target.value }))}
+                      rows={emailTest.template === 'custom' ? 8 : 4}
+                    />
+                    {emailTest.template === 'custom' && (
+                      <p className="text-xs text-muted-foreground">HTML is supported. Line breaks will be converted to &lt;br&gt; tags.</p>
+                    )}
+                  </div>
+
+                  <Button 
+                    onClick={sendTestEmail} 
+                    disabled={testingEmail || !emailTest.recipient}
+                    className="w-full sm:w-auto"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a template" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="welcome">Welcome Email</SelectItem>
-                      <SelectItem value="onboarding_reminder">Onboarding Reminder</SelectItem>
-                      <SelectItem value="license_expiry">License Expiry Notice</SelectItem>
-                      <SelectItem value="password_reset">Password Reset</SelectItem>
-                      <SelectItem value="custom">Custom Message</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                    {testingEmail ? (
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4 mr-2" />
+                    )}
+                    Send Test Email
+                  </Button>
+                </CardContent>
+              </Card>
 
-                <div className="space-y-2">
-                  <Label htmlFor="customMessage">
-                    {emailTest.template === 'custom' ? 'Email Body' : 'Additional Message (Optional)'}
-                  </Label>
-                  <Textarea
-                    id="customMessage"
-                    placeholder={emailTest.template === 'custom' 
-                      ? "Enter your full email message..." 
-                      : "Add an optional message to the template..."}
-                    value={emailTest.customMessage}
-                    onChange={(e) => setEmailTest(prev => ({ ...prev, customMessage: e.target.value }))}
-                    rows={emailTest.template === 'custom' ? 8 : 4}
-                  />
-                  {emailTest.template === 'custom' && (
-                    <p className="text-xs text-muted-foreground">HTML is supported. Line breaks will be converted to &lt;br&gt; tags.</p>
-                  )}
-                </div>
-
-                <Button 
-                  onClick={sendTestEmail} 
-                  disabled={testingEmail || !emailTest.recipient}
-                  className="w-full sm:w-auto"
-                >
-                  {testingEmail ? (
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4 mr-2" />
-                  )}
-                  Send Test Email
-                </Button>
-              </CardContent>
-            </Card>
+              {/* Email Preview */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Eye className="h-5 w-5" />
+                    Email Preview
+                  </CardTitle>
+                  <CardDescription>
+                    Preview how your email will appear to recipients
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="border rounded-lg overflow-hidden bg-background">
+                    {/* Email Header */}
+                    <div className="border-b p-4 space-y-2 bg-muted/30">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground font-medium w-16">From:</span>
+                        <span className="text-foreground">{emailTest.sender || 'noreply@example.com'}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground font-medium w-16">To:</span>
+                        <span className="text-foreground">{emailTest.recipient || 'recipient@example.com'}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground font-medium w-16">Subject:</span>
+                        <span className="text-foreground font-medium">{emailTest.subject || 'No subject'}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Email Body */}
+                    <div className="p-6 min-h-[300px] bg-white dark:bg-zinc-900">
+                      <div 
+                        className="prose prose-sm dark:prose-invert max-w-none"
+                        style={{ fontFamily: 'Arial, sans-serif' }}
+                      >
+                        {emailTest.template === 'custom' ? (
+                          emailTest.customMessage ? (
+                            <div 
+                              dangerouslySetInnerHTML={{ 
+                                __html: emailTest.customMessage.replace(/\n/g, '<br>') 
+                              }} 
+                            />
+                          ) : (
+                            <p className="text-muted-foreground italic">Your custom message will appear here...</p>
+                          )
+                        ) : (
+                          <div className="space-y-4">
+                            {emailTest.template === 'welcome' && (
+                              <>
+                                <h2 className="text-xl font-bold text-foreground">Welcome to TopHat Security!</h2>
+                                <p>Thank you for joining us. We're excited to have you on board.</p>
+                                <p>Your account has been created successfully. You can now access all of our security solutions and services.</p>
+                              </>
+                            )}
+                            {emailTest.template === 'onboarding_reminder' && (
+                              <>
+                                <h2 className="text-xl font-bold text-foreground">Complete Your Onboarding</h2>
+                                <p>We noticed you haven't completed your onboarding process yet.</p>
+                                <p>Please take a few minutes to finish setting up your account to get the most out of our platform.</p>
+                              </>
+                            )}
+                            {emailTest.template === 'license_expiry' && (
+                              <>
+                                <h2 className="text-xl font-bold text-foreground">License Expiry Notice</h2>
+                                <p>Your license is expiring soon.</p>
+                                <p>Please renew your license to continue enjoying uninterrupted access to our services.</p>
+                              </>
+                            )}
+                            {emailTest.template === 'password_reset' && (
+                              <>
+                                <h2 className="text-xl font-bold text-foreground">Password Reset Request</h2>
+                                <p>We received a request to reset your password.</p>
+                                <p>Click the button below to create a new password. This link will expire in 24 hours.</p>
+                                <div className="mt-4">
+                                  <span className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium">
+                                    Reset Password
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                            {emailTest.customMessage && (
+                              <div className="mt-4 pt-4 border-t">
+                                <p className="font-medium text-sm text-muted-foreground mb-2">Additional Message:</p>
+                                <div dangerouslySetInnerHTML={{ __html: emailTest.customMessage.replace(/\n/g, '<br>') }} />
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        <p className="text-muted-foreground italic mt-6 text-sm">(This is a test email)</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
             <Card>
               <CardHeader>
