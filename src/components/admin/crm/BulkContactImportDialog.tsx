@@ -68,6 +68,14 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
   const [contactStatus, setContactStatus] = useState<string>('active');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [lastTouchPointDate, setLastTouchPointDate] = useState<string>('');
+  const [defaultCountry, setDefaultCountry] = useState<string>('');
+  const [defaultIndustry, setDefaultIndustry] = useState<string>('');
+  const [defaultDepartment, setDefaultDepartment] = useState<string>('');
+  const [interactionType, setInteractionType] = useState<string>('');
+  const [priority, setPriority] = useState<string>('medium');
+  const [isPrimaryContact, setIsPrimaryContact] = useState<boolean>(false);
+  const [customLeadSource, setCustomLeadSource] = useState<string>('');
+  const [notes, setNotes] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
 
@@ -270,30 +278,39 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
         if (contact.interaction_date) notesParts.push(`Date: ${contact.interaction_date}`);
         if (contact.assigned_rep) notesParts.push(`Original Rep: ${contact.assigned_rep}`);
 
+        // Build final notes
+        const allNotes = notesParts.length > 0 ? notesParts.join('\n') : '';
+        const finalNotes = notes ? (allNotes ? `${notes}\n\n${allNotes}` : notes) : allNotes;
+
         const contactData: any = {
           first_name: contact.first_name,
           last_name: contact.last_name,
           email: contact.email,
           phone: contact.phone,
           job_title: contact.job_title,
-          department: contact.department,
+          department: defaultDepartment || contact.department,
           address_line1: contact.address_line1,
           city: contact.city,
           state: contact.state,
           postal_code: contact.postal_code,
-          country: contact.country,
-          lead_source: contact.lead_source || leadSource,
+          country: defaultCountry || contact.country,
+          lead_source: customLeadSource || (leadSource === 'Other' ? 'Other' : leadSource),
           status: contactStatus,
-          notes: notesParts.length > 0 ? notesParts.join('\n') : null,
+          is_primary: isPrimaryContact,
+          notes: finalNotes || null,
           custom_fields: {
             ...customFields,
             account_type: accountType,
+            priority: priority,
+            ...(defaultIndustry && { industry_override: defaultIndustry }),
+            ...(interactionType && { interaction_type: interactionType }),
             ...(lastTouchPointDate && { last_touch_point: lastTouchPointDate }),
-            ...(defaultOwnerId && { assigned_customer_rep_id: defaultOwnerId }),
+            ...(defaultOwnerId && defaultOwnerId !== 'none' && { assigned_customer_rep_id: defaultOwnerId }),
           },
           tags: [
-            leadSource.replace(/\s+/g, '-').toLowerCase(),
+            (customLeadSource || leadSource).replace(/\s+/g, '-').toLowerCase(),
             ...selectedTags,
+            ...(priority === 'high' ? ['priority-high'] : []),
           ],
           ...(lastTouchPointDate && { last_contacted_at: new Date(lastTouchPointDate).toISOString() }),
         };
@@ -519,6 +536,148 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
                   <Download className="h-4 w-4 mr-2" />
                   Download Template
                 </Button>
+              </div>
+            </div>
+
+            {/* Options Row 5 - Industry & Department Overrides */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Default Industry (Override)</Label>
+                <Select value={defaultIndustry} onValueChange={setDefaultIndustry}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Use from CSV" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover max-h-60">
+                    <SelectItem value="none">Use from CSV</SelectItem>
+                    <SelectItem value="Technology">Technology</SelectItem>
+                    <SelectItem value="Financial Services">Financial Services</SelectItem>
+                    <SelectItem value="Healthcare">Healthcare</SelectItem>
+                    <SelectItem value="Government">Government</SelectItem>
+                    <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                    <SelectItem value="Energy">Energy</SelectItem>
+                    <SelectItem value="Retail">Retail</SelectItem>
+                    <SelectItem value="Education">Education</SelectItem>
+                    <SelectItem value="Telecommunications">Telecommunications</SelectItem>
+                    <SelectItem value="Security">Security</SelectItem>
+                    <SelectItem value="Consulting">Consulting</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Default Department (Override)</Label>
+                <Select value={defaultDepartment} onValueChange={setDefaultDepartment}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Use from CSV" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="none">Use from CSV</SelectItem>
+                    <SelectItem value="IT">IT</SelectItem>
+                    <SelectItem value="Security">Security</SelectItem>
+                    <SelectItem value="Engineering">Engineering</SelectItem>
+                    <SelectItem value="Operations">Operations</SelectItem>
+                    <SelectItem value="Executive">Executive</SelectItem>
+                    <SelectItem value="Sales">Sales</SelectItem>
+                    <SelectItem value="Marketing">Marketing</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="HR">HR</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Options Row 6 - Country & Interaction Type */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Default Country (Override)</Label>
+                <Select value={defaultCountry} onValueChange={setDefaultCountry}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Use from CSV" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover max-h-60">
+                    <SelectItem value="none">Use from CSV</SelectItem>
+                    <SelectItem value="United States">United States</SelectItem>
+                    <SelectItem value="Canada">Canada</SelectItem>
+                    <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                    <SelectItem value="Germany">Germany</SelectItem>
+                    <SelectItem value="France">France</SelectItem>
+                    <SelectItem value="Australia">Australia</SelectItem>
+                    <SelectItem value="Japan">Japan</SelectItem>
+                    <SelectItem value="Singapore">Singapore</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Interaction Type</Label>
+                <Select value={interactionType} onValueChange={setInteractionType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Use from CSV" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="none">Use from CSV</SelectItem>
+                    <SelectItem value="Badge Scan">Badge Scan</SelectItem>
+                    <SelectItem value="Demo Request">Demo Request</SelectItem>
+                    <SelectItem value="Meeting">Meeting</SelectItem>
+                    <SelectItem value="Email">Email</SelectItem>
+                    <SelectItem value="Phone Call">Phone Call</SelectItem>
+                    <SelectItem value="Webinar">Webinar</SelectItem>
+                    <SelectItem value="Download">Download</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Options Row 7 - Priority & Primary Contact */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Priority</Label>
+                <Select value={priority} onValueChange={setPriority}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2 pt-6">
+                <input 
+                  type="checkbox" 
+                  id="isPrimary"
+                  checked={isPrimaryContact}
+                  onChange={(e) => setIsPrimaryContact(e.target.checked)}
+                  className="h-4 w-4 rounded border-border"
+                />
+                <Label htmlFor="isPrimary" className="cursor-pointer">
+                  Mark as Primary Contact
+                </Label>
+              </div>
+            </div>
+
+            {/* Options Row 8 - Custom Lead Source & Notes */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Custom Lead Source (if "Other" selected)</Label>
+                <Input 
+                  value={customLeadSource}
+                  onChange={(e) => setCustomLeadSource(e.target.value)}
+                  placeholder="Enter custom lead source..."
+                  disabled={leadSource !== 'Other'}
+                />
+              </div>
+              <div>
+                <Label>Additional Notes (added to all contacts)</Label>
+                <Input 
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Enter notes to add..."
+                />
               </div>
             </div>
 
