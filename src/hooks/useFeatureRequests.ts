@@ -165,10 +165,13 @@ export const useFeatureRequests = (productFilter?: string) => {
 
 export const PRODUCT_OPTIONS = [
   { value: 'DDX', label: 'DDX' },
-  { value: 'SeekCap', label: 'SeekCap' },
-  { value: 'ParaGuard', label: 'ParaGuard' },
-  { value: 'SecondLook', label: 'SecondLook' },
-  { value: 'Perpetual', label: 'Perpetual' },
+  { value: 'SEEKCAP', label: 'SEEKCAP' },
+  { value: 'PARAGUARD', label: 'PARAGUARD' },
+  { value: 'SECONDLOOK', label: 'SECONDLOOK' },
+  { value: 'LIGHTFOOT', label: 'LIGHTFOOT' },
+  { value: 'O-RANGE', label: 'O-RANGE' },
+  { value: 'ONBOARD', label: 'ONBOARD' },
+  { value: 'AURORASENSE', label: 'AURORASENSE' },
 ];
 
 export const STATUS_OPTIONS = [
