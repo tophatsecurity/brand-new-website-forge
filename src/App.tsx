@@ -48,6 +48,7 @@ import OnboardingAdminPage from "./pages/admin/OnboardingAdminPage";
 import SettingsAdminPage from "./pages/admin/SettingsAdminPage";
 import CRMAdminPage from "./pages/admin/CRMAdminPage";
 import RoleAssignmentPage from "./pages/admin/RoleAssignmentPage";
+import SupportTeamPage from "./pages/admin/SupportTeamPage";
 import Onboarding from "./pages/Onboarding";
 const queryClient = new QueryClient();
 
@@ -168,6 +169,11 @@ const App = () => (
               <Route path="/admin/crm" element={
                 <AdminRoute>
                   <CRMAdminPage />
+                </AdminRoute>
+              } />
+              <Route path="/admin/support-team" element={
+                <AdminRoute>
+                  <SupportTeamPage />
                 </AdminRoute>
               } />
               {/* Public onboarding route - accessible without login */}
