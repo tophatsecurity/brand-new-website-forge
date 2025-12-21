@@ -45,6 +45,7 @@ import LicensingAdminPage from "./pages/admin/LicensingAdminPage";
 import CatalogAdminPage from "./pages/admin/CatalogAdminPage";
 import CreditsAdminPage from "./pages/admin/CreditsAdminPage";
 import OnboardingAdminPage from "./pages/admin/OnboardingAdminPage";
+import SettingsAdminPage from "./pages/admin/SettingsAdminPage";
 import Onboarding from "./pages/Onboarding";
 const queryClient = new QueryClient();
 
@@ -150,6 +151,11 @@ const App = () => (
               <Route path="/admin/onboarding" element={
                 <AdminRoute>
                   <OnboardingAdminPage />
+                </AdminRoute>
+              } />
+              <Route path="/admin/settings" element={
+                <AdminRoute>
+                  <SettingsAdminPage />
                 </AdminRoute>
               } />
               <Route path="/onboarding" element={
