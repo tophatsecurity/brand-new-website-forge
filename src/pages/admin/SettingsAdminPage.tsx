@@ -42,6 +42,7 @@ const SettingsAdminPage = () => {
   
   // Email testing state
   const [emailTest, setEmailTest] = useState({
+    sender: 'noreply@tophatsecurity.com',
     recipient: '',
     subject: 'Test Email from Admin Panel',
     template: 'welcome',
@@ -133,16 +134,28 @@ const SettingsAdminPage = () => {
     setTestingEmail(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('send-email-postmark', {
-        body: {
-          to: emailTest.recipient,
-          subject: emailTest.subject,
-          template: emailTest.template,
-          data: {
-            customMessage: emailTest.customMessage,
-            testMode: true
-          }
+      const emailPayload: Record<string, any> = {
+        to: emailTest.recipient,
+        from: emailTest.sender,
+        subject: emailTest.subject,
+        data: {
+          testMode: true
         }
+      };
+
+      // If custom template, send the body directly; otherwise use template
+      if (emailTest.template === 'custom') {
+        emailPayload.htmlBody = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          ${emailTest.customMessage.replace(/\n/g, '<br>')}
+          <p style="color: #666; font-style: italic; margin-top: 20px;">(This is a test email)</p>
+        </div>`;
+      } else {
+        emailPayload.template = emailTest.template;
+        emailPayload.data.customMessage = emailTest.customMessage;
+      }
+
+      const { data, error } = await supabase.functions.invoke('send-email-postmark', {
+        body: emailPayload
       });
 
       if (error) throw error;
@@ -297,6 +310,17 @@ const SettingsAdminPage = () => {
               <CardContent className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
+                    <Label htmlFor="sender">Sender Email</Label>
+                    <Input
+                      id="sender"
+                      type="email"
+                      placeholder="noreply@example.com"
+                      value={emailTest.sender}
+                      onChange={(e) => setEmailTest(prev => ({ ...prev, sender: e.target.value }))}
+                    />
+                    <p className="text-xs text-muted-foreground">Must be a verified sender in Postmark</p>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="recipient">Recipient Email</Label>
                     <Input
                       id="recipient"
@@ -306,15 +330,16 @@ const SettingsAdminPage = () => {
                       onChange={(e) => setEmailTest(prev => ({ ...prev, recipient: e.target.value }))}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="subject">Subject</Label>
-                    <Input
-                      id="subject"
-                      placeholder="Email subject"
-                      value={emailTest.subject}
-                      onChange={(e) => setEmailTest(prev => ({ ...prev, subject: e.target.value }))}
-                    />
-                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="subject">Subject</Label>
+                  <Input
+                    id="subject"
+                    placeholder="Email subject"
+                    value={emailTest.subject}
+                    onChange={(e) => setEmailTest(prev => ({ ...prev, subject: e.target.value }))}
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -336,18 +361,23 @@ const SettingsAdminPage = () => {
                   </Select>
                 </div>
 
-                {emailTest.template === 'custom' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="customMessage">Custom Message</Label>
-                    <Textarea
-                      id="customMessage"
-                      placeholder="Enter your custom email message..."
-                      value={emailTest.customMessage}
-                      onChange={(e) => setEmailTest(prev => ({ ...prev, customMessage: e.target.value }))}
-                      rows={5}
-                    />
-                  </div>
-                )}
+                <div className="space-y-2">
+                  <Label htmlFor="customMessage">
+                    {emailTest.template === 'custom' ? 'Email Body' : 'Additional Message (Optional)'}
+                  </Label>
+                  <Textarea
+                    id="customMessage"
+                    placeholder={emailTest.template === 'custom' 
+                      ? "Enter your full email message..." 
+                      : "Add an optional message to the template..."}
+                    value={emailTest.customMessage}
+                    onChange={(e) => setEmailTest(prev => ({ ...prev, customMessage: e.target.value }))}
+                    rows={emailTest.template === 'custom' ? 8 : 4}
+                  />
+                  {emailTest.template === 'custom' && (
+                    <p className="text-xs text-muted-foreground">HTML is supported. Line breaks will be converted to &lt;br&gt; tags.</p>
+                  )}
+                </div>
 
                 <Button 
                   onClick={sendTestEmail} 
