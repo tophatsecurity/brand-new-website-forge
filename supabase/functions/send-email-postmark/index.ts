@@ -109,6 +109,23 @@ const getEmailTemplate = (template: string, data: Record<string, any> = {}): str
         <p>Best regards,<br>The Top Hat Security Team</p>
       </div>
     `,
+    account_credentials: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #333;">Your Account Has Been Created</h1>
+        <p>Hello${data.firstName ? ` ${data.firstName}` : ''},</p>
+        <p>An account has been created for you at Top Hat Security. Here are your login credentials:</p>
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0 0 10px 0;"><strong>Email:</strong> ${data.email || 'N/A'}</p>
+          <p style="margin: 0;"><strong>Temporary Password:</strong> <code style="background: #e5e7eb; padding: 4px 8px; border-radius: 4px; font-size: 14px;">${data.tempPassword || 'N/A'}</code></p>
+        </div>
+        <p style="color: #dc2626;"><strong>Important:</strong> Please change your password after your first login.</p>
+        ${data.loginUrl ? `<p style="margin: 20px 0;"><a href="${data.loginUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Login Now</a></p>` : ''}
+        ${data.customMessage ? `<p>${data.customMessage}</p>` : ''}
+        ${data.testMode ? '<p style="color: #666; font-style: italic;">(This is a test email)</p>' : ''}
+        <p style="color: #666; font-size: 12px; margin-top: 30px;">If you didn't expect this email, please contact our support team.</p>
+        <p>Best regards,<br>The Top Hat Security Team</p>
+      </div>
+    `,
   };
   
   return templates[template] || templates.welcome;
