@@ -70,16 +70,18 @@ import { useCatalog, type CatalogItem, type CatalogFormData, type ProductType, t
 import { productFeatures } from "./license-data/productOptions";
 
 const productIcons: Record<string, React.ElementType> = {
-  'SeekCap': Search,
+  'SEEKCAP': Search,
   'DDX': Network,
-  'ParaGuard': Shield,
+  'PARAGUARD': Shield,
   'SECONDLOOK': Eye,
+  'LIGHTFOOT': Wrench,
+  'O-RANGE': Network,
+  'ONBOARD': Briefcase,
+  'AURORASENSE': Package,
   'Network Maintenance': Wrench,
   'Security Consulting': Briefcase,
   'Enterprise Bundle': Layers,
   'ICS Probe': Shield,
-  'ORANGE Scada Simulator': Network,
-  'OnBoard': Briefcase,
 };
 
 const defaultFormData: CatalogFormData = {
