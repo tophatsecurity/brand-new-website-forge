@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useCRMAccounts, useCRMContacts, useCRMDeals, useCRMActivities, useCRMStats, CRMAccount, CRMContact } from '@/hooks/useCRM';
+import { useSupportTeam, getRoleLabel } from '@/hooks/useSupportTeam';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -69,9 +70,10 @@ const CRMAdminPage = () => {
   const { data: contacts = [], isLoading: contactsLoading, createContact, deleteContact } = useCRMContacts();
   const { data: deals = [], isLoading: dealsLoading, createDeal, deleteDeal } = useCRMDeals();
   const { data: activities = [], isLoading: activitiesLoading, createActivity, deleteActivity } = useCRMActivities();
+  const { data: supportTeam = [] } = useSupportTeam();
 
   // Form states
-  const [accountForm, setAccountForm] = useState({ name: '', industry: '', email: '', phone: '', website: '', account_type: 'free' as const });
+  const [accountForm, setAccountForm] = useState({ name: '', industry: '', email: '', phone: '', website: '', account_type: 'free' as const, owner_id: '' });
   const [contactForm, setContactForm] = useState({ first_name: '', last_name: '', email: '', phone: '', job_title: '', account_id: '' });
   const [dealForm, setDealForm] = useState({ name: '', amount: 0, stage: 'qualification' as const, account_id: '', expected_close_date: '' });
   const [activityForm, setActivityForm] = useState({ subject: '', activity_type: 'call' as const, description: '', account_id: '', due_date: '' });
@@ -87,9 +89,11 @@ const CRMAdminPage = () => {
   };
 
   const handleCreateAccount = async () => {
-    await createAccount.mutateAsync(accountForm);
+    const data: any = { ...accountForm };
+    if (data.owner_id === '') delete data.owner_id;
+    await createAccount.mutateAsync(data);
     setShowAccountDialog(false);
-    setAccountForm({ name: '', industry: '', email: '', phone: '', website: '', account_type: 'free' });
+    setAccountForm({ name: '', industry: '', email: '', phone: '', website: '', account_type: 'free', owner_id: '' });
   };
 
   const handleCreateContact = async () => {
@@ -223,6 +227,7 @@ const CRMAdminPage = () => {
       free: 'secondary',
       customer: 'default',
       demo: 'outline',
+      partner: 'default',
       var: 'outline',
       customer_service: 'outline',
       admin: 'destructive'
@@ -231,6 +236,7 @@ const CRMAdminPage = () => {
       free: 'Free',
       customer: 'Customer',
       demo: 'Demo',
+      partner: 'Partner',
       var: 'VAR',
       customer_service: 'Customer Service',
       admin: 'Admin'
@@ -717,6 +723,7 @@ const CRMAdminPage = () => {
                       <SelectItem value="free">Free</SelectItem>
                       <SelectItem value="demo">Demo</SelectItem>
                       <SelectItem value="customer">Customer</SelectItem>
+                      <SelectItem value="partner">Partner</SelectItem>
                       <SelectItem value="var">VAR</SelectItem>
                       <SelectItem value="customer_service">Customer Service</SelectItem>
                       <SelectItem value="admin">Admin</SelectItem>
@@ -734,9 +741,25 @@ const CRMAdminPage = () => {
                   <Input id="phone" value={accountForm.phone} onChange={(e) => setAccountForm({...accountForm, phone: e.target.value})} />
                 </div>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="website">Website</Label>
-                <Input id="website" value={accountForm.website} onChange={(e) => setAccountForm({...accountForm, website: e.target.value})} />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="website">Website</Label>
+                  <Input id="website" value={accountForm.website} onChange={(e) => setAccountForm({...accountForm, website: e.target.value})} />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="owner">Assigned Support Rep</Label>
+                  <Select value={accountForm.owner_id} onValueChange={(v) => setAccountForm({...accountForm, owner_id: v})}>
+                    <SelectTrigger><SelectValue placeholder="Select team member" /></SelectTrigger>
+                    <SelectContent className="bg-popover">
+                      <SelectItem value="">Unassigned</SelectItem>
+                      {supportTeam.map((member) => (
+                        <SelectItem key={member.id} value={member.id}>
+                          {member.email} ({getRoleLabel(member.role)})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
             <DialogFooter>
