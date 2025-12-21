@@ -15,7 +15,7 @@ const DetectionCapabilities = () => {
               <div className="mb-2">
                 <Cpu className="h-8 w-8 text-primary" />
               </div>
-              <CardTitle>eBPF + ParaGuard Synergy</CardTitle>
+              <CardTitle>eBPF + PARAGUARD Synergy</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">

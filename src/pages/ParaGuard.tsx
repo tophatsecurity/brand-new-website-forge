@@ -17,7 +17,7 @@ const ParaGuard = () => {
       {/* Hero Section */}
       <ParaGuardHero />
 
-      {/* ParaGuard vs Traditional Security */}
+      {/* PARAGUARD vs Traditional Security */}
       <ComparisonTable />
 
       {/* Advanced Detection Capabilities */}

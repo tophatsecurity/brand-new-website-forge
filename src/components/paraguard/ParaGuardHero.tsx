@@ -11,7 +11,7 @@ const ParaGuardHero = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-12">
           <div className="w-full md:w-1/2">
             <Badge variant="outline" className="bg-primary/10 text-primary mb-4">AI Security</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">ParaGuard AI Security Platform</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">PARAGUARD AI Security Platform</h1>
             <p className="text-xl text-gray-300 mb-8">
               Comprehensive AI security platform from AI Hardware to Model security.
             </p>
@@ -29,12 +29,12 @@ const ParaGuardHero = () => {
                 <div className="relative aspect-video bg-black/30 rounded-lg">
                   <img 
                     src="/lovable-uploads/627629f2-285b-4e9e-91c2-8baf0461d459.png" 
-                    alt="ParaGuard Dashboard" 
+                    alt="PARAGUARD Dashboard" 
                     className="w-full h-full object-contain"
                   />
                   
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                    <h3 className="text-lg font-semibold text-white">ParaGuard Dashboard</h3>
+                    <h3 className="text-lg font-semibold text-white">PARAGUARD Dashboard</h3>
                     <p className="text-sm text-gray-200">Resource monitoring with security risk assessment</p>
                   </div>
                 </div>

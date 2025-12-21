@@ -31,7 +31,7 @@ const HeroSection = () => {
     },
     {
       image: "/lovable-uploads/627629f2-285b-4e9e-91c2-8baf0461d459.png",
-      name: "ParaGuard Security Platform",
+      name: "PARAGUARD Security Platform",
       description: "Resource monitoring with security risk assessment dashboard"
     },
     {
