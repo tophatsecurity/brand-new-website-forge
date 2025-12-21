@@ -34,6 +34,8 @@ import AccountDetailDialog from '@/components/admin/crm/AccountDetailDialog';
 import BulkContactImportDialog from '@/components/admin/crm/BulkContactImportDialog';
 import ContactFilters, { ContactFiltersState } from '@/components/admin/crm/ContactFilters';
 import ContactDetailDialog from '@/components/admin/crm/ContactDetailDialog';
+import ContactBulkActions from '@/components/admin/crm/ContactBulkActions';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const initialContactFilters: ContactFiltersState = {
   status: 'all',
@@ -58,6 +60,7 @@ const CRMAdminPage = () => {
   const [showAccountDetail, setShowAccountDetail] = useState(false);
   const [selectedContact, setSelectedContact] = useState<CRMContact | null>(null);
   const [showContactDetail, setShowContactDetail] = useState(false);
+  const [selectedContactIds, setSelectedContactIds] = useState<string[]>([]);
   const [contactFilters, setContactFilters] = useState<ContactFiltersState>(initialContactFilters);
   
   const { data: stats, isLoading: statsLoading } = useCRMStats();
@@ -124,6 +127,32 @@ const CRMAdminPage = () => {
     return Object.values(contactFilters).filter(v => v !== 'all').length;
   }, [contactFilters]);
 
+  // Contact multi-select handlers
+  const handleSelectAllContacts = (checked: boolean) => {
+    if (checked) {
+      setSelectedContactIds(contacts.filter(c => {
+        const matchesSearch = 
+          `${c.first_name} ${c.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.email?.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesSearch;
+      }).map(c => c.id));
+    } else {
+      setSelectedContactIds([]);
+    }
+  };
+
+  const handleSelectContact = (contactId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedContactIds(prev => [...prev, contactId]);
+    } else {
+      setSelectedContactIds(prev => prev.filter(id => id !== contactId));
+    }
+  };
+
+  const clearContactSelection = () => {
+    setSelectedContactIds([]);
+  };
+
   const filteredContacts = useMemo(() => {
     return contacts.filter(c => {
       // Search filter
@@ -180,6 +209,9 @@ const CRMAdminPage = () => {
       return true;
     });
   }, [contacts, searchTerm, contactFilters]);
+
+  const allContactsSelected = filteredContacts.length > 0 && selectedContactIds.length === filteredContacts.length;
+  const someContactsSelected = selectedContactIds.length > 0 && selectedContactIds.length < filteredContacts.length;
 
   const filteredDeals = deals.filter(d => 
     d.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -413,11 +445,28 @@ const CRMAdminPage = () => {
                 onClearFilters={clearContactFilters}
                 activeFilterCount={activeContactFilterCount}
               />
+              
+              {/* Bulk Actions Bar */}
+              <ContactBulkActions
+                selectedIds={selectedContactIds}
+                accounts={accounts.map(a => ({ id: a.id, name: a.name }))}
+                onClearSelection={clearContactSelection}
+                onDelete={(ids) => ids.forEach(id => deleteContact.mutate(id))}
+              />
+
               <Card>
                 <CardContent className="p-0">
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-12">
+                          <Checkbox
+                            checked={allContactsSelected}
+                            onCheckedChange={handleSelectAllContacts}
+                            aria-label="Select all contacts"
+                            className={someContactsSelected ? 'data-[state=checked]:bg-primary/50' : ''}
+                          />
+                        </TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Account</TableHead>
                         <TableHead>Job Title</TableHead>
@@ -428,78 +477,77 @@ const CRMAdminPage = () => {
                         <TableHead className="w-12"></TableHead>
                       </TableRow>
                     </TableHeader>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Account</TableHead>
-                      <TableHead>Job Title</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="w-12"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredContacts.map((contact) => (
-                      <TableRow key={contact.id}>
-                        <TableCell className="font-medium">
-                          {contact.first_name} {contact.last_name}
-                          {contact.is_primary && <Badge variant="outline" className="ml-2">Primary</Badge>}
-                        </TableCell>
-                        <TableCell>{contact.account?.name || '-'}</TableCell>
-                        <TableCell>{contact.job_title || '-'}</TableCell>
-                        <TableCell>{contact.email || '-'}</TableCell>
-                        <TableCell>{contact.phone || '-'}</TableCell>
-                        <TableCell>
-                          {contact.lead_source ? (
-                            <Badge variant="outline" className="text-xs">
-                              {contact.lead_source}
+                    <TableBody>
+                      {filteredContacts.map((contact) => (
+                        <TableRow 
+                          key={contact.id}
+                          className={selectedContactIds.includes(contact.id) ? 'bg-primary/5' : ''}
+                        >
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedContactIds.includes(contact.id)}
+                              onCheckedChange={(checked) => handleSelectContact(contact.id, checked as boolean)}
+                              aria-label={`Select ${contact.first_name} ${contact.last_name}`}
+                            />
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {contact.first_name} {contact.last_name}
+                            {contact.is_primary && <Badge variant="outline" className="ml-2">Primary</Badge>}
+                          </TableCell>
+                          <TableCell>{contact.account?.name || '-'}</TableCell>
+                          <TableCell>{contact.job_title || '-'}</TableCell>
+                          <TableCell>{contact.email || '-'}</TableCell>
+                          <TableCell>{contact.phone || '-'}</TableCell>
+                          <TableCell>
+                            {contact.lead_source ? (
+                              <Badge variant="outline" className="text-xs">
+                                {contact.lead_source}
+                              </Badge>
+                            ) : '-'}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={contact.status === 'active' ? 'default' : 'secondary'}>
+                              {contact.status}
                             </Badge>
-                          ) : '-'}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={contact.status === 'active' ? 'default' : 'secondary'}>
-                            {contact.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleViewContact(contact)}>
-                                <Eye className="h-4 w-4 mr-2" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleViewContact(contact)}>
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                className="text-destructive"
-                                onClick={() => deleteContact.mutate(contact.id)}
-                              >
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {filteredContacts.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                          No contacts found {activeContactFilterCount > 0 && '(try adjusting filters)'}
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleViewContact(contact)}>
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleViewContact(contact)}>
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  className="text-destructive"
+                                  onClick={() => deleteContact.mutate(contact.id)}
+                                >
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {filteredContacts.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                            No contacts found {activeContactFilterCount > 0 && '(try adjusting filters)'}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
