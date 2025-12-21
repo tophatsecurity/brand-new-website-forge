@@ -76,8 +76,10 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
   const [isPrimaryContact, setIsPrimaryContact] = useState<boolean>(false);
   const [customLeadSource, setCustomLeadSource] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
+  const [createAccountsFromCompany, setCreateAccountsFromCompany] = useState<boolean>(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [results, setResults] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
+  const [results, setResults] = useState<{ success: number; failed: number; errors: string[]; accountsCreated: number } | null>(null);
+  const [createdAccountsCache, setCreatedAccountsCache] = useState<Map<string, string>>(new Map());
 
   // Fetch team members (users with customer_rep, var, admin roles)
   useEffect(() => {
@@ -246,6 +248,70 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
     URL.revokeObjectURL(url);
   };
 
+  // Helper function to create or get existing account from company name
+  const getOrCreateAccount = async (companyName: string, contact: ParsedContact): Promise<string | null> => {
+    if (!companyName || !createAccountsFromCompany) return null;
+
+    const normalizedName = companyName.trim().toLowerCase();
+    
+    // Check cache first
+    if (createdAccountsCache.has(normalizedName)) {
+      return createdAccountsCache.get(normalizedName) || null;
+    }
+
+    // Check if account already exists in passed accounts
+    const existingAccount = accounts.find(a => a.name.toLowerCase() === normalizedName);
+    if (existingAccount) {
+      createdAccountsCache.set(normalizedName, existingAccount.id);
+      return existingAccount.id;
+    }
+
+    // Check if account exists in database
+    const { data: existingDbAccount } = await supabase
+      .from('crm_accounts')
+      .select('id')
+      .ilike('name', companyName.trim())
+      .maybeSingle();
+
+    if (existingDbAccount) {
+      createdAccountsCache.set(normalizedName, existingDbAccount.id);
+      return existingDbAccount.id;
+    }
+
+    // Create new account
+    const accountData: any = {
+      name: companyName.trim(),
+      account_type: accountType === 'customer' ? 'customer' : 'free',
+      status: 'active',
+      industry: defaultIndustry || contact.industry || null,
+      country: defaultCountry || contact.country || null,
+      city: contact.city || null,
+      state: contact.state || null,
+      postal_code: contact.postal_code || null,
+      address_line1: contact.address_line1 || null,
+      tags: [(customLeadSource || leadSource).replace(/\s+/g, '-').toLowerCase()],
+      notes: `Auto-created from contact import (${customLeadSource || leadSource})`,
+    };
+
+    if (defaultOwnerId && defaultOwnerId !== 'none') {
+      accountData.owner_id = defaultOwnerId;
+    }
+
+    const { data: newAccount, error } = await supabase
+      .from('crm_accounts')
+      .insert(accountData)
+      .select('id')
+      .single();
+
+    if (error) {
+      console.error('Failed to create account:', error);
+      return null;
+    }
+
+    createdAccountsCache.set(normalizedName, newAccount.id);
+    return newAccount.id;
+  };
+
   const handleSubmit = async () => {
     const validContacts = parsedContacts.filter(c => c.valid);
 
@@ -255,8 +321,10 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
 
     setIsProcessing(true);
     setResults(null);
+    setCreatedAccountsCache(new Map());
 
-    const importResults = { success: 0, failed: 0, errors: [] as string[] };
+    const importResults = { success: 0, failed: 0, errors: [] as string[], accountsCreated: 0 };
+    const initialAccountCacheSize = createdAccountsCache.size;
 
     for (const contact of validContacts) {
       try {
@@ -281,6 +349,14 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
         // Build final notes
         const allNotes = notesParts.length > 0 ? notesParts.join('\n') : '';
         const finalNotes = notes ? (allNotes ? `${notes}\n\n${allNotes}` : notes) : allNotes;
+
+        // Determine account ID - either from selection, auto-created, or none
+        let accountId: string | null = null;
+        if (selectedAccountId && selectedAccountId !== 'none') {
+          accountId = selectedAccountId;
+        } else if (createAccountsFromCompany && contact.company) {
+          accountId = await getOrCreateAccount(contact.company, contact);
+        }
 
         const contactData: any = {
           first_name: contact.first_name,
@@ -315,8 +391,8 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
           ...(lastTouchPointDate && { last_contacted_at: new Date(lastTouchPointDate).toISOString() }),
         };
 
-        if (selectedAccountId && selectedAccountId !== 'none') {
-          contactData.account_id = selectedAccountId;
+        if (accountId) {
+          contactData.account_id = accountId;
         }
 
         if (defaultOwnerId && defaultOwnerId !== 'none') {
@@ -339,18 +415,28 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
       }
     }
 
+    // Calculate how many accounts were actually created (new entries in cache)
+    importResults.accountsCreated = createdAccountsCache.size - initialAccountCacheSize;
+
     setResults(importResults);
     setIsProcessing(false);
 
     if (importResults.success > 0) {
       queryClient.invalidateQueries({ queryKey: ['crm-contacts'] });
-      toast.success(`Imported ${importResults.success} contacts successfully`);
+      queryClient.invalidateQueries({ queryKey: ['crm-accounts'] });
+      
+      let successMessage = `Imported ${importResults.success} contacts successfully`;
+      if (importResults.accountsCreated > 0) {
+        successMessage += ` and created ${importResults.accountsCreated} new accounts`;
+      }
+      toast.success(successMessage);
       
       if (importResults.failed === 0) {
         setTimeout(() => {
           setCsvContent('');
           setParsedContacts([]);
           setResults(null);
+          setCreatedAccountsCache(new Map());
           setOpen(false);
         }, 2000);
       }
@@ -660,8 +746,21 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
               </div>
             </div>
 
-            {/* Options Row 8 - Custom Lead Source & Notes */}
+            {/* Options Row 8 - Account Creation */}
             <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-2 pt-6">
+                <input 
+                  type="checkbox" 
+                  id="createAccounts"
+                  checked={createAccountsFromCompany}
+                  onChange={(e) => setCreateAccountsFromCompany(e.target.checked)}
+                  className="h-4 w-4 rounded border-border"
+                  disabled={!!selectedAccountId && selectedAccountId !== 'none'}
+                />
+                <Label htmlFor="createAccounts" className="cursor-pointer">
+                  Auto-create Accounts from Company names
+                </Label>
+              </div>
               <div>
                 <Label>Custom Lead Source (if "Other" selected)</Label>
                 <Input 
@@ -671,14 +770,16 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
                   disabled={leadSource !== 'Other'}
                 />
               </div>
-              <div>
-                <Label>Additional Notes (added to all contacts)</Label>
-                <Input 
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Enter notes to add..."
-                />
-              </div>
+            </div>
+
+            {/* Options Row 9 - Notes */}
+            <div>
+              <Label>Additional Notes (added to all contacts)</Label>
+              <Input 
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Enter notes to add..."
+              />
             </div>
 
             {/* File Upload */}
@@ -788,6 +889,9 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
                 <AlertDescription>
                   {results.success > 0 && (
                     <span className="text-green-600">{results.success} contacts imported successfully. </span>
+                  )}
+                  {results.accountsCreated > 0 && (
+                    <span className="text-blue-600">{results.accountsCreated} new accounts created. </span>
                   )}
                   {results.failed > 0 && (
                     <span className="text-red-600">{results.failed} contacts failed to import.</span>
