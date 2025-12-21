@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-export type AppRole = 'admin' | 'user' | 'moderator' | 'var' | 'customer_rep' | 'customer' | 'account_rep' | 'marketing' | 'free';
+export type AppRole = 'admin' | 'user' | 'moderator' | 'var' | 'customer_rep' | 'customer' | 'account_rep' | 'marketing' | 'free' | 'program_manager';
 
 export interface RolePermissions {
   canAccessAdmin: boolean;
@@ -16,6 +16,7 @@ export interface RolePermissions {
   canManageCustomers: boolean;
   canViewReports: boolean;
   canViewMarketing: boolean;
+  canManageFeatureRequests: boolean;
 }
 
 const rolePermissionsMap: Record<AppRole, RolePermissions> = {
@@ -33,6 +34,23 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageCustomers: true,
     canViewReports: true,
     canViewMarketing: true,
+    canManageFeatureRequests: true,
+  },
+  program_manager: {
+    canAccessAdmin: true,
+    canManageUsers: false,
+    canManageLicenses: false,
+    canManageCredits: false,
+    canManageDownloads: false,
+    canManageCatalog: false,
+    canViewSupport: true,
+    canViewDownloads: true,
+    canViewLicensing: true,
+    canViewCredits: true,
+    canManageCustomers: false,
+    canViewReports: true,
+    canViewMarketing: false,
+    canManageFeatureRequests: true,
   },
   account_rep: {
     canAccessAdmin: true,
@@ -48,6 +66,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageCustomers: true,
     canViewReports: true,
     canViewMarketing: false,
+    canManageFeatureRequests: false,
   },
   marketing: {
     canAccessAdmin: true,
@@ -63,6 +82,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageCustomers: true,
     canViewReports: true,
     canViewMarketing: true,
+    canManageFeatureRequests: false,
   },
   var: {
     canAccessAdmin: true,
@@ -78,6 +98,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageCustomers: true,
     canViewReports: true,
     canViewMarketing: false,
+    canManageFeatureRequests: false,
   },
   customer_rep: {
     canAccessAdmin: true,
@@ -93,6 +114,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageCustomers: true,
     canViewReports: false,
     canViewMarketing: false,
+    canManageFeatureRequests: false,
   },
   customer: {
     canAccessAdmin: false,
@@ -108,6 +130,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageCustomers: false,
     canViewReports: false,
     canViewMarketing: false,
+    canManageFeatureRequests: false,
   },
   user: {
     canAccessAdmin: false,
@@ -123,6 +146,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageCustomers: false,
     canViewReports: false,
     canViewMarketing: false,
+    canManageFeatureRequests: false,
   },
   moderator: {
     canAccessAdmin: true,
@@ -138,6 +162,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageCustomers: false,
     canViewReports: false,
     canViewMarketing: false,
+    canManageFeatureRequests: false,
   },
   free: {
     canAccessAdmin: false,
@@ -153,6 +178,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageCustomers: false,
     canViewReports: false,
     canViewMarketing: false,
+    canManageFeatureRequests: false,
   },
 };
 
@@ -173,6 +199,7 @@ export const useRolePermissions = (roles: AppRole[]): RolePermissions => {
       canManageCustomers: false,
       canViewReports: false,
       canViewMarketing: false,
+      canManageFeatureRequests: false,
     };
 
     roles.forEach((role) => {
@@ -194,6 +221,7 @@ export const useRolePermissions = (roles: AppRole[]): RolePermissions => {
 export const getRoleLabel = (role: AppRole): string => {
   const labels: Record<AppRole, string> = {
     admin: 'Admin',
+    program_manager: 'Program Manager',
     account_rep: 'Account Rep',
     marketing: 'Marketing',
     var: 'VAR',
@@ -207,5 +235,5 @@ export const getRoleLabel = (role: AppRole): string => {
 };
 
 export const getAllRoles = (): AppRole[] => {
-  return ['admin', 'account_rep', 'marketing', 'var', 'customer_rep', 'customer', 'user', 'moderator', 'free'];
+  return ['admin', 'program_manager', 'account_rep', 'marketing', 'var', 'customer_rep', 'customer', 'user', 'moderator', 'free'];
 };

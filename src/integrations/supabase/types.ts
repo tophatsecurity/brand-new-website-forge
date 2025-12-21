@@ -456,6 +456,80 @@ export type Database = {
           },
         ]
       }
+      feature_requests: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          description: string
+          id: string
+          priority: string | null
+          product_name: string
+          status: string
+          submitted_by: string | null
+          submitted_by_email: string | null
+          title: string
+          updated_at: string
+          vote_count: number
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          priority?: string | null
+          product_name: string
+          status?: string
+          submitted_by?: string | null
+          submitted_by_email?: string | null
+          title: string
+          updated_at?: string
+          vote_count?: number
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          priority?: string | null
+          product_name?: string
+          status?: string
+          submitted_by?: string | null
+          submitted_by_email?: string | null
+          title?: string
+          updated_at?: string
+          vote_count?: number
+        }
+        Relationships: []
+      }
+      feature_votes: {
+        Row: {
+          created_at: string
+          feature_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_votes_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       guest_onboarding: {
         Row: {
           company_name: string | null
@@ -1186,6 +1260,7 @@ export type Database = {
         | "account_rep"
         | "marketing"
         | "free"
+        | "program_manager"
       onboarding_status: "not_started" | "in_progress" | "completed" | "on_hold"
       permission_type: "downloads" | "support" | "admin"
     }
@@ -1325,6 +1400,7 @@ export const Constants = {
         "account_rep",
         "marketing",
         "free",
+        "program_manager",
       ],
       onboarding_status: ["not_started", "in_progress", "completed", "on_hold"],
       permission_type: ["downloads", "support", "admin"],
