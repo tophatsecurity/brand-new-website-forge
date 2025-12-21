@@ -29,7 +29,7 @@ interface ParsedContact {
   phone: string | null;
   job_title: string | null;
   department: string | null;
-  company: string | null;
+  account_name: string | null;
   address_line1: string | null;
   city: string | null;
   state: string | null;
@@ -157,7 +157,7 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
       }
 
       // Map Black Hat CSV format (all columns):
-      // 0: First Name, 1: Last Name, 2: Title, 3: Company, 4: Email, 5: empty, 6: Phone
+      // 0: First Name, 1: Last Name, 2: Title, 3: Account/Company, 4: Email, 5: empty, 6: Phone
       // 7-8: empty, 9: Address, 10: Postal Code, 11: City, 12: Country, 13: State
       // 14-18: empty, 19: Industry, 20: Job Level, 21: Country (duplicate)
       // 22: empty, 23: Interaction Type (Request/Badge scanning), 24-26: empty
@@ -165,7 +165,7 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
       const first_name = parts[0] || '';
       const last_name = parts[1] || '';
       const job_title = parts[2] || null;
-      const company = parts[3] || null;
+      const account_name = parts[3] || null;
       const email = parts[4] || null;
       const phone = parts[6] || null;
       const address_line1 = parts[9] || null;
@@ -195,7 +195,7 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
         phone,
         job_title,
         department: null,
-        company,
+        account_name,
         address_line1,
         city,
         state,
@@ -330,7 +330,7 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
       try {
         // Build custom fields with extra data
         const customFields: Record<string, any> = {};
-        if (contact.company) customFields.company = contact.company;
+        if (contact.account_name) customFields.account_name = contact.account_name;
         if (contact.industry) customFields.industry = contact.industry;
         if (contact.job_level) customFields.job_level = contact.job_level;
         if (contact.interaction_type) customFields.interaction_type = contact.interaction_type;
@@ -339,7 +339,7 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
 
         // Build notes with comprehensive info
         const notesParts: string[] = [];
-        if (contact.company) notesParts.push(`Company: ${contact.company}`);
+        if (contact.account_name) notesParts.push(`Account: ${contact.account_name}`);
         if (contact.industry) notesParts.push(`Industry: ${contact.industry}`);
         if (contact.job_level) notesParts.push(`Job Level: ${contact.job_level}`);
         if (contact.interaction_type) notesParts.push(`Interaction: ${contact.interaction_type}`);
@@ -354,8 +354,8 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
         let accountId: string | null = null;
         if (selectedAccountId && selectedAccountId !== 'none') {
           accountId = selectedAccountId;
-        } else if (createAccountsFromCompany && contact.company) {
-          accountId = await getOrCreateAccount(contact.company, contact);
+        } else if (createAccountsFromCompany && contact.account_name) {
+          accountId = await getOrCreateAccount(contact.account_name, contact);
         }
 
         const contactData: any = {
@@ -758,7 +758,7 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
                   disabled={!!selectedAccountId && selectedAccountId !== 'none'}
                 />
                 <Label htmlFor="createAccounts" className="cursor-pointer">
-                  Auto-create Accounts from Company names
+                  Auto-create Accounts from CSV Account names
                 </Label>
               </div>
               <div>
@@ -844,8 +844,8 @@ const BulkContactImportDialog = ({ accounts }: BulkContactImportDialogProps) => 
                         <div className="flex items-center justify-between">
                           <div>
                             <span className="font-medium">{contact.first_name} {contact.last_name}</span>
-                            {contact.company && (
-                              <span className="text-muted-foreground ml-2">@ {contact.company}</span>
+                            {contact.account_name && (
+                              <span className="text-muted-foreground ml-2">@ {contact.account_name}</span>
                             )}
                           </div>
                           <div className="flex items-center gap-2">
