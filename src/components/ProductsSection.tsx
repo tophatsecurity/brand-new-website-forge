@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Lock, Search, Radio, Server, Database, FileCheck, Eye } from "lucide-react";
+import { Shield, Lock, Search, Radio, Server, Database, FileCheck, Eye, Footprints, Copy } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,9 +51,25 @@ const ProductsSection = () => {
       ]
     },
     {
-      category: "Asset Management",
-      id: "visibility",
+      category: "OT/ICS Security",
+      id: "ot-ics-security",
       products: [
+        {
+          title: "LIGHTFOOT",
+          description: "A lightfooted probe for OT/ICS using native industrial protocols.",
+          longDescription: "LIGHTFOOT provides non-intrusive OT/ICS network discovery and monitoring using native industrial protocols, enabling complete visibility without disrupting critical processes.",
+          icon: <Footprints className="h-8 w-8 text-primary" />,
+          borderColor: "border-primary",
+          link: "/lightfoot"
+        },
+        {
+          title: "O-RANGE",
+          description: "Digital twin for OT Networks — red teaming without the risk.",
+          longDescription: "O-RANGE creates digital twins of factories, plants, assembly lines, railroads, and any automation-dependent system for safe red team operations and security testing.",
+          icon: <Copy className="h-8 w-8 text-primary" />,
+          borderColor: "border-primary",
+          link: "/orange"
+        },
         {
           title: "SeekCAP",
           description: "Industrial network visibility and packet analysis without SPAN ports.",
