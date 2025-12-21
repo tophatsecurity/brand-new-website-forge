@@ -715,6 +715,7 @@ const CRMAdminPage = () => {
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent className="bg-popover">
                       <SelectItem value="free">Free</SelectItem>
+                      <SelectItem value="demo">Demo</SelectItem>
                       <SelectItem value="customer">Customer</SelectItem>
                       <SelectItem value="var">VAR</SelectItem>
                       <SelectItem value="customer_service">Customer Service</SelectItem>

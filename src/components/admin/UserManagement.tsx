@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import UserList from './UserList';
 import AddUserDialog from './dialogs/AddUserDialog';
 import BulkAddUsersDialog from './dialogs/BulkAddUsersDialog';
 import { useUserManagement } from '@/hooks/useUserManagement';
 
-const UserManagement = () => {
+interface UserManagementProps {
+  roleFilter?: string;
+}
+
+const UserManagement = ({ roleFilter }: UserManagementProps) => {
   const [addUserOpen, setAddUserOpen] = useState(false);
   const [bulkAddOpen, setBulkAddOpen] = useState(false);
   const {
@@ -24,30 +28,47 @@ const UserManagement = () => {
     handleRevokePermission,
   } = useUserManagement();
 
+  // Filter users by role if roleFilter is provided
+  const filteredUsers = useMemo(() => {
+    if (!roleFilter) return users;
+    return users.filter(user => {
+      const userRole = user.user_metadata?.role || 'user';
+      return userRole === roleFilter;
+    });
+  }, [users, roleFilter]);
+
   return (
     <div className="bg-card rounded-lg shadow-md p-6">
-      <div className="flex justify-end gap-2 mb-6">
-        <BulkAddUsersDialog
-          open={bulkAddOpen}
-          onOpenChange={setBulkAddOpen}
-          onBulkAddUsers={handleBulkAddUsers}
-        />
-        <AddUserDialog 
-          open={addUserOpen} 
-          onOpenChange={setAddUserOpen} 
-          onAddUser={handleAddUser} 
-        />
+      <div className="flex justify-between items-center mb-6">
+        <div className="text-sm text-muted-foreground">
+          {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''} 
+          {roleFilter && ` with role "${roleFilter}"`}
+        </div>
+        <div className="flex gap-2">
+          <BulkAddUsersDialog
+            open={bulkAddOpen}
+            onOpenChange={setBulkAddOpen}
+            onBulkAddUsers={handleBulkAddUsers}
+          />
+          <AddUserDialog 
+            open={addUserOpen} 
+            onOpenChange={setAddUserOpen} 
+            onAddUser={handleAddUser} 
+          />
+        </div>
       </div>
       
       {loading ? (
         <div className="text-center py-8">Loading users...</div>
       ) : (
         <>
-          {users.length === 0 ? (
-            <div className="text-center py-8">No users found.</div>
+          {filteredUsers.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              {roleFilter ? `No users with role "${roleFilter}" found.` : 'No users found.'}
+            </div>
           ) : (
             <UserList 
-              users={users}
+              users={filteredUsers}
               onApproveUser={handleApproveUser}
               onRejectUser={handleRejectUser}
               onDeleteUser={handleDeleteUser}

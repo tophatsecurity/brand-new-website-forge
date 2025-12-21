@@ -42,22 +42,27 @@ const navSections: NavSection[] = [
     ]
   },
   {
-    title: 'Sales & Support',
+    title: 'Users & Accounts',
+    items: [
+      { title: 'Users', url: '/admin/users', icon: Users },
+      { title: 'Role Assignment', url: '/admin/roles', icon: UserCog },
+      { title: 'Customer Onboarding', url: '/admin/onboarding', icon: UserPlus },
+    ]
+  },
+  {
+    title: 'Sales & Licensing',
     items: [
       { title: 'CRM', url: '/admin/crm', icon: Building2 },
-      { title: 'Customer Onboarding', url: '/admin/onboarding', icon: UserPlus },
       { title: 'License Management', url: '/admin/licensing', icon: Key },
+      { title: 'Catalog', url: '/admin/catalog', icon: Package },
+      { title: 'Credits', url: '/admin/credits', icon: CreditCard },
     ]
   },
   {
     title: 'Administration',
     items: [
-      { title: 'Users', url: '/admin/users', icon: Users },
-      { title: 'Role Assignment', url: '/admin/roles', icon: UserCog },
       { title: 'Permissions', url: '/admin/permissions', icon: Shield },
-      { title: 'Catalog', url: '/admin/catalog', icon: Package },
       { title: 'Downloads', url: '/admin/downloads', icon: Download },
-      { title: 'Credits', url: '/admin/credits', icon: CreditCard },
     ]
   },
   {
