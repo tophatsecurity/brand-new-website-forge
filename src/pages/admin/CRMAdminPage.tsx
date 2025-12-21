@@ -49,7 +49,7 @@ const CRMAdminPage = () => {
   const { data: activities = [], isLoading: activitiesLoading, createActivity, deleteActivity } = useCRMActivities();
 
   // Form states
-  const [accountForm, setAccountForm] = useState({ name: '', industry: '', email: '', phone: '', website: '', account_type: 'prospect' as const });
+  const [accountForm, setAccountForm] = useState({ name: '', industry: '', email: '', phone: '', website: '', account_type: 'free' as const });
   const [contactForm, setContactForm] = useState({ first_name: '', last_name: '', email: '', phone: '', job_title: '', account_id: '' });
   const [dealForm, setDealForm] = useState({ name: '', amount: 0, stage: 'qualification' as const, account_id: '', expected_close_date: '' });
   const [activityForm, setActivityForm] = useState({ subject: '', activity_type: 'call' as const, description: '', account_id: '', due_date: '' });
@@ -62,7 +62,7 @@ const CRMAdminPage = () => {
   const handleCreateAccount = async () => {
     await createAccount.mutateAsync(accountForm);
     setShowAccountDialog(false);
-    setAccountForm({ name: '', industry: '', email: '', phone: '', website: '', account_type: 'prospect' });
+    setAccountForm({ name: '', industry: '', email: '', phone: '', website: '', account_type: 'free' });
   };
 
   const handleCreateContact = async () => {
@@ -99,13 +99,20 @@ const CRMAdminPage = () => {
 
   const getAccountTypeBadge = (type: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
-      prospect: 'secondary',
+      free: 'secondary',
       customer: 'default',
-      partner: 'outline',
-      vendor: 'outline',
-      other: 'secondary'
+      var: 'outline',
+      customer_service: 'outline',
+      admin: 'destructive'
     };
-    return <Badge variant={variants[type] || 'secondary'}>{type}</Badge>;
+    const labels: Record<string, string> = {
+      free: 'Free',
+      customer: 'Customer',
+      var: 'VAR',
+      customer_service: 'Customer Service',
+      admin: 'Admin'
+    };
+    return <Badge variant={variants[type] || 'secondary'}>{labels[type] || type}</Badge>;
   };
 
   const getDealStageBadge = (stage: string) => {
@@ -527,11 +534,12 @@ const CRMAdminPage = () => {
                   <Label htmlFor="type">Account Type</Label>
                   <Select value={accountForm.account_type} onValueChange={(v: any) => setAccountForm({...accountForm, account_type: v})}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="prospect">Prospect</SelectItem>
+                    <SelectContent className="bg-popover">
+                      <SelectItem value="free">Free</SelectItem>
                       <SelectItem value="customer">Customer</SelectItem>
-                      <SelectItem value="partner">Partner</SelectItem>
-                      <SelectItem value="vendor">Vendor</SelectItem>
+                      <SelectItem value="var">VAR</SelectItem>
+                      <SelectItem value="customer_service">Customer Service</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
