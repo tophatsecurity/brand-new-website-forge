@@ -58,67 +58,24 @@ const ContactForm = () => {
     setIsSubmitting(true);
 
     try {
-      // 1. Create CRM contact
-      const { data: contact, error: contactError } = await supabase
-        .from('crm_contacts')
-        .insert({
-          first_name: data.firstName,
-          last_name: data.lastName,
+      // Submit via edge function (handles CRM contact creation + emails)
+      const { data: response, error } = await supabase.functions.invoke('submit-contact-form', {
+        body: {
+          firstName: data.firstName,
+          lastName: data.lastName,
           email: data.email,
-          phone: data.phone || null,
-          lead_source: 'Contact Form',
-          notes: `Product Interest: ${data.productInterest}\n\nMessage:\n${data.message}${data.createDemoAccount ? '\n\n[Requested Demo Account]' : ''}`,
-          tags: [data.productInterest, 'website-inquiry'],
-          status: 'lead',
-        })
-        .select()
-        .single();
-
-      if (contactError) {
-        console.error('CRM contact creation failed:', contactError);
-        // Continue anyway - don't block the form submission
-      }
-
-      // 2. Send confirmation email to user
-      const { error: userEmailError } = await supabase.functions.invoke('send-email-postmark', {
-        body: {
-          to: data.email,
-          subject: 'Thank you for contacting Top Hat Security',
-          template: 'contact_confirmation',
-          data: {
-            firstName: data.firstName,
-            productInterest: data.productInterest,
-            createDemoAccount: data.createDemoAccount,
-          },
+          phone: data.phone,
+          company: data.company,
+          productInterest: data.productInterest,
+          message: data.message,
+          createDemoAccount: data.createDemoAccount,
         },
       });
 
-      if (userEmailError) {
-        console.error('User confirmation email failed:', userEmailError);
-      }
-
-      // 3. Send notification to admins
-      const { error: adminEmailError } = await supabase.functions.invoke('send-email-postmark', {
-        body: {
-          to: 'sales@tophatsecurity.com',
-          subject: `New Contact Inquiry: ${data.firstName} ${data.lastName} - ${data.productInterest}`,
-          template: 'contact_admin_notification',
-          data: {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            phone: data.phone,
-            company: data.company,
-            productInterest: data.productInterest,
-            message: data.message,
-            createDemoAccount: data.createDemoAccount,
-            contactId: contact?.id,
-          },
-        },
-      });
-
-      if (adminEmailError) {
-        console.error('Admin notification email failed:', adminEmailError);
+      if (error) {
+        console.error('Contact form submission error:', error);
+        toast.error('Failed to submit your inquiry. Please try again.');
+        return;
       }
 
       toast.success('Thank you for your inquiry! We will get back to you soon.');

@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.upload-download-file]
 verify_jwt = true
+
+[functions.submit-contact-form]
+verify_jwt = false
