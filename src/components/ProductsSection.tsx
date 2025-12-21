@@ -19,9 +19,9 @@ const ProductsSection = () => {
       id: "ai-security",
       products: [
         {
-          title: "ParaGuard",
+          title: "PARAGUARD",
           description: "AI security detection & response for AI Edge and Hyperscale environments.",
-          longDescription: "ParaGuard offers advanced AI-powered security detection and automated response systems specifically designed for AI Edge computing and Hyperscale environments, protecting against emerging threats.",
+          longDescription: "PARAGUARD offers advanced AI-powered security detection and automated response systems specifically designed for AI Edge computing and Hyperscale environments, protecting against emerging threats.",
           icon: <Lock className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/paraguard"

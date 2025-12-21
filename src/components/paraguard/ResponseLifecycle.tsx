@@ -7,7 +7,7 @@ const ResponseLifecycle = () => {
   return (
     <div className="py-16 bg-slate-50 dark:bg-slate-900/30">
       <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-3xl font-bold mb-6 text-center">ParaGuard in Action: Response Lifecycle</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center">PARAGUARD in Action: Response Lifecycle</h2>
         
         <div className="max-w-4xl mx-auto">
           <Accordion type="single" collapsible className="w-full">
