@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Lock, Search, Radio, Server, Database, FileCheck, Eye, Footprints, Copy, CircuitBoard } from "lucide-react";
+import { Shield, Lock, Search, Radio, Server, Database, FileCheck, Eye, Footprints, Copy, CircuitBoard, Satellite } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -85,6 +85,20 @@ const ProductsSection = () => {
           icon: <Eye className="h-8 w-8 text-primary" />,
           borderColor: "border-primary",
           link: "/seekcap"
+        }
+      ]
+    },
+    {
+      category: "IoT & Satellite",
+      id: "iot-satellite",
+      products: [
+        {
+          title: "AURORASENSE",
+          description: "Unified IoT sensor monitoring with satellite connectivity for remote deployments.",
+          longDescription: "AURORASENSE transforms disparate IoT sensors into a unified, secure monitoring platform. Supports Starlink terminals, aerospace systems, drone payloads, maritime vessels, and remote infrastructure with enterprise-grade reliability.",
+          icon: <Satellite className="h-8 w-8 text-primary" />,
+          borderColor: "border-primary",
+          link: "/aurorasense"
         }
       ]
     }
