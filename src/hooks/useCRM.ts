@@ -27,6 +27,38 @@ export interface CRMAccount {
   custom_fields: Record<string, any>;
   created_at: string;
   updated_at: string;
+  // Linked data
+  licenses?: ProductLicense[];
+  onboarding?: CustomerOnboarding[];
+}
+
+export interface ProductLicense {
+  id: string;
+  license_key: string;
+  product_name: string;
+  status: string;
+  seats: number;
+  expiry_date: string;
+  activation_date: string | null;
+  assigned_to: string | null;
+  features: string[];
+  addons: string[];
+  account_id: string | null;
+}
+
+export interface CustomerOnboarding {
+  id: string;
+  user_id: string;
+  status: 'not_started' | 'in_progress' | 'completed' | 'on_hold';
+  current_step: number;
+  total_steps: number;
+  company_name: string | null;
+  contact_name: string | null;
+  contact_email: string;
+  contact_phone: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+  account_id: string | null;
 }
 
 export interface CRMContact {
@@ -442,6 +474,166 @@ export const useCRMStats = () => {
         totalActivities: activitiesRes.count || 0,
         pendingActivities: (activitiesRes.data || []).filter((a: any) => a.status === 'planned').length,
       };
+    },
+  });
+};
+
+// Account Details Hook - fetches account with linked licenses and onboarding
+export const useCRMAccountDetails = (accountId: string | null) => {
+  const queryClient = useQueryClient();
+
+  const accountQuery = useQuery({
+    queryKey: ['crm-account-details', accountId],
+    queryFn: async () => {
+      if (!accountId) return null;
+
+      // Fetch account details
+      const { data: account, error: accountError } = await supabase
+        .from('crm_accounts')
+        .select('*')
+        .eq('id', accountId)
+        .maybeSingle();
+      
+      if (accountError) throw accountError;
+      if (!account) return null;
+
+      // Fetch linked licenses
+      const { data: licenses, error: licensesError } = await supabase
+        .from('product_licenses')
+        .select('*')
+        .eq('account_id', accountId)
+        .order('created_at', { ascending: false });
+      
+      if (licensesError) console.error('Error fetching licenses:', licensesError);
+
+      // Fetch linked onboarding records
+      const { data: onboarding, error: onboardingError } = await supabase
+        .from('customer_onboarding')
+        .select('*')
+        .eq('account_id', accountId)
+        .order('created_at', { ascending: false });
+      
+      if (onboardingError) console.error('Error fetching onboarding:', onboardingError);
+
+      return {
+        ...account,
+        licenses: licenses || [],
+        onboarding: onboarding || [],
+      } as CRMAccount;
+    },
+    enabled: !!accountId,
+  });
+
+  // Link license to account
+  const linkLicense = useMutation({
+    mutationFn: async ({ licenseId, accountId }: { licenseId: string; accountId: string }) => {
+      const { error } = await supabase
+        .from('product_licenses')
+        .update({ account_id: accountId })
+        .eq('id', licenseId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crm-account-details', accountId] });
+      queryClient.invalidateQueries({ queryKey: ['crm-stats'] });
+      toast.success('License linked to account');
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to link license: ${error.message}`);
+    },
+  });
+
+  // Unlink license from account
+  const unlinkLicense = useMutation({
+    mutationFn: async (licenseId: string) => {
+      const { error } = await supabase
+        .from('product_licenses')
+        .update({ account_id: null })
+        .eq('id', licenseId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crm-account-details', accountId] });
+      toast.success('License unlinked from account');
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to unlink license: ${error.message}`);
+    },
+  });
+
+  // Link onboarding to account
+  const linkOnboarding = useMutation({
+    mutationFn: async ({ onboardingId, accountId }: { onboardingId: string; accountId: string }) => {
+      const { error } = await supabase
+        .from('customer_onboarding')
+        .update({ account_id: accountId })
+        .eq('id', onboardingId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crm-account-details', accountId] });
+      toast.success('Onboarding linked to account');
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to link onboarding: ${error.message}`);
+    },
+  });
+
+  // Unlink onboarding from account
+  const unlinkOnboarding = useMutation({
+    mutationFn: async (onboardingId: string) => {
+      const { error } = await supabase
+        .from('customer_onboarding')
+        .update({ account_id: null })
+        .eq('id', onboardingId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crm-account-details', accountId] });
+      toast.success('Onboarding unlinked from account');
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to unlink onboarding: ${error.message}`);
+    },
+  });
+
+  return { 
+    ...accountQuery, 
+    linkLicense, 
+    unlinkLicense, 
+    linkOnboarding, 
+    unlinkOnboarding 
+  };
+};
+
+// Hook to get unlinked licenses (for linking dialog)
+export const useUnlinkedLicenses = () => {
+  return useQuery({
+    queryKey: ['unlinked-licenses'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_licenses')
+        .select('*')
+        .is('account_id', null)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as ProductLicense[];
+    },
+  });
+};
+
+// Hook to get unlinked onboarding records (for linking dialog)
+export const useUnlinkedOnboarding = () => {
+  return useQuery({
+    queryKey: ['unlinked-onboarding'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('customer_onboarding')
+        .select('*')
+        .is('account_id', null)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as CustomerOnboarding[];
     },
   });
 };
