@@ -8,9 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuGroup,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -19,17 +16,12 @@ import {
   User, 
   LogOut, 
   Settings, 
-  Shield, 
   Key,
   Download,
   HelpCircle,
   CreditCard,
-  Building2,
-  Users,
   ClipboardList,
-  LayoutDashboard,
-  FileText,
-  Briefcase
+  LayoutDashboard
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -117,26 +109,18 @@ const UserNavMenu: React.FC<UserNavMenuProps> = ({ user, signOut, isAdmin = fals
     </DropdownMenuGroup>
   );
 
-  // VAR / Customer Rep items
+  // VAR / Customer Rep items - simplified, main items in admin panel
   const repItems = (
     <DropdownMenuGroup>
       <DropdownMenuLabel className="text-xs text-muted-foreground">Sales & Support</DropdownMenuLabel>
-      <DropdownMenuItem onClick={() => navigate('/admin/crm')}>
-        <Building2 className="mr-2 h-4 w-4" />
-        <span>CRM</span>
-      </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => navigate('/admin/onboarding')}>
-        <ClipboardList className="mr-2 h-4 w-4" />
-        <span>Customer Onboarding</span>
-      </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => navigate('/admin/licensing')}>
-        <Key className="mr-2 h-4 w-4" />
-        <span>License Management</span>
+      <DropdownMenuItem onClick={() => navigate('/admin')}>
+        <LayoutDashboard className="mr-2 h-4 w-4" />
+        <span>Go to Admin Panel</span>
       </DropdownMenuItem>
     </DropdownMenuGroup>
   );
 
-  // Admin items
+  // Admin items - simplified, main items in admin panel
   const adminItems = (
     <DropdownMenuGroup>
       <DropdownMenuLabel className="text-xs text-muted-foreground">Administration</DropdownMenuLabel>
@@ -144,50 +128,6 @@ const UserNavMenu: React.FC<UserNavMenuProps> = ({ user, signOut, isAdmin = fals
         <LayoutDashboard className="mr-2 h-4 w-4" />
         <span>Admin Dashboard</span>
       </DropdownMenuItem>
-      <DropdownMenuSub>
-        <DropdownMenuSubTrigger>
-          <Shield className="mr-2 h-4 w-4" />
-          <span>Admin Tools</span>
-        </DropdownMenuSubTrigger>
-        <DropdownMenuSubContent className="bg-popover">
-          <DropdownMenuItem onClick={() => navigate('/admin/users')}>
-            <Users className="mr-2 h-4 w-4" />
-            <span>User Management</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/admin/permissions')}>
-            <Shield className="mr-2 h-4 w-4" />
-            <span>Permissions</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/admin/crm')}>
-            <Building2 className="mr-2 h-4 w-4" />
-            <span>CRM</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/admin/licensing')}>
-            <Key className="mr-2 h-4 w-4" />
-            <span>Licensing</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/admin/catalog')}>
-            <FileText className="mr-2 h-4 w-4" />
-            <span>Catalog</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/admin/credits')}>
-            <CreditCard className="mr-2 h-4 w-4" />
-            <span>Credits</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/admin/downloads')}>
-            <Download className="mr-2 h-4 w-4" />
-            <span>Downloads</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/admin/onboarding')}>
-            <ClipboardList className="mr-2 h-4 w-4" />
-            <span>Onboarding</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/admin/settings')}>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
-          </DropdownMenuItem>
-        </DropdownMenuSubContent>
-      </DropdownMenuSub>
     </DropdownMenuGroup>
   );
 
