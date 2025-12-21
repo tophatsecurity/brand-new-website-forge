@@ -16,7 +16,8 @@ import {
   Building2,
   CreditCard,
   ChevronDown,
-  UserCog
+  UserCog,
+  HeadphonesIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -46,6 +47,7 @@ const navSections: NavSection[] = [
     items: [
       { title: 'Users', url: '/admin/users', icon: Users },
       { title: 'Role Assignment', url: '/admin/roles', icon: UserCog },
+      { title: 'Support Team', url: '/admin/support-team', icon: HeadphonesIcon },
       { title: 'Customer Onboarding', url: '/admin/onboarding', icon: UserPlus },
     ]
   },
