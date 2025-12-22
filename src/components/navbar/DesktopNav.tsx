@@ -73,7 +73,7 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
             className="gap-2"
           >
             <LayoutDashboard className="h-4 w-4" />
-            My Portal
+            Portal
           </Button>
         )}
         

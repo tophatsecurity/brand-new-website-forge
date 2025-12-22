@@ -178,7 +178,7 @@ const getNavSections = (isAdmin: boolean, userRoles: string[]): NavSection[] => 
 export function PortalSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<string[]>([
-    'My Portal', 'Account', 'Program Manager', 'Sales & CRM', 'Moderation',
+    'Portal', 'Account', 'Program Manager', 'Sales & CRM', 'Moderation',
     'Admin Overview', 'User Management', 'Product Management', 'System'
   ]);
   const location = useLocation();
