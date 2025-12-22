@@ -7,10 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Search, ThumbsUp, ClipboardList, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { Search, ThumbsUp, ClipboardList, CheckCircle, Clock, XCircle, Plus } from 'lucide-react';
 import { useFeatureRequests, PRODUCT_OPTIONS, STATUS_OPTIONS, PRIORITY_OPTIONS, FeatureRequest } from '@/hooks/useFeatureRequests';
 import { useSupportTeam } from '@/hooks/useSupportTeam';
 
@@ -20,8 +20,17 @@ const FeatureRequestsAdminPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRequest, setSelectedRequest] = useState<FeatureRequest | null>(null);
   const [editForm, setEditForm] = useState({ status: '', priority: '', assigned_to: '' });
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    title: '',
+    description: '',
+    product_name: '',
+    priority: 'medium',
+    submitted_by_email: '',
+  });
+  const [creating, setCreating] = useState(false);
 
-  const { data: requests, isLoading, updateRequest, deleteRequest } = useFeatureRequests();
+  const { data: requests, isLoading, updateRequest, deleteRequest, createRequestOnBehalf } = useFeatureRequests();
   const { data: teamMembers } = useSupportTeam();
 
   const filteredRequests = requests?.filter(req => {
@@ -66,6 +75,21 @@ const FeatureRequestsAdminPage = () => {
     }
   };
 
+  const handleCreate = async () => {
+    if (!createForm.title || !createForm.description || !createForm.product_name) return;
+    setCreating(true);
+    await createRequestOnBehalf.mutateAsync({
+      title: createForm.title,
+      description: createForm.description,
+      product_name: createForm.product_name,
+      priority: createForm.priority as any,
+      submitted_by_email: createForm.submitted_by_email || undefined,
+    });
+    setCreating(false);
+    setShowCreateDialog(false);
+    setCreateForm({ title: '', description: '', product_name: '', priority: 'medium', submitted_by_email: '' });
+  };
+
   const getStatusBadge = (status: string) => {
     const statusOption = STATUS_OPTIONS.find(s => s.value === status);
     return (
@@ -96,9 +120,98 @@ const FeatureRequestsAdminPage = () => {
       </Helmet>
 
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Feature Requests</h1>
-          <p className="text-muted-foreground">Manage user feature requests and feedback</p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold">Feature Requests</h1>
+            <p className="text-muted-foreground">Manage user feature requests and feedback</p>
+          </div>
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Create Request
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-background">
+              <DialogHeader>
+                <DialogTitle>Create Feature Request</DialogTitle>
+                <DialogDescription>
+                  Create a feature request on behalf of a user
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="create-title">Title</Label>
+                  <Input
+                    id="create-title"
+                    placeholder="Feature request title"
+                    value={createForm.title}
+                    onChange={(e) => setCreateForm(f => ({ ...f, title: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="create-description">Description</Label>
+                  <Textarea
+                    id="create-description"
+                    placeholder="Detailed description of the feature request..."
+                    rows={4}
+                    value={createForm.description}
+                    onChange={(e) => setCreateForm(f => ({ ...f, description: e.target.value }))}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Product</Label>
+                    <Select value={createForm.product_name} onValueChange={(v) => setCreateForm(f => ({ ...f, product_name: v }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select product" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover">
+                        {PRODUCT_OPTIONS.map(p => (
+                          <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Priority</Label>
+                    <Select value={createForm.priority} onValueChange={(v) => setCreateForm(f => ({ ...f, priority: v }))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover">
+                        {PRIORITY_OPTIONS.map(p => (
+                          <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="create-email">Submitter Email (optional)</Label>
+                  <Input
+                    id="create-email"
+                    type="email"
+                    placeholder="user@example.com"
+                    value={createForm.submitted_by_email}
+                    onChange={(e) => setCreateForm(f => ({ ...f, submitted_by_email: e.target.value }))}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Leave blank if submitting internally
+                  </p>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
+                  <Button 
+                    onClick={handleCreate} 
+                    disabled={creating || !createForm.title || !createForm.description || !createForm.product_name}
+                  >
+                    {creating ? 'Creating...' : 'Create Request'}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Stats */}
