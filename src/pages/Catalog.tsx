@@ -194,10 +194,36 @@ const Catalog = () => {
     }
   };
 
-  const softwareProducts = catalog.filter(c => c.product_type === 'software');
+  // Group products by product_name
+  const groupProductsByName = (products: CatalogItem[]) => {
+    const grouped: Record<string, CatalogItem[]> = {};
+    products.forEach(item => {
+      if (!grouped[item.product_name]) {
+        grouped[item.product_name] = [];
+      }
+      grouped[item.product_name].push(item);
+    });
+    // Sort variants: free first, then evaluation, then by price_tier
+    Object.keys(grouped).forEach(key => {
+      grouped[key].sort((a, b) => {
+        const tierOrder = ['free', 'evaluation', 'standard', 'professional', 'elite', 'enterprise'];
+        const aIndex = tierOrder.indexOf(a.price_tier?.toLowerCase() || 'standard');
+        const bIndex = tierOrder.indexOf(b.price_tier?.toLowerCase() || 'standard');
+        return aIndex - bIndex;
+      });
+    });
+    return grouped;
+  };
+
+  const softwareProducts = catalog.filter(c => c.product_type === 'software' || c.product_type === 'free' || c.product_type === 'evaluation');
   const maintenanceProducts = catalog.filter(c => c.product_type === 'maintenance');
   const serviceProducts = catalog.filter(c => c.product_type === 'service');
   const bundleProducts = catalog.filter(c => c.product_type === 'bundle');
+
+  const groupedSoftware = groupProductsByName(softwareProducts);
+  const groupedMaintenance = groupProductsByName(maintenanceProducts);
+  const groupedServices = groupProductsByName(serviceProducts);
+  const groupedBundles = groupProductsByName(bundleProducts);
 
   const renderProductCard = (item: CatalogItem) => {
     const hasLicense = hasLicenseForProduct(item.product_name);
@@ -211,8 +237,13 @@ const Catalog = () => {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <IconComponent className="h-5 w-5 text-primary" />
-              {item.product_name}
+              {/* Show tier/variant name instead of product name */}
+              <span className="capitalize">
+                {item.price_tier || item.license_model || 'Standard'}
+              </span>
+              {(item.product_type === 'free' || item.product_type === 'evaluation') && (
+                <Badge variant="secondary" className="text-xs capitalize">{item.product_type}</Badge>
+              )}
             </div>
             {hasLicense && (
               <Badge variant="secondary" className="ml-2">
@@ -423,75 +454,131 @@ const Catalog = () => {
           </TabsList>
 
           <TabsContent value="software" className="mt-6">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {loading ? (
-                <div className="col-span-full text-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
-                </div>
-              ) : softwareProducts.length === 0 ? (
-                <div className="col-span-full text-center py-12 bg-card rounded-lg border">
-                  <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium">No software products available</h3>
-                  <p className="text-muted-foreground">Check back soon for new products.</p>
-                </div>
-              ) : (
-                softwareProducts.map(renderProductCard)
-              )}
-            </div>
+            {loading ? (
+              <div className="text-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+              </div>
+            ) : Object.keys(groupedSoftware).length === 0 ? (
+              <div className="text-center py-12 bg-card rounded-lg border">
+                <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium">No software products available</h3>
+                <p className="text-muted-foreground">Check back soon for new products.</p>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {Object.entries(groupedSoftware).map(([productName, variants]) => {
+                  const IconComponent = productIcons[productName] || Package;
+                  return (
+                    <div key={productName} className="space-y-4">
+                      <div className="flex items-center gap-3 border-b pb-3">
+                        <IconComponent className="h-6 w-6 text-primary" />
+                        <h3 className="text-xl font-semibold">{productName}</h3>
+                        <Badge variant="outline">{variants.length} variant{variants.length > 1 ? 's' : ''}</Badge>
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {variants.map(renderProductCard)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="maintenance" className="mt-6">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {loading ? (
-                <div className="col-span-full text-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
-                </div>
-              ) : maintenanceProducts.length === 0 ? (
-                <div className="col-span-full text-center py-12 bg-card rounded-lg border">
-                  <Settings2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium">No maintenance packages available</h3>
-                  <p className="text-muted-foreground">Maintenance packages will appear here.</p>
-                </div>
-              ) : (
-                maintenanceProducts.map(renderProductCard)
-              )}
-            </div>
+            {loading ? (
+              <div className="text-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+              </div>
+            ) : Object.keys(groupedMaintenance).length === 0 ? (
+              <div className="text-center py-12 bg-card rounded-lg border">
+                <Settings2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium">No maintenance packages available</h3>
+                <p className="text-muted-foreground">Maintenance packages will appear here.</p>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {Object.entries(groupedMaintenance).map(([productName, variants]) => {
+                  const IconComponent = productIcons[productName] || Package;
+                  return (
+                    <div key={productName} className="space-y-4">
+                      <div className="flex items-center gap-3 border-b pb-3">
+                        <IconComponent className="h-6 w-6 text-primary" />
+                        <h3 className="text-xl font-semibold">{productName}</h3>
+                        <Badge variant="outline">{variants.length} variant{variants.length > 1 ? 's' : ''}</Badge>
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {variants.map(renderProductCard)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="services" className="mt-6">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {loading ? (
-                <div className="col-span-full text-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
-                </div>
-              ) : serviceProducts.length === 0 ? (
-                <div className="col-span-full text-center py-12 bg-card rounded-lg border">
-                  <Headphones className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium">No service packages available</h3>
-                  <p className="text-muted-foreground">Professional services will appear here.</p>
-                </div>
-              ) : (
-                serviceProducts.map(renderProductCard)
-              )}
-            </div>
+            {loading ? (
+              <div className="text-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+              </div>
+            ) : Object.keys(groupedServices).length === 0 ? (
+              <div className="text-center py-12 bg-card rounded-lg border">
+                <Headphones className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium">No service packages available</h3>
+                <p className="text-muted-foreground">Professional services will appear here.</p>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {Object.entries(groupedServices).map(([productName, variants]) => {
+                  const IconComponent = productIcons[productName] || Package;
+                  return (
+                    <div key={productName} className="space-y-4">
+                      <div className="flex items-center gap-3 border-b pb-3">
+                        <IconComponent className="h-6 w-6 text-primary" />
+                        <h3 className="text-xl font-semibold">{productName}</h3>
+                        <Badge variant="outline">{variants.length} variant{variants.length > 1 ? 's' : ''}</Badge>
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {variants.map(renderProductCard)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="bundles" className="mt-6">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {loading ? (
-                <div className="col-span-full text-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
-                </div>
-              ) : bundleProducts.length === 0 ? (
-                <div className="col-span-full text-center py-12 bg-card rounded-lg border">
-                  <Layers className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium">No bundles available</h3>
-                  <p className="text-muted-foreground">Product bundles will appear here.</p>
-                </div>
-              ) : (
-                bundleProducts.map(renderProductCard)
-              )}
-            </div>
+            {loading ? (
+              <div className="text-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+              </div>
+            ) : Object.keys(groupedBundles).length === 0 ? (
+              <div className="text-center py-12 bg-card rounded-lg border">
+                <Layers className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium">No bundles available</h3>
+                <p className="text-muted-foreground">Product bundles will appear here.</p>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {Object.entries(groupedBundles).map(([productName, variants]) => {
+                  const IconComponent = productIcons[productName] || Package;
+                  return (
+                    <div key={productName} className="space-y-4">
+                      <div className="flex items-center gap-3 border-b pb-3">
+                        <IconComponent className="h-6 w-6 text-primary" />
+                        <h3 className="text-xl font-semibold">{productName}</h3>
+                        <Badge variant="outline">{variants.length} variant{variants.length > 1 ? 's' : ''}</Badge>
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {variants.map(renderProductCard)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 
