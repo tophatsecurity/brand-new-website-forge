@@ -61,6 +61,7 @@ type Download = {
   download_count?: number;
   sha256_hash?: string | null;
   file_size?: number | null;
+  release_notes?: string | null;
 };
 
 type DownloadStats = {
@@ -92,7 +93,8 @@ const DownloadsAdminPage = () => {
     is_latest: false,
     catalog_id: '' as string | null,
     sha256_hash: '' as string | null,
-    file_size: null as number | null
+    file_size: null as number | null,
+    release_notes: '' as string | null
   });
   
   if (!user || user.user_metadata?.role !== 'admin') {
@@ -283,7 +285,8 @@ const DownloadsAdminPage = () => {
         is_latest: formData.is_latest,
         catalog_id: formData.catalog_id || null,
         sha256_hash: formData.sha256_hash || null,
-        file_size: formData.file_size || null
+        file_size: formData.file_size || null,
+        release_notes: formData.release_notes || null
       };
 
       if (editingDownload) {
@@ -322,7 +325,8 @@ const DownloadsAdminPage = () => {
         is_latest: false,
         catalog_id: null,
         sha256_hash: null,
-        file_size: null
+        file_size: null,
+        release_notes: null
       });
       setEditingDownload(null);
       setIsDialogOpen(false);
@@ -379,7 +383,8 @@ const DownloadsAdminPage = () => {
       is_latest: download.is_latest,
       catalog_id: download.catalog_id,
       sha256_hash: download.sha256_hash || null,
-      file_size: download.file_size || null
+      file_size: download.file_size || null,
+      release_notes: download.release_notes || null
     });
     setIsDialogOpen(true);
   };
@@ -397,7 +402,8 @@ const DownloadsAdminPage = () => {
       is_latest: false,
       catalog_id: null,
       sha256_hash: null,
-      file_size: null
+      file_size: null,
+      release_notes: null
     });
     setIsDialogOpen(true);
   };
@@ -643,7 +649,17 @@ const DownloadsAdminPage = () => {
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
+                rows={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="release_notes">Release Notes</Label>
+              <Textarea 
+                id="release_notes"
+                value={formData.release_notes || ''}
+                onChange={(e) => setFormData({...formData, release_notes: e.target.value})}
                 rows={3}
+                placeholder="What's new in this version..."
               />
             </div>
             <div className="flex items-center space-x-2">
@@ -674,8 +690,9 @@ const DownloadsAdminPage = () => {
                 <TableHead>Catalog</TableHead>
                 <TableHead>Product</TableHead>
                 <TableHead>Type</TableHead>
+                <TableHead>Format</TableHead>
                 <TableHead>Version</TableHead>
-                <TableHead>Release Date</TableHead>
+                <TableHead>Hash</TableHead>
                 <TableHead>Downloads</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
@@ -684,19 +701,19 @@ const DownloadsAdminPage = () => {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     Loading downloads...
                   </TableCell>
                 </TableRow>
               ) : error ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-red-500">
+                  <TableCell colSpan={9} className="text-center py-8 text-red-500">
                     Error loading downloads: {(error as Error).message}
                   </TableCell>
                 </TableRow>
               ) : downloads && downloads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     No downloads found. Add your first download.
                   </TableCell>
                 </TableRow>
@@ -717,8 +734,38 @@ const DownloadsAdminPage = () => {
                     <TableCell>
                       <Badge variant="secondary">{download.product_type}</Badge>
                     </TableCell>
+                    <TableCell>
+                      {download.package_format ? (
+                        <Badge variant="outline" className="uppercase text-xs">
+                          {download.package_format}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">-</span>
+                      )}
+                    </TableCell>
                     <TableCell>v{download.version}</TableCell>
-                    <TableCell>{format(parseISO(download.release_date), 'MMM dd, yyyy')}</TableCell>
+                    <TableCell>
+                      {download.sha256_hash ? (
+                        <div className="flex items-center gap-1">
+                          <code className="text-xs text-muted-foreground truncate max-w-[80px]" title={download.sha256_hash}>
+                            {download.sha256_hash.substring(0, 8)}...
+                          </code>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-5 w-5"
+                            onClick={() => {
+                              navigator.clipboard.writeText(download.sha256_hash || '');
+                              toast({ title: "Copied", description: "SHA256 hash copied" });
+                            }}
+                          >
+                            <FileCheck className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">-</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Badge variant="secondary" className="font-mono">
                         {downloadStats?.[download.id] || 0}
