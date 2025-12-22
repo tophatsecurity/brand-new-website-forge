@@ -237,10 +237,12 @@ const Catalog = () => {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {/* Show tier/variant name instead of product name */}
-              <span className="capitalize">
-                {item.price_tier || item.license_model || 'Standard'}
-              </span>
+              {/* Show SKU or tier/variant name */}
+              {item.sku ? (
+                <code className="text-sm font-mono bg-primary/10 text-primary px-2 py-0.5 rounded">{item.sku}</code>
+              ) : (
+                <span className="capitalize">{item.price_tier || item.license_model || 'Standard'}</span>
+              )}
               {(item.product_type === 'free' || item.product_type === 'evaluation') && (
                 <Badge variant="secondary" className="text-xs capitalize">{item.product_type}</Badge>
               )}
@@ -252,16 +254,13 @@ const Catalog = () => {
               </Badge>
             )}
           </CardTitle>
+          {item.sku && item.price_tier && (
+            <p className="text-sm font-medium capitalize text-muted-foreground">{item.price_tier}</p>
+          )}
           <CardDescription>{item.description}</CardDescription>
         </CardHeader>
         <CardContent className="flex-1">
           <div className="space-y-3 text-sm">
-            {item.sku && (
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">SKU:</span>
-                <code className="text-xs bg-muted px-2 py-1 rounded">{item.sku}</code>
-              </div>
-            )}
             {item.base_price > 0 && (
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Starting at:</span>
