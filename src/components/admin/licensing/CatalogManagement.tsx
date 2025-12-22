@@ -70,7 +70,10 @@ import {
   Headphones,
   Settings2,
   LayoutGrid,
-  List
+  List,
+  ChevronLeft,
+  ChevronsLeft,
+  ChevronsRight
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useCatalog, type CatalogItem, type CatalogFormData, type ProductType, type LicenseModel, type SupportLevel, type VersionStage, type PriceTier } from "@/hooks/useCatalog";
@@ -124,6 +127,8 @@ const CatalogManagement: React.FC = () => {
   const [licenseTypeFilter, setLicenseTypeFilter] = useState<LicenseModel | 'all'>('all');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'grouped' | 'flat'>('flat');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Filter catalog based on search and license type
   const filteredCatalog = catalog.filter((item) => {
@@ -136,6 +141,17 @@ const CatalogManagement: React.FC = () => {
     
     return matchesSearch && matchesLicenseType;
   });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredCatalog.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedCatalog = filteredCatalog.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, licenseTypeFilter]);
 
   // Group products by base name (e.g., SEEKCAP, DDX, etc.)
   const groupedProducts = filteredCatalog.reduce((acc, item) => {
@@ -696,7 +712,7 @@ const CatalogManagement: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredCatalog.map((item) => {
+              {paginatedCatalog.map((item) => {
                 const IconComponent = productIcons[item.product_name] || Package;
                 return (
                   <TableRow key={item.id} className={!item.is_active ? 'opacity-50' : ''}>
@@ -796,6 +812,73 @@ const CatalogManagement: React.FC = () => {
               })}
             </TableBody>
           </Table>
+          
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-4 py-3 border-t">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Rows per page:</span>
+                <Select 
+                  value={itemsPerPage.toString()} 
+                  onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}
+                >
+                  <SelectTrigger className="w-16 h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-muted-foreground mr-2">
+                  {startIndex + 1}-{Math.min(endIndex, filteredCatalog.length)} of {filteredCatalog.length}
+                </span>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="h-8 w-8"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronsLeft className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="h-8 w-8"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm px-2">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="h-8 w-8"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="h-8 w-8"
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronsRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         /* Grouped View */
