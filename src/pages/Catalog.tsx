@@ -346,6 +346,30 @@ const Catalog = () => {
                 </a>
               </Button>
             )
+          ) : item.product_type === 'free' ? (
+            // Free tier - no purchase needed, just get started
+            <Button 
+              className="w-full" 
+              onClick={() => generateDemoLicense(item)}
+              disabled={generatingDemo === item.id || hasLicense}
+            >
+              {generatingDemo === item.id ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Activating...
+                </>
+              ) : hasLicense ? (
+                <>
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  Active
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Get Started Free
+                </>
+              )}
+            </Button>
           ) : (
             <>
               <Button 
@@ -367,7 +391,7 @@ const Catalog = () => {
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Try Demo
+                    Try {item.product_type === 'evaluation' ? 'Evaluation' : 'Demo'}
                   </>
                 )}
               </Button>
