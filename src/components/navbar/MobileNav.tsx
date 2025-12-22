@@ -31,7 +31,7 @@ const MobileNav: React.FC<MobileNavProps> = ({
     <div className="md:hidden flex items-center space-x-2">
       {user && isApproved && (
         <Button 
-          variant="outline" 
+          variant="default" 
           size="sm"
           onClick={() => navigate('/licensing')}
           className="gap-1 text-xs px-2"

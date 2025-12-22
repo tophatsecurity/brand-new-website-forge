@@ -67,13 +67,13 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
       <div className="flex items-center space-x-3">
         {user && isApproved && (
           <Button 
-            variant="outline" 
+            variant="default" 
             size="sm"
             onClick={() => navigate('/licensing')}
             className="gap-2"
           >
             <LayoutDashboard className="h-4 w-4" />
-            Customer Portal
+            My Portal
           </Button>
         )}
         
