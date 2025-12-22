@@ -7,7 +7,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useLicenses } from "@/hooks/useLicenses";
 import LicenseHeader from "@/components/admin/licensing/LicenseHeader";
 import LicenseFilters from "@/components/admin/licensing/LicenseFilters";
-import LicenseTable from "@/components/admin/licensing/LicenseTable";
+import LicenseTable, { License } from "@/components/admin/licensing/LicenseTable";
+import ViewLicenseDialog from "@/components/admin/licensing/ViewLicenseDialog";
+import EditLicenseDialog from "@/components/admin/licensing/EditLicenseDialog";
+import DeleteLicenseDialog from "@/components/admin/licensing/DeleteLicenseDialog";
 import { Button } from "@/components/ui/button";
 import { Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +21,15 @@ const LicensingAdminPage = () => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  
+  // CRUD dialog states
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedLicense, setSelectedLicense] = useState<License | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
   const { 
     licenses, 
     tiers, 
@@ -46,6 +58,111 @@ const LicensingAdminPage = () => {
     });
   };
 
+  // View license
+  const handleView = (license: License) => {
+    setSelectedLicense(license);
+    setViewDialogOpen(true);
+  };
+
+  // Edit license
+  const handleEdit = (license: License) => {
+    setSelectedLicense(license);
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = async (id: string, data: any) => {
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('product_licenses')
+        .update(data)
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "License updated",
+        description: "License has been updated successfully.",
+      });
+      setEditDialogOpen(false);
+      refetch?.();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update license",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Delete license
+  const handleDelete = (license: License) => {
+    setSelectedLicense(license);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedLicense) return;
+    
+    setIsDeleting(true);
+    try {
+      // First delete any activations
+      await supabase
+        .from('license_activations')
+        .delete()
+        .eq('license_id', selectedLicense.id);
+
+      // Then delete the license
+      const { error } = await supabase
+        .from('product_licenses')
+        .delete()
+        .eq('id', selectedLicense.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "License deleted",
+        description: "License has been deleted successfully.",
+      });
+      setDeleteDialogOpen(false);
+      refetch?.();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete license",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Status change
+  const handleStatusChange = async (id: string, status: string) => {
+    try {
+      const { error } = await supabase
+        .from('product_licenses')
+        .update({ status })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Status updated",
+        description: `License status changed to ${status}.`,
+      });
+      refetch?.();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update status",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleBulkAction = async (action: string, licenseIds: string[]) => {
     try {
       let updateData: Record<string, any> = {};
@@ -63,7 +180,6 @@ const LicensingAdminPage = () => {
         case 'extend_30':
         case 'extend_90': {
           const days = action === 'extend_30' ? 30 : 90;
-          // For extend, we need to update each license individually based on current expiry
           for (const id of licenseIds) {
             const license = licenses.find(l => l.id === id);
             if (license) {
@@ -182,10 +298,40 @@ const LicensingAdminPage = () => {
               loading={loading} 
               onCopyKey={handleCopyKey}
               onBulkAction={handleBulkAction}
+              onView={handleView}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onStatusChange={handleStatusChange}
             />
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* CRUD Dialogs */}
+      <ViewLicenseDialog
+        open={viewDialogOpen}
+        onOpenChange={setViewDialogOpen}
+        license={selectedLicense}
+        onCopyKey={handleCopyKey}
+      />
+
+      <EditLicenseDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        license={selectedLicense}
+        tiers={tiers}
+        onSave={handleSaveEdit}
+        isSubmitting={isSubmitting}
+      />
+
+      <DeleteLicenseDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        licenseKey={selectedLicense?.license_key || ''}
+        productName={selectedLicense?.product_name || ''}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+      />
     </AdminLayout>
   );
 };
