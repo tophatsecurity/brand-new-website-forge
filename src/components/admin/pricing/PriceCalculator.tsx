@@ -3,7 +3,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { 
   Calculator, 
@@ -12,21 +11,25 @@ import {
   Plus, 
   Minus, 
   Trash2, 
-  DollarSign,
   ShoppingCart,
   Percent,
-  FileText
+  FileText,
+  Calendar
 } from 'lucide-react';
-import { useCatalog, CatalogItem } from '@/hooks/useCatalog';
+import { useCatalog, CatalogItem, BillingPeriod } from '@/hooks/useCatalog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+type QuoteBillingPeriod = 'monthly' | 'annual';
 
 type QuoteItem = {
   item: CatalogItem;
   quantity: number;
   seats: number;
   discount: number;
+  billingPeriod: QuoteBillingPeriod;
 };
 
 const PriceCalculator: React.FC = () => {
@@ -80,7 +83,9 @@ const PriceCalculator: React.FC = () => {
           : qi
       ));
     } else {
-      setQuoteItems(prev => [...prev, { item, quantity: 1, seats: 1, discount: 0 }]);
+      // Default to monthly if monthly price is available, otherwise annual
+      const defaultBilling: QuoteBillingPeriod = item.monthly_price ? 'monthly' : 'annual';
+      setQuoteItems(prev => [...prev, { item, quantity: 1, seats: 1, discount: 0, billingPeriod: defaultBilling }]);
     }
   };
 
@@ -106,6 +111,12 @@ const PriceCalculator: React.FC = () => {
     ));
   };
 
+  const updateBillingPeriod = (itemId: string, period: QuoteBillingPeriod) => {
+    setQuoteItems(prev => prev.map(qi => 
+      qi.item.id === itemId ? { ...qi, billingPeriod: period } : qi
+    ));
+  };
+
   const removeFromQuote = (itemId: string) => {
     setQuoteItems(prev => prev.filter(qi => qi.item.id !== itemId));
   };
@@ -115,22 +126,48 @@ const PriceCalculator: React.FC = () => {
     setGlobalDiscount(0);
   };
 
+  // Helper to get price based on billing period
+  const getItemPrice = (qi: QuoteItem): number => {
+    if (qi.billingPeriod === 'monthly' && qi.item.monthly_price) {
+      return qi.item.monthly_price;
+    }
+    return qi.item.base_price;
+  };
+
+  // Helper to get price label
+  const getPriceLabel = (qi: QuoteItem): string => {
+    if (qi.billingPeriod === 'monthly') {
+      return '/mo';
+    }
+    return '/yr';
+  };
+
   const calculations = useMemo(() => {
-    let subtotal = 0;
+    let monthlySubtotal = 0;
+    let annualSubtotal = 0;
     let itemDiscounts = 0;
 
     quoteItems.forEach(qi => {
-      const lineTotal = qi.item.base_price * qi.quantity * qi.seats;
+      const unitPrice = getItemPrice(qi);
+      const lineTotal = unitPrice * qi.quantity * qi.seats;
       const itemDiscount = lineTotal * (qi.discount / 100);
-      subtotal += lineTotal;
+      
+      if (qi.billingPeriod === 'monthly') {
+        monthlySubtotal += lineTotal - itemDiscount;
+      } else {
+        annualSubtotal += lineTotal - itemDiscount;
+      }
       itemDiscounts += itemDiscount;
     });
 
-    const afterItemDiscounts = subtotal - itemDiscounts;
+    const subtotal = monthlySubtotal + annualSubtotal;
+    const afterItemDiscounts = subtotal;
     const globalDiscountAmount = afterItemDiscounts * (globalDiscount / 100);
     const total = afterItemDiscounts - globalDiscountAmount;
 
     return {
+      monthlySubtotal,
+      annualSubtotal,
       subtotal,
       itemDiscounts,
       afterItemDiscounts,
@@ -229,8 +266,15 @@ const PriceCalculator: React.FC = () => {
                           </div>
                         </TableCell>
                         <TableCell>{getProductTypeBadge(item.product_type)}</TableCell>
-                        <TableCell className="text-right font-medium">
-                          ${item.base_price.toLocaleString()}
+                        <TableCell className="text-right">
+                          <div className="space-y-0.5">
+                            <p className="font-medium">${item.base_price.toLocaleString()}/yr</p>
+                            {item.monthly_price && (
+                              <p className="text-xs text-muted-foreground">
+                                ${item.monthly_price.toLocaleString()}/mo
+                              </p>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <Button 
@@ -298,6 +342,32 @@ const PriceCalculator: React.FC = () => {
                         </Button>
                       </div>
                       
+                      {/* Billing Period - only show if monthly price available */}
+                      {qi.item.monthly_price && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Calendar className="h-3 w-3 text-muted-foreground" />
+                          <Label className="text-xs text-muted-foreground">Billing:</Label>
+                          <div className="flex gap-1">
+                            <Button
+                              variant={qi.billingPeriod === 'monthly' ? 'default' : 'outline'}
+                              size="sm"
+                              className="h-5 text-xs px-2"
+                              onClick={() => updateBillingPeriod(qi.item.id, 'monthly')}
+                            >
+                              Monthly
+                            </Button>
+                            <Button
+                              variant={qi.billingPeriod === 'annual' ? 'default' : 'outline'}
+                              size="sm"
+                              className="h-5 text-xs px-2"
+                              onClick={() => updateBillingPeriod(qi.item.id, 'annual')}
+                            >
+                              Annual
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                      
                       <div className="grid grid-cols-3 gap-2 text-sm">
                         <div>
                           <Label className="text-xs text-muted-foreground">Qty</Label>
@@ -345,9 +415,11 @@ const PriceCalculator: React.FC = () => {
                       </div>
 
                       <div className="flex justify-between text-sm pt-1 border-t">
-                        <span className="text-muted-foreground">Line Total:</span>
+                        <span className="text-muted-foreground">
+                          Line Total{getPriceLabel(qi)}:
+                        </span>
                         <span className="font-medium">
-                          ${((qi.item.base_price * qi.quantity * qi.seats) * (1 - qi.discount / 100)).toLocaleString()}
+                          ${((getItemPrice(qi) * qi.quantity * qi.seats) * (1 - qi.discount / 100)).toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -378,6 +450,18 @@ const PriceCalculator: React.FC = () => {
                 <Separator />
 
                 <div className="space-y-2 text-sm">
+                  {calculations.monthlySubtotal > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Monthly Recurring:</span>
+                      <span>${calculations.monthlySubtotal.toLocaleString()}/mo</span>
+                    </div>
+                  )}
+                  {calculations.annualSubtotal > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Annual:</span>
+                      <span>${calculations.annualSubtotal.toLocaleString()}/yr</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal:</span>
                     <span>${calculations.subtotal.toLocaleString()}</span>

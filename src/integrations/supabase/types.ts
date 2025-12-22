@@ -789,6 +789,7 @@ export type Database = {
       license_catalog: {
         Row: {
           base_price: number | null
+          billing_period: string | null
           changelog: string | null
           created_at: string
           credit_packages: Json | null
@@ -808,6 +809,7 @@ export type Database = {
           license_model: string
           maintenance_included: boolean | null
           min_version: string | null
+          monthly_price: number | null
           next_release_date: string | null
           next_release_version: string | null
           price_per_credit: number | null
@@ -828,6 +830,7 @@ export type Database = {
         }
         Insert: {
           base_price?: number | null
+          billing_period?: string | null
           changelog?: string | null
           created_at?: string
           credit_packages?: Json | null
@@ -847,6 +850,7 @@ export type Database = {
           license_model?: string
           maintenance_included?: boolean | null
           min_version?: string | null
+          monthly_price?: number | null
           next_release_date?: string | null
           next_release_version?: string | null
           price_per_credit?: number | null
@@ -867,6 +871,7 @@ export type Database = {
         }
         Update: {
           base_price?: number | null
+          billing_period?: string | null
           changelog?: string | null
           created_at?: string
           credit_packages?: Json | null
@@ -886,6 +891,7 @@ export type Database = {
           license_model?: string
           maintenance_included?: boolean | null
           min_version?: string | null
+          monthly_price?: number | null
           next_release_date?: string | null
           next_release_version?: string | null
           price_per_credit?: number | null
