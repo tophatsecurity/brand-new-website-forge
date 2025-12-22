@@ -49,7 +49,6 @@ const navSections: NavSection[] = [
     items: [
       { title: 'Users', url: '/admin/users', icon: Users },
       { title: 'Role Assignment', url: '/admin/roles', icon: UserCog },
-      { title: 'Support Team', url: '/admin/support-team', icon: HeadphonesIcon },
       { title: 'Customer Onboarding', url: '/admin/onboarding', icon: UserPlus },
     ]
   },
@@ -57,11 +56,17 @@ const navSections: NavSection[] = [
     title: 'Sales & Licensing',
     items: [
       { title: 'CRM', url: '/admin/crm', icon: Building2 },
-      { title: 'License Management', url: '/admin/licensing', icon: Key },
+      { title: 'Entitlements', url: '/admin/entitlements', icon: Key },
       { title: 'Payment Approvals', url: '/admin/payment-approvals', icon: BadgeCheck },
       { title: 'Catalog', url: '/admin/catalog', icon: Package },
       { title: 'Credits', url: '/admin/credits', icon: CreditCard },
       { title: 'Feature Requests', url: '/admin/feature-requests', icon: ClipboardList },
+    ]
+  },
+  {
+    title: 'Support',
+    items: [
+      { title: 'Support Center', url: '/admin/support', icon: HeadphonesIcon },
     ]
   },
   {

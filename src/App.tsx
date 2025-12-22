@@ -59,10 +59,9 @@ import OnboardingAdminPage from "./pages/admin/OnboardingAdminPage";
 import SettingsAdminPage from "./pages/admin/SettingsAdminPage";
 import CRMAdminPage from "./pages/admin/CRMAdminPage";
 import RoleAssignmentPage from "./pages/admin/RoleAssignmentPage";
-import SupportTeamPage from "./pages/admin/SupportTeamPage";
 import PaymentApprovalsPage from "./pages/admin/PaymentApprovalsPage";
 import FeatureRequestsAdminPage from "./pages/admin/FeatureRequestsAdminPage";
-import SupportTicketsPage from "./pages/admin/SupportTicketsPage";
+import SupportAdminPage from "./pages/admin/SupportAdminPage";
 import FeatureRequests from "./pages/FeatureRequests";
 import Onboarding from "./pages/Onboarding";
 import RolesReference from "./pages/RolesReference";
@@ -202,6 +201,11 @@ const App = () => (
                   <LicensingAdminPage />
                 </AdminRoute>
               } />
+              <Route path="/admin/entitlements" element={
+                <AdminRoute>
+                  <LicensingAdminPage />
+                </AdminRoute>
+              } />
               <Route path="/admin/catalog" element={
                 <AdminRoute>
                   <CatalogAdminPage />
@@ -227,14 +231,9 @@ const App = () => (
                   <CRMAdminPage />
                 </AdminRoute>
               } />
-              <Route path="/admin/support-team" element={
+              <Route path="/admin/support" element={
                 <AdminRoute>
-                  <SupportTeamPage />
-                </AdminRoute>
-              } />
-              <Route path="/admin/support-tickets" element={
-                <AdminRoute>
-                  <SupportTicketsPage />
+                  <SupportAdminPage />
                 </AdminRoute>
               } />
               <Route path="/admin/payment-approvals" element={
