@@ -63,6 +63,7 @@ const BULK_ACTIONS = [
   { value: 'extend_30', label: 'Extend 30 Days', variant: 'outline' as const },
   { value: 'extend_90', label: 'Extend 90 Days', variant: 'outline' as const },
   { value: 'export', label: 'Export Selected', variant: 'outline' as const },
+  { value: 'bulk_delete', label: 'Delete Selected', variant: 'destructive' as const },
 ];
 
 const LicenseTable: React.FC<LicenseTableProps> = ({ 

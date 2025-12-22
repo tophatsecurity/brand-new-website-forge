@@ -2,33 +2,48 @@ import React, { useState } from 'react';
 import AdminLayout from '@/components/layouts/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, Link } from "react-router-dom";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useLicenses } from "@/hooks/useLicenses";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import LicenseHeader from "@/components/admin/licensing/LicenseHeader";
 import LicenseFilters from "@/components/admin/licensing/LicenseFilters";
 import LicenseTable, { License } from "@/components/admin/licensing/LicenseTable";
 import ViewLicenseDialog from "@/components/admin/licensing/ViewLicenseDialog";
 import EditLicenseDialog from "@/components/admin/licensing/EditLicenseDialog";
 import DeleteLicenseDialog from "@/components/admin/licensing/DeleteLicenseDialog";
+import AuditLogViewer from "@/components/admin/audit/AuditLogViewer";
 import { Button } from "@/components/ui/button";
-import { Package } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Package, History, Loader2, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { addDays } from "date-fns";
 
 const LicensingAdminPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { logAudit } = useAuditLog();
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const [mainTab, setMainTab] = useState("licenses");
   
   // CRUD dialog states
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [selectedLicense, setSelectedLicense] = useState<License | null>(null);
+  const [bulkDeleteIds, setBulkDeleteIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   
   const { 
     licenses, 
@@ -62,6 +77,12 @@ const LicensingAdminPage = () => {
   const handleView = (license: License) => {
     setSelectedLicense(license);
     setViewDialogOpen(true);
+    logAudit({
+      action: 'view',
+      entityType: 'license',
+      entityId: license.id,
+      entityName: license.license_key,
+    });
   };
 
   // Edit license
@@ -73,12 +94,28 @@ const LicensingAdminPage = () => {
   const handleSaveEdit = async (id: string, data: any) => {
     setIsSubmitting(true);
     try {
+      const oldLicense = licenses.find(l => l.id === id);
+      
       const { error } = await supabase
         .from('product_licenses')
         .update(data)
         .eq('id', id);
 
       if (error) throw error;
+
+      await logAudit({
+        action: 'update',
+        entityType: 'license',
+        entityId: id,
+        entityName: oldLicense?.license_key,
+        oldValues: oldLicense ? {
+          product_name: oldLicense.product_name,
+          status: oldLicense.status,
+          seats: oldLicense.seats,
+          expiry_date: oldLicense.expiry_date
+        } : undefined,
+        newValues: data,
+      });
 
       toast({
         title: "License updated",
@@ -122,6 +159,18 @@ const LicensingAdminPage = () => {
 
       if (error) throw error;
 
+      await logAudit({
+        action: 'delete',
+        entityType: 'license',
+        entityId: selectedLicense.id,
+        entityName: selectedLicense.license_key,
+        oldValues: {
+          product_name: selectedLicense.product_name,
+          assigned_to: selectedLicense.assigned_to,
+          status: selectedLicense.status
+        }
+      });
+
       toast({
         title: "License deleted",
         description: "License has been deleted successfully.",
@@ -139,15 +188,75 @@ const LicensingAdminPage = () => {
     }
   };
 
+  // Bulk delete
+  const handleBulkDelete = async () => {
+    setIsBulkDeleting(true);
+    try {
+      const selectedLicenses = licenses.filter(l => bulkDeleteIds.includes(l.id));
+      
+      // Delete activations first
+      for (const id of bulkDeleteIds) {
+        await supabase
+          .from('license_activations')
+          .delete()
+          .eq('license_id', id);
+      }
+
+      // Delete licenses
+      const { error } = await supabase
+        .from('product_licenses')
+        .delete()
+        .in('id', bulkDeleteIds);
+
+      if (error) throw error;
+
+      await logAudit({
+        action: 'bulk_delete',
+        entityType: 'license',
+        metadata: {
+          count: bulkDeleteIds.length,
+          license_keys: selectedLicenses.map(l => l.license_key)
+        }
+      });
+
+      toast({
+        title: "Licenses deleted",
+        description: `${bulkDeleteIds.length} license(s) have been deleted.`,
+      });
+      setBulkDeleteDialogOpen(false);
+      setBulkDeleteIds([]);
+      refetch?.();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete licenses",
+        variant: "destructive",
+      });
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
+
   // Status change
   const handleStatusChange = async (id: string, status: string) => {
     try {
+      const oldLicense = licenses.find(l => l.id === id);
+      
       const { error } = await supabase
         .from('product_licenses')
         .update({ status })
         .eq('id', id);
 
       if (error) throw error;
+
+      await logAudit({
+        action: 'status_change',
+        entityType: 'license',
+        entityId: id,
+        entityName: oldLicense?.license_key,
+        oldValues: { status: oldLicense?.status },
+        newValues: { status }
+      });
 
       toast({
         title: "Status updated",
@@ -164,6 +273,13 @@ const LicensingAdminPage = () => {
   };
 
   const handleBulkAction = async (action: string, licenseIds: string[]) => {
+    // Handle bulk delete separately
+    if (action === 'bulk_delete') {
+      setBulkDeleteIds(licenseIds);
+      setBulkDeleteDialogOpen(true);
+      return;
+    }
+
     try {
       let updateData: Record<string, any> = {};
       
@@ -190,6 +306,11 @@ const LicensingAdminPage = () => {
                 .eq('id', id);
             }
           }
+          await logAudit({
+            action: 'bulk_update',
+            entityType: 'license',
+            metadata: { action: `extend_${days}_days`, count: licenseIds.length }
+          });
           toast({
             title: "Licenses Extended",
             description: `${licenseIds.length} license(s) extended by ${days} days.`,
@@ -220,6 +341,12 @@ const LicensingAdminPage = () => {
           a.click();
           URL.revokeObjectURL(url);
           
+          await logAudit({
+            action: 'export',
+            entityType: 'license',
+            metadata: { count: licenseIds.length }
+          });
+          
           toast({
             title: "Export Complete",
             description: `${licenseIds.length} license(s) exported.`,
@@ -237,6 +364,12 @@ const LicensingAdminPage = () => {
           .in('id', licenseIds);
 
         if (error) throw error;
+
+        await logAudit({
+          action: 'bulk_update',
+          entityType: 'license',
+          metadata: { action, count: licenseIds.length, ...updateData }
+        });
 
         toast({
           title: "Bulk Action Complete",
@@ -277,35 +410,54 @@ const LicensingAdminPage = () => {
         </Button>
       </div>
       
-      <div className="bg-card rounded-lg shadow-md p-6 relative z-0">
-        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-          <LicenseFilters 
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            featureFilter={featureFilter}
-            setFeatureFilter={setFeatureFilter}
-            addonFilter={addonFilter}
-            setAddonFilter={setAddonFilter}
-            features={features}
-            addons={addons}
-          />
-          
-          <TabsContent value={activeTab}>
-            <LicenseTable 
-              licenses={statusFilteredLicenses} 
-              loading={loading} 
-              onCopyKey={handleCopyKey}
-              onBulkAction={handleBulkAction}
-              onView={handleView}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onStatusChange={handleStatusChange}
-            />
-          </TabsContent>
-        </Tabs>
-      </div>
+      <Tabs value={mainTab} onValueChange={setMainTab} className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="licenses">Licenses</TabsTrigger>
+          <TabsTrigger value="audit">
+            <History className="h-4 w-4 mr-2" />
+            Audit Log
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="licenses">
+          <div className="bg-card rounded-lg shadow-md p-6 relative z-0">
+            <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
+              <LicenseFilters 
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                featureFilter={featureFilter}
+                setFeatureFilter={setFeatureFilter}
+                addonFilter={addonFilter}
+                setAddonFilter={setAddonFilter}
+                features={features}
+                addons={addons}
+              />
+              
+              <TabsContent value={activeTab}>
+                <LicenseTable 
+                  licenses={statusFilteredLicenses} 
+                  loading={loading} 
+                  onCopyKey={handleCopyKey}
+                  onBulkAction={handleBulkAction}
+                  onView={handleView}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onStatusChange={handleStatusChange}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="audit">
+          <div className="bg-card rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold mb-4">License Activity Audit Trail</h3>
+            <AuditLogViewer entityType="license" />
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* CRUD Dialogs */}
       <ViewLicenseDialog
@@ -332,6 +484,37 @@ const LicensingAdminPage = () => {
         onConfirm={handleConfirmDelete}
         isDeleting={isDeleting}
       />
+
+      {/* Bulk Delete Dialog */}
+      <AlertDialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Delete {bulkDeleteIds.length} License(s)
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {bulkDeleteIds.length} selected license(s)? 
+              This action cannot be undone. All activation data associated with these licenses will also be deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button variant="outline" onClick={() => setBulkDeleteDialogOpen(false)} disabled={isBulkDeleting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleBulkDelete} disabled={isBulkDeleting}>
+              {isBulkDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                `Delete ${bulkDeleteIds.length} License(s)`
+              )}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminLayout>
   );
 };
