@@ -68,7 +68,9 @@ import {
   ChevronDown,
   ChevronRight,
   Headphones,
-  Settings2
+  Settings2,
+  LayoutGrid,
+  List
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useCatalog, type CatalogItem, type CatalogFormData, type ProductType, type LicenseModel, type SupportLevel, type VersionStage, type PriceTier } from "@/hooks/useCatalog";
@@ -121,6 +123,7 @@ const CatalogManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [licenseTypeFilter, setLicenseTypeFilter] = useState<LicenseModel | 'all'>('all');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<'grouped' | 'flat'>('flat');
 
   // Filter catalog based on search and license type
   const filteredCatalog = catalog.filter((item) => {
@@ -626,20 +629,46 @@ const CatalogManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Expand/Collapse All */}
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={expandAllGroups}>
-          Expand All
-        </Button>
-        <Button variant="outline" size="sm" onClick={collapseAllGroups}>
-          Collapse All
-        </Button>
-        <span className="text-sm text-muted-foreground ml-2">
-          {sortedGroupNames.length} product groups • {filteredCatalog.length} items
+      {/* View Toggle & Controls */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center border rounded-lg p-1">
+            <Button 
+              variant={viewMode === 'flat' ? 'default' : 'ghost'} 
+              size="sm" 
+              className="h-7 px-3"
+              onClick={() => setViewMode('flat')}
+            >
+              <List className="h-4 w-4 mr-1" />
+              List
+            </Button>
+            <Button 
+              variant={viewMode === 'grouped' ? 'default' : 'ghost'} 
+              size="sm" 
+              className="h-7 px-3"
+              onClick={() => setViewMode('grouped')}
+            >
+              <LayoutGrid className="h-4 w-4 mr-1" />
+              Grouped
+            </Button>
+          </div>
+          {viewMode === 'grouped' && (
+            <>
+              <Button variant="outline" size="sm" onClick={expandAllGroups}>
+                Expand All
+              </Button>
+              <Button variant="outline" size="sm" onClick={collapseAllGroups}>
+                Collapse All
+              </Button>
+            </>
+          )}
+        </div>
+        <span className="text-sm text-muted-foreground">
+          {viewMode === 'grouped' ? `${sortedGroupNames.length} product groups • ` : ''}{filteredCatalog.length} items
         </span>
       </div>
 
-      {/* Grouped Products */}
+      {/* Empty State */}
       {filteredCatalog.length === 0 ? (
         <div className="border rounded-lg p-12 text-center">
           <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -650,7 +679,126 @@ const CatalogManagement: React.FC = () => {
             {catalog.length === 0 ? 'Add your first product to get started.' : 'Try adjusting your search or filter.'}
           </p>
         </div>
+      ) : viewMode === 'flat' ? (
+        /* Flat Table View */
+        <div className="border rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[140px]">SKU</TableHead>
+                <TableHead>Product</TableHead>
+                <TableHead>Version</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>License</TableHead>
+                <TableHead>Pricing</TableHead>
+                <TableHead>Active</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCatalog.map((item) => {
+                const IconComponent = productIcons[item.product_name] || Package;
+                return (
+                  <TableRow key={item.id} className={!item.is_active ? 'opacity-50' : ''}>
+                    <TableCell>
+                      {item.sku ? (
+                        <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">
+                          {item.sku}
+                        </code>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <IconComponent className="h-4 w-4 text-primary" />
+                        <div>
+                          <p className="font-medium">{item.product_name}</p>
+                          <p className="text-xs text-muted-foreground truncate max-w-[180px]">{item.description}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-sm font-mono">{item.version}</span>
+                        {getVersionStageBadge(item.version_stage)}
+                      </div>
+                    </TableCell>
+                    <TableCell>{getProductTypeBadge(item.product_type)}</TableCell>
+                    <TableCell>{getLicenseModelBadge(item.license_model)}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-sm">
+                          {item.base_price > 0 ? `$${item.base_price}` : 'Free'}
+                        </span>
+                        {item.credits_included > 0 && (
+                          <span className="text-xs text-muted-foreground">
+                            {item.credits_included} credits
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={item.is_active}
+                        onCheckedChange={() => handleToggleActive(item.id, item.is_active)}
+                      />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Dialog open={editingItem?.id === item.id} onOpenChange={(open) => !open && setEditingItem(null)}>
+                          <DialogTrigger asChild>
+                            <Button variant="ghost" size="icon" onClick={() => handleEdit(item)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[600px]">
+                            <DialogHeader>
+                              <DialogTitle>Edit Product</DialogTitle>
+                              <DialogDescription>Update product details.</DialogDescription>
+                            </DialogHeader>
+                            {renderForm()}
+                            <DialogFooter>
+                              <Button variant="outline" onClick={() => setEditingItem(null)}>Cancel</Button>
+                              <Button onClick={handleSubmit} disabled={isSubmitting || !formData.product_name}>
+                                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                                Save Changes
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete {item.product_name}?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently remove this product from the catalog.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       ) : (
+        /* Grouped View */
         <div className="space-y-3">
           {sortedGroupNames.map((groupName) => {
             const items = groupedProducts[groupName];
