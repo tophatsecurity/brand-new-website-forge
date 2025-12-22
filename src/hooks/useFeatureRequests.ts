@@ -79,6 +79,39 @@ export const useFeatureRequests = (productFilter?: string) => {
     },
   });
 
+  // For admins/program managers to create requests on behalf of users
+  const createRequestOnBehalf = useMutation({
+    mutationFn: async (request: { 
+      title: string; 
+      description: string; 
+      product_name: string;
+      priority?: string;
+      submitted_by_email?: string;
+    }) => {
+      const { data, error } = await supabase
+        .from('feature_requests')
+        .insert({
+          title: request.title,
+          description: request.description,
+          product_name: request.product_name,
+          priority: request.priority || 'medium',
+          submitted_by_email: request.submitted_by_email || null,
+          submitted_by: null, // No user ID since it's on behalf of someone else
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feature-requests'] });
+      toast.success('Feature request created on behalf of user');
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to create request: ${error.message}`);
+    },
+  });
+
   const updateRequest = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<FeatureRequest> & { id: string }) => {
       // Get old request for comparison
@@ -196,6 +229,7 @@ export const useFeatureRequests = (productFilter?: string) => {
   return {
     ...requestsQuery,
     createRequest,
+    createRequestOnBehalf,
     updateRequest,
     deleteRequest,
     vote,
