@@ -59,6 +59,10 @@ import FeatureRequestsAdminPage from "./pages/admin/FeatureRequestsAdminPage";
 import FeatureRequests from "./pages/FeatureRequests";
 import Onboarding from "./pages/Onboarding";
 import RolesReference from "./pages/RolesReference";
+
+// VAR Pages
+import DealRegistrationPage from "./pages/var/DealRegistrationPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -212,6 +216,13 @@ const App = () => (
                 <AdminRoute>
                   <RolesReference />
                 </AdminRoute>
+              } />
+              
+              {/* VAR Routes */}
+              <Route path="/var/deals" element={
+                <ProtectedRoute>
+                  <DealRegistrationPage />
+                </ProtectedRoute>
               } />
               
               {/* Public onboarding route - accessible without login */}
