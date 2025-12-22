@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { format, parseISO, addDays } from 'date-fns';
+import { format, parseISO, addDays, differenceInDays, isPast } from 'date-fns';
 import {
   Package,
   Gift,
@@ -31,8 +31,13 @@ import {
   Eye,
   Search,
   Lock,
-  CreditCard
+  CreditCard,
+  AlertTriangle,
+  Bell,
+  Clock,
+  RefreshCw
 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Tooltip,
   TooltipContent,
@@ -92,10 +97,59 @@ const Licensing = () => {
   const [generatingDemo, setGeneratingDemo] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>('catalog');
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [dismissedReminder, setDismissedReminder] = useState(false);
   
   const hasLicenseForProduct = (productName: string) => {
     return licenses.some(l => l.product_name === productName);
   };
+
+  // Get licenses expiring within 30 days
+  const getExpiringLicenses = () => {
+    const now = new Date();
+    return licenses.filter(license => {
+      if (license.status !== 'active') return false;
+      const expiryDate = parseISO(license.expiry_date);
+      const daysUntilExpiry = differenceInDays(expiryDate, now);
+      return daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
+    }).sort((a, b) => {
+      return parseISO(a.expiry_date).getTime() - parseISO(b.expiry_date).getTime();
+    });
+  };
+
+  // Get expired licenses
+  const getExpiredLicenses = () => {
+    return licenses.filter(license => {
+      const expiryDate = parseISO(license.expiry_date);
+      return isPast(expiryDate) && license.status === 'active';
+    });
+  };
+
+  const expiringLicenses = getExpiringLicenses();
+  const expiredLicenses = getExpiredLicenses();
+  const hasExpiringOrExpired = expiringLicenses.length > 0 || expiredLicenses.length > 0;
+
+  // Show toast notification for expiring licenses on initial load
+  useEffect(() => {
+    if (!loading && licenses.length > 0) {
+      const expiring = getExpiringLicenses();
+      const expired = getExpiredLicenses();
+      
+      if (expired.length > 0) {
+        toast({
+          title: `${expired.length} license${expired.length > 1 ? 's' : ''} expired`,
+          description: "Please renew your licenses to continue using the products.",
+          variant: "destructive",
+        });
+      } else if (expiring.length > 0) {
+        const soonest = expiring[0];
+        const daysLeft = differenceInDays(parseISO(soonest.expiry_date), new Date());
+        toast({
+          title: "License renewal reminder",
+          description: `${expiring.length} license${expiring.length > 1 ? 's' : ''} expiring soon. ${soonest.product_name} expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}.`,
+        });
+      }
+    }
+  }, [loading, licenses.length]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -447,6 +501,76 @@ const Licensing = () => {
             )}
           </div>
         </div>
+
+        {/* License Renewal Reminder Banner */}
+        {hasExpiringOrExpired && !dismissedReminder && (
+          <Alert variant={expiredLicenses.length > 0 ? "destructive" : "default"} className="relative">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle className="flex items-center gap-2">
+              {expiredLicenses.length > 0 ? (
+                <>Expired Licenses</>
+              ) : (
+                <>Licenses Expiring Soon</>
+              )}
+            </AlertTitle>
+            <AlertDescription>
+              <div className="space-y-3">
+                {expiredLicenses.length > 0 && (
+                  <div>
+                    <p className="font-medium text-sm mb-2">
+                      {expiredLicenses.length} license{expiredLicenses.length > 1 ? 's have' : ' has'} expired:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {expiredLicenses.map(license => (
+                        <Badge key={license.id} variant="destructive" className="gap-1">
+                          <Clock className="h-3 w-3" />
+                          {license.product_name} - Expired {format(parseISO(license.expiry_date), 'MMM d')}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {expiringLicenses.length > 0 && (
+                  <div>
+                    <p className="font-medium text-sm mb-2">
+                      {expiringLicenses.length} license{expiringLicenses.length > 1 ? 's' : ''} expiring within 30 days:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {expiringLicenses.map(license => {
+                        const daysLeft = differenceInDays(parseISO(license.expiry_date), new Date());
+                        return (
+                          <Badge 
+                            key={license.id} 
+                            variant={daysLeft <= 7 ? "destructive" : "secondary"}
+                            className="gap-1"
+                          >
+                            <Clock className="h-3 w-3" />
+                            {license.product_name} - {daysLeft} day{daysLeft !== 1 ? 's' : ''} left
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                <div className="flex gap-2 mt-3">
+                  <Button size="sm" variant="outline" asChild>
+                    <a href="mailto:licensing@tophatsecurity.com">
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Contact for Renewal
+                    </a>
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={() => setDismissedReminder(true)}
+                  >
+                    Dismiss
+                  </Button>
+                </div>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Payment Method Dialog */}
         <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
