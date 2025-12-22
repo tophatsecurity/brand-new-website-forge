@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { 
@@ -24,10 +23,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-type License = {
+export type License = {
   id: string;
   license_key: string;
   product_name: string;
+  tier_id?: string;
   tier: {
     name: string;
   };
@@ -50,6 +50,10 @@ type LicenseTableProps = {
   loading: boolean;
   onCopyKey: (key: string) => void;
   onBulkAction?: (action: string, licenseIds: string[]) => void;
+  onView: (license: License) => void;
+  onEdit: (license: License) => void;
+  onDelete: (license: License) => void;
+  onStatusChange: (id: string, status: string) => void;
 };
 
 const BULK_ACTIONS = [
@@ -61,8 +65,17 @@ const BULK_ACTIONS = [
   { value: 'export', label: 'Export Selected', variant: 'outline' as const },
 ];
 
-const LicenseTable: React.FC<LicenseTableProps> = ({ licenses, loading, onCopyKey, onBulkAction }) => {
-  const colSpan = 11; // Total number of columns in the table (added checkbox column)
+const LicenseTable: React.FC<LicenseTableProps> = ({ 
+  licenses, 
+  loading, 
+  onCopyKey, 
+  onBulkAction,
+  onView,
+  onEdit,
+  onDelete,
+  onStatusChange
+}) => {
+  const colSpan = 11;
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -93,6 +106,8 @@ const LicenseTable: React.FC<LicenseTableProps> = ({ licenses, loading, onCopyKe
 
   const allSelected = licenses.length > 0 && selectedIds.length === licenses.length;
   const someSelected = selectedIds.length > 0 && selectedIds.length < licenses.length;
+
+  const getLicenseById = (id: string) => licenses.find(l => l.id === id);
 
   const renderConstraints = (license: License) => {
     const hasConstraints = license.max_hosts || license.allowed_networks?.length > 0;
@@ -225,9 +240,14 @@ const LicenseTable: React.FC<LicenseTableProps> = ({ licenses, loading, onCopyKe
                   </TableCell>
                   <TableCell className="text-right">
                     <LicenseActionMenu 
+                      licenseId={license.id}
                       licenseKey={license.license_key}
                       status={license.status}
                       onCopyKey={onCopyKey}
+                      onView={() => onView(license)}
+                      onEdit={() => onEdit(license)}
+                      onDelete={() => onDelete(license)}
+                      onStatusChange={onStatusChange}
                     />
                   </TableCell>
                 </TableRow>
