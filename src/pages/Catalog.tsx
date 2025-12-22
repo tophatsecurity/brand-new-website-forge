@@ -204,6 +204,7 @@ const Catalog = () => {
     const IconComponent = productIcons[item.product_name] || Package;
     const isService = item.product_type === 'service';
     const isMaintenance = item.product_type === 'maintenance';
+    const isFreeOrEvaluation = item.product_type === 'free' || item.product_type === 'evaluation';
     
     return (
       <Card key={item.id} className="flex flex-col">
@@ -238,17 +239,21 @@ const Catalog = () => {
             )}
             {!isService && !isMaintenance && (
               <>
-                <div className="flex items-center text-muted-foreground">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  {item.demo_duration_days}-day demo available
-                </div>
-                <div className="flex items-center text-muted-foreground">
-                  <Package className="h-4 w-4 mr-2" />
-                  {item.demo_seats} seat{item.demo_seats > 1 ? 's' : ''} in demo
-                </div>
+                {isFreeOrEvaluation && (
+                  <>
+                    <div className="flex items-center text-muted-foreground">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      {item.demo_duration_days}-day {item.product_type} period
+                    </div>
+                    <div className="flex items-center text-muted-foreground">
+                      <Package className="h-4 w-4 mr-2" />
+                      {item.demo_seats} seat{item.demo_seats > 1 ? 's' : ''} included
+                    </div>
+                  </>
+                )}
                 {item.demo_features.length > 0 && (
                   <div className="pt-2">
-                    <p className="text-xs font-medium text-muted-foreground mb-1">Demo Features:</p>
+                    <p className="text-xs font-medium text-muted-foreground mb-1">Features:</p>
                     <div className="flex flex-wrap gap-1">
                       {item.demo_features.slice(0, 3).map(feature => (
                         <Badge key={feature} variant="outline" className="text-xs">
