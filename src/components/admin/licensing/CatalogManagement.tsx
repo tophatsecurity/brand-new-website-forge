@@ -311,8 +311,10 @@ const CatalogManagement: React.FC = () => {
         return <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">Service</Badge>;
       case 'bundle':
         return <Badge variant="secondary" className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400">Bundle</Badge>;
-      case 'demo':
-        return <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Demo</Badge>;
+      case 'free':
+        return <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">Free</Badge>;
+      case 'evaluation':
+        return <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Evaluation</Badge>;
     }
   };
 
@@ -895,7 +897,8 @@ const CatalogManagement: React.FC = () => {
             const hasPerpetual = items.some(i => i.license_model === 'perpetual');
             const hasMaintenance = items.some(i => i.product_type === 'maintenance');
             const hasService = items.some(i => i.product_type === 'service');
-            const hasDemo = items.some(i => i.product_type === 'demo');
+            const hasFree = items.some(i => i.product_type === 'free');
+            const hasEvaluation2 = items.some(i => i.product_type === 'evaluation');
 
             return (
               <Collapsible key={groupName} open={isExpanded} onOpenChange={() => toggleGroup(groupName)}>
@@ -915,7 +918,8 @@ const CatalogManagement: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {hasDemo && <Badge variant="outline" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Demo</Badge>}
+                        {hasFree && <Badge variant="outline" className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">Free</Badge>}
+                        {hasEvaluation2 && <Badge variant="outline" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Evaluation</Badge>}
                         {hasSubscription && <Badge variant="outline" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">Subscription</Badge>}
                         {hasPerpetual && <Badge variant="outline" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">Perpetual</Badge>}
                         {hasMaintenance && <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Maintenance</Badge>}
