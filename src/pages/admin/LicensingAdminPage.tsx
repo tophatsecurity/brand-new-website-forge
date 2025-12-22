@@ -394,7 +394,7 @@ const LicensingAdminPage = () => {
     : licenses.filter(license => license.status === activeTab);
 
   return (
-    <AdminLayout title="License Management">
+    <AdminLayout title="Entitlements">
       <div className="flex justify-between items-center mb-6">
         <LicenseHeader 
           open={open} 
