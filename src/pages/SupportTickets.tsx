@@ -54,6 +54,7 @@ const SupportTickets = () => {
     category: "general",
     product_name: "",
   });
+  const [customProgram, setCustomProgram] = useState("");
 
   const filteredTickets = userTickets.filter(ticket => {
     const matchesSearch = 
@@ -66,13 +67,15 @@ const SupportTickets = () => {
   const handleCreateTicket = async () => {
     if (!newTicket.subject.trim() || !newTicket.description.trim()) return;
     
+    const productName = newTicket.product_name === "Other" ? customProgram : newTicket.product_name;
+    
     setSubmitting(true);
     const result = await createTicket({
       subject: newTicket.subject,
       description: newTicket.description,
       priority: newTicket.priority,
       category: newTicket.category,
-      product_name: newTicket.product_name || undefined,
+      product_name: productName || undefined,
     });
 
     if (result) {
@@ -83,6 +86,7 @@ const SupportTickets = () => {
         category: "general",
         product_name: "",
       });
+      setCustomProgram("");
       setIsCreateOpen(false);
     }
     setSubmitting(false);
@@ -190,7 +194,10 @@ const SupportTickets = () => {
                   <Label>Related Program</Label>
                   <Select
                     value={newTicket.product_name}
-                    onValueChange={(val) => setNewTicket({ ...newTicket, product_name: val })}
+                    onValueChange={(val) => {
+                      setNewTicket({ ...newTicket, product_name: val });
+                      if (val !== "Other") setCustomProgram("");
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a program" />
@@ -207,6 +214,17 @@ const SupportTickets = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                {newTicket.product_name === "Other" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="customProgram">Specify Program</Label>
+                    <Input
+                      id="customProgram"
+                      placeholder="Enter program name"
+                      value={customProgram}
+                      onChange={(e) => setCustomProgram(e.target.value)}
+                    />
+                  </div>
+                )}
                 <div className="flex justify-end gap-2 pt-4">
                   <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
                     Cancel
