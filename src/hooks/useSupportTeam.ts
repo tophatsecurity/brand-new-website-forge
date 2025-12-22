@@ -13,11 +13,11 @@ export const useSupportTeam = () => {
   return useQuery({
     queryKey: ['support-team'],
     queryFn: async () => {
-      // Fetch users with support-related roles (customer_rep, customer_service, var, account_rep)
+      // Fetch users with support-related roles (customer_rep, customer_service, var, account_rep, program_manager)
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('user_id, role')
-        .in('role', ['support', 'customer_rep', 'var', 'account_rep', 'admin']);
+        .in('role', ['support', 'customer_rep', 'var', 'account_rep', 'admin', 'program_manager']);
 
       if (roleError) throw roleError;
 
@@ -58,6 +58,7 @@ export const SUPPORT_ROLES = [
   { value: 'customer_rep', label: 'Customer Rep' },
   { value: 'account_rep', label: 'Account Rep' },
   { value: 'var', label: 'VAR' },
+  { value: 'program_manager', label: 'Program Manager' },
   { value: 'admin', label: 'Admin' },
 ];
 
