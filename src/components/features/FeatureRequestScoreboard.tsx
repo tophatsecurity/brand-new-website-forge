@@ -162,8 +162,8 @@ const FeatureRequestScoreboard = ({ requests, userId, userEmail, showUserStats =
                       {getRankIcon(index)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {contributor.email === userEmail ? 'You' : contributor.email}
+                      <p className="text-sm font-medium truncate font-mono">
+                        @{contributor.email}
                       </p>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
