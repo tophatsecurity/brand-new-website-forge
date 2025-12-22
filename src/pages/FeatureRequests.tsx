@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { ThumbsUp, Plus, Lightbulb, Filter } from 'lucide-react';
 import { useFeatureRequests, PRODUCT_OPTIONS, STATUS_OPTIONS } from '@/hooks/useFeatureRequests';
 import { useAuth } from '@/contexts/AuthContext';
+import FeatureRequestScoreboard from '@/components/features/FeatureRequestScoreboard';
 
 const FeatureRequests = () => {
   const { user } = useAuth();
@@ -131,6 +132,14 @@ const FeatureRequests = () => {
           </Dialog>
         )}
       </div>
+
+      {/* Scoreboard */}
+      <FeatureRequestScoreboard 
+        requests={requests || []} 
+        userId={user?.id} 
+        userEmail={user?.email}
+        showUserStats={!!user}
+      />
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-6">
