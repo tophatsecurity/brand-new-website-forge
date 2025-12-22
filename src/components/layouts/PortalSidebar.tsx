@@ -24,7 +24,8 @@ import {
   UserCog,
   HeadphonesIcon,
   BadgeCheck,
-  Handshake
+  Handshake,
+  Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -111,6 +112,7 @@ const getNavSections = (isAdmin: boolean, userRoles: string[]): NavSection[] => 
       items: [
         { title: 'Ticket Queue', url: '/admin/support-tickets', icon: HeadphonesIcon },
         { title: 'Knowledge Base Admin', url: '/admin/support', icon: BadgeHelp },
+        { title: 'SLA Configuration', url: '/admin/sla', icon: Clock },
       ]
     });
   }
