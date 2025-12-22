@@ -350,7 +350,8 @@ const CatalogManagement: React.FC = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="software">Software</SelectItem>
-                  <SelectItem value="demo">Demo</SelectItem>
+                  <SelectItem value="free">Free</SelectItem>
+                  <SelectItem value="evaluation">Evaluation</SelectItem>
                   <SelectItem value="maintenance">Maintenance</SelectItem>
                   <SelectItem value="service">Service</SelectItem>
                   <SelectItem value="bundle">Bundle</SelectItem>
