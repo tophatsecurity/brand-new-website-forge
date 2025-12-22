@@ -163,6 +163,30 @@ export const useLicenseForm = ({
         onLicenseCreated(newLicense);
         onClose();
         form.reset();
+
+        // Send email notification if license is assigned
+        if (data.email) {
+          try {
+            await supabase.functions.invoke('send-email-postmark', {
+              body: {
+                to: data.email,
+                subject: `License Issued: ${data.product}`,
+                template: 'license_created',
+                data: {
+                  customerName: data.email.split('@')[0],
+                  productName: data.product,
+                  licenseKey: randomKey,
+                  tier: data.tier,
+                  seats: data.seats,
+                  expiryDate: new Date(data.expiryDate).toLocaleDateString(),
+                  dashboardUrl: `${window.location.origin}/licensing`,
+                },
+              },
+            });
+          } catch (emailError) {
+            console.error('Failed to send license notification email:', emailError);
+          }
+        }
           
         toast({
           title: "License created",

@@ -169,6 +169,22 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canViewMarketing: false,
     canManageFeatureRequests: false,
   },
+  support: {
+    canAccessAdmin: true,
+    canManageUsers: false,
+    canManageLicenses: false,
+    canManageCredits: false,
+    canManageDownloads: false,
+    canManageCatalog: false,
+    canViewSupport: true,
+    canViewDownloads: true,
+    canViewLicensing: true,
+    canViewCredits: true,
+    canManageCustomers: true,
+    canViewReports: false,
+    canViewMarketing: false,
+    canManageFeatureRequests: false,
+  },
 };
 
 const permissionLabels: Record<keyof RolePermissions, string> = {
@@ -191,6 +207,7 @@ const permissionLabels: Record<keyof RolePermissions, string> = {
 const roleDescriptions: Record<AppRole, string> = {
   admin: 'Full system access with all permissions. Can manage users, settings, and all features.',
   program_manager: 'Oversees programs and feature requests. Has access to reports and admin panel.',
+  support: 'Support team role with ticket management and customer inquiry handling.',
   account_rep: 'Manages customer accounts and licenses. Can view reports and manage CRM.',
   marketing: 'Access to marketing tools, CRM, and reports. Cannot manage licenses or credits.',
   var: 'Value Added Reseller with license and customer management capabilities.',

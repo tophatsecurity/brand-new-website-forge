@@ -21,6 +21,7 @@ interface RoleSwitcherProps {
 const roleConfig: Record<AppRole, { label: string; icon: React.ElementType; description: string }> = {
   admin: { label: 'Admin', icon: Shield, description: 'Full access to all features' },
   program_manager: { label: 'Program Manager', icon: ClipboardList, description: 'Feature requests management' },
+  support: { label: 'Support', icon: UserCheck, description: 'Support ticket management' },
   account_rep: { label: 'Account Rep', icon: Briefcase, description: 'Account management access' },
   marketing: { label: 'Marketing', icon: Megaphone, description: 'Marketing and campaigns access' },
   var: { label: 'VAR', icon: TrendingUp, description: 'Value Added Reseller access' },
@@ -32,7 +33,7 @@ const roleConfig: Record<AppRole, { label: string; icon: React.ElementType; desc
 };
 
 // All roles an admin can switch to for testing
-const allSwitchableRoles: AppRole[] = ['admin', 'program_manager', 'account_rep', 'marketing', 'var', 'customer_rep', 'customer', 'free'];
+const allSwitchableRoles: AppRole[] = ['admin', 'program_manager', 'support', 'account_rep', 'marketing', 'var', 'customer_rep', 'customer', 'free'];
 
 const RoleSwitcher: React.FC<RoleSwitcherProps> = ({ 
   selectedRole, 
