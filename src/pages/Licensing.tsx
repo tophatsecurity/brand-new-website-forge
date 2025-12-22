@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -38,18 +39,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
 import {
   Dialog,
   DialogContent,
@@ -101,7 +90,7 @@ const Licensing = () => {
   const [loading, setLoading] = useState(true);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [generatingDemo, setGeneratingDemo] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<'all' | 'licenses' | string>('all');
+  const [activeTab, setActiveTab] = useState<string>('catalog');
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   
   const hasLicenseForProduct = (productName: string) => {
@@ -334,22 +323,7 @@ const Licensing = () => {
     }
   };
 
-  const filteredCatalog = activeView === 'all' || activeView === 'licenses' 
-    ? catalog 
-    : catalog.filter(item => item.product_name === activeView);
-
-  const filteredLicenses = activeView === 'all' || activeView === 'licenses'
-    ? licenses
-    : licenses.filter(l => l.product_name === activeView);
-
   const isServiceProduct = (item: CatalogItem) => item.product_type === 'service';
-
-  // Check if a product is paid (non-demo)
-  const isPaidProduct = (item: CatalogItem) => {
-    return item.product_type === 'service' || 
-           (item.product_type === 'software' && 
-            !['demo', 'alpha', 'beta'].includes(item.product_name.toLowerCase()));
-  };
 
   const renderProductCard = (item: CatalogItem) => {
     const hasLicense = hasLicenseForProduct(item.product_name);
@@ -452,272 +426,186 @@ const Licensing = () => {
   };
 
   return (
-    <UserLayout>
-      <div className="pt-0">
-        <SidebarProvider>
-          <div className="flex min-h-[calc(100vh-6rem)] w-full">
-            <Sidebar className="border-r pt-4">
-              <SidebarContent>
-                <SidebarGroup>
-                  <SidebarGroupLabel className="flex items-center justify-between">
-                    <span>Navigation</span>
-                    <SidebarTrigger className="h-6 w-6" />
-                  </SidebarGroupLabel>
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={() => setActiveView('all')}
-                          isActive={activeView === 'all'}
-                        >
-                          <LayoutGrid className="h-4 w-4" />
-                          <span>All Products</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={() => setActiveView('licenses')}
-                          isActive={activeView === 'licenses'}
-                        >
-                          <Key className="h-4 w-4" />
-                          <span>My Licenses</span>
-                          {licenses.length > 0 && (
-                            <Badge variant="secondary" className="ml-auto text-xs">
-                              {licenses.length}
-                            </Badge>
-                          )}
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
-
-                <SidebarGroup>
-                  <SidebarGroupLabel>Product Catalog</SidebarGroupLabel>
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      {catalogLoading ? (
-                        <div className="px-3 py-2">
-                          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                        </div>
-                      ) : (
-                        catalog.map((item) => {
-                          const IconComponent = productIcons[item.product_name] || Package;
-                          const hasLicense = hasLicenseForProduct(item.product_name);
-                          return (
-                            <SidebarMenuItem key={item.id}>
-                              <SidebarMenuButton 
-                                onClick={() => setActiveView(item.product_name)}
-                                isActive={activeView === item.product_name}
-                              >
-                                <IconComponent className="h-4 w-4" />
-                                <span>{item.product_name}</span>
-                                {hasLicense && (
-                                  <CheckCircle2 className="h-3 w-3 ml-auto text-green-500" />
-                                )}
-                              </SidebarMenuButton>
-                            </SidebarMenuItem>
-                          );
-                        })
-                      )}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
-              </SidebarContent>
-            </Sidebar>
-
-            <main className="flex-1 p-6 overflow-auto">
-              <div className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex items-center gap-3">
-                    <Key className="h-7 w-7 text-primary" />
-                    <h1 className="text-2xl font-bold">
-                      {activeView === 'all' && 'Product Catalog'}
-                      {activeView === 'licenses' && 'My Licenses'}
-                      {activeView !== 'all' && activeView !== 'licenses' && activeView}
-                    </h1>
-                    <PaymentStatusBadge />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {isFreeUser && (
-                      <Button size="sm" onClick={() => setShowPaymentDialog(true)}>
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        Add Payment
-                      </Button>
-                    )}
-                    {user?.user_metadata?.role === 'admin' && (
-                      <Button asChild size="sm" variant="outline">
-                        <a href="/admin/licensing">Admin Panel</a>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Payment Method Dialog */}
-                <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Add Payment Method</DialogTitle>
-                      <DialogDescription>
-                        Add a payment method to unlock paid features and convert from free tier.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <AddPaymentMethodForm
-                      accountId={paymentStatus?.accountId || undefined}
-                      onSuccess={() => {
-                        setShowPaymentDialog(false);
-                        refetchPayment();
-                      }}
-                      onCancel={() => setShowPaymentDialog(false)}
-                    />
-                  </DialogContent>
-                </Dialog>
-
-                {activeView === 'licenses' ? (
-                  <div className="bg-card rounded-lg shadow-md p-6">
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Product</TableHead>
-                            <TableHead>License Key</TableHead>
-                            <TableHead>Tier</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Expiry Date</TableHead>
-                            <TableHead>Seats</TableHead>
-                            <TableHead>Features</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {loading ? (
-                            <TableRow>
-                              <TableCell colSpan={7} className="text-center py-8">
-                                <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
-                              </TableCell>
-                            </TableRow>
-                          ) : licenses.length === 0 ? (
-                            <TableRow>
-                              <TableCell colSpan={7} className="text-center py-8">
-                                <Key className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                                <p className="font-medium">No licenses yet</p>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  Select a product to start a free demo.
-                                </p>
-                              </TableCell>
-                            </TableRow>
-                          ) : (
-                            licenses.map((license) => (
-                              <TableRow key={license.id}>
-                                <TableCell className="font-medium">{license.product_name}</TableCell>
-                                <TableCell>
-                                  <div className="flex items-center gap-1">
-                                    <code className="bg-muted px-2 py-1 rounded text-xs max-w-[120px] truncate">
-                                      {license.license_key}
-                                    </code>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="icon" 
-                                      className="h-6 w-6"
-                                      onClick={() => handleCopyKey(license.license_key)}
-                                    >
-                                      <Copy className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                </TableCell>
-                                <TableCell>{license.tier_name}</TableCell>
-                                <TableCell>{getStatusBadge(license.status)}</TableCell>
-                                <TableCell>
-                                  <div className="flex items-center">
-                                    <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                                    {format(parseISO(license.expiry_date), 'MMM dd, yyyy')}
-                                  </div>
-                                </TableCell>
-                                <TableCell>{license.seats}</TableCell>
-                                <TableCell>
-                                  <div className="flex items-center">
-                                    {renderFeatureIcons(license)}
-                                    {renderAddonIcons(license)}
-                                  </div>
-                                </TableCell>
-                              </TableRow>
-                            ))
-                          )}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    <div className="grid gap-6 md:grid-cols-2">
-                      {catalogLoading ? (
-                        <div className="col-span-2 text-center py-12">
-                          <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
-                        </div>
-                      ) : filteredCatalog.length === 0 ? (
-                        <div className="col-span-2 text-center py-12 bg-card rounded-lg">
-                          <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                          <h3 className="text-lg font-medium">No products available</h3>
-                        </div>
-                      ) : (
-                        filteredCatalog.map(renderProductCard)
-                      )}
-                    </div>
-
-                    {activeView !== 'all' && activeView !== 'licenses' && filteredLicenses.length > 0 && (
-                      <div className="bg-card rounded-lg shadow-md p-6">
-                        <h3 className="text-lg font-semibold mb-4">Your {activeView} Licenses</h3>
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>License Key</TableHead>
-                              <TableHead>Status</TableHead>
-                              <TableHead>Expiry</TableHead>
-                              <TableHead>Seats</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {filteredLicenses.map((license) => (
-                              <TableRow key={license.id}>
-                                <TableCell>
-                                  <div className="flex items-center gap-1">
-                                    <code className="bg-muted px-2 py-1 rounded text-xs">
-                                      {license.license_key}
-                                    </code>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="icon" 
-                                      className="h-6 w-6"
-                                      onClick={() => handleCopyKey(license.license_key)}
-                                    >
-                                      <Copy className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                </TableCell>
-                                <TableCell>{getStatusBadge(license.status)}</TableCell>
-                                <TableCell>{format(parseISO(license.expiry_date), 'MMM dd, yyyy')}</TableCell>
-                                <TableCell>{license.seats}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="mt-8 bg-card rounded-lg shadow-md p-6">
-                  <h2 className="text-xl font-bold mb-4">Need Help?</h2>
-                  <p className="text-muted-foreground mb-4">
-                    Contact our support team for license issues or additional seats.
-                  </p>
-                  <Button variant="outline" asChild>
-                    <a href="mailto:licensing@tophatsecurity.com">Contact Support</a>
-                  </Button>
-                </div>
-              </div>
-            </main>
+    <UserLayout title="Licensing">
+      <div className="space-y-6">
+        {/* Header with actions */}
+        <div className="flex flex-wrap justify-between items-center gap-4">
+          <div className="flex items-center gap-3">
+            <Key className="h-7 w-7 text-primary" />
+            <div>
+              <h2 className="text-xl font-semibold">Product Licensing</h2>
+              <p className="text-sm text-muted-foreground">Manage your licenses and try new products</p>
+            </div>
+            <PaymentStatusBadge />
           </div>
-        </SidebarProvider>
+          <div className="flex items-center gap-2">
+            {isFreeUser && (
+              <Button size="sm" onClick={() => setShowPaymentDialog(true)}>
+                <CreditCard className="h-4 w-4 mr-2" />
+                Add Payment
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Payment Method Dialog */}
+        <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Payment Method</DialogTitle>
+              <DialogDescription>
+                Add a payment method to unlock paid features and convert from free tier.
+              </DialogDescription>
+            </DialogHeader>
+            <AddPaymentMethodForm
+              accountId={paymentStatus?.accountId || undefined}
+              onSuccess={() => {
+                setShowPaymentDialog(false);
+                refetchPayment();
+              }}
+              onCancel={() => setShowPaymentDialog(false)}
+            />
+          </DialogContent>
+        </Dialog>
+
+        {/* Tabs Navigation */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="catalog" className="gap-2">
+              <LayoutGrid className="h-4 w-4" />
+              Product Catalog
+            </TabsTrigger>
+            <TabsTrigger value="licenses" className="gap-2">
+              <Key className="h-4 w-4" />
+              My Licenses
+              {licenses.length > 0 && (
+                <Badge variant="secondary" className="ml-1 text-xs">
+                  {licenses.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Catalog Tab */}
+          <TabsContent value="catalog" className="mt-6">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {catalogLoading ? (
+                <div className="col-span-full text-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+                </div>
+              ) : catalog.length === 0 ? (
+                <div className="col-span-full text-center py-12 bg-card rounded-lg">
+                  <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium">No products available</h3>
+                </div>
+              ) : (
+                catalog.map(renderProductCard)
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Licenses Tab */}
+          <TabsContent value="licenses" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Key className="h-5 w-5" />
+                  Your Licenses
+                </CardTitle>
+                <CardDescription>
+                  View and manage your active product licenses
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Product</TableHead>
+                        <TableHead>License Key</TableHead>
+                        <TableHead>Tier</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Expiry Date</TableHead>
+                        <TableHead>Seats</TableHead>
+                        <TableHead>Features</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {loading ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8">
+                            <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                          </TableCell>
+                        </TableRow>
+                      ) : licenses.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8">
+                            <Key className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                            <p className="font-medium">No licenses yet</p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              Go to the Product Catalog tab to start a free demo.
+                            </p>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        licenses.map((license) => (
+                          <TableRow key={license.id}>
+                            <TableCell className="font-medium">{license.product_name}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1">
+                                <code className="bg-muted px-2 py-1 rounded text-xs max-w-[120px] truncate">
+                                  {license.license_key}
+                                </code>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-6 w-6"
+                                  onClick={() => handleCopyKey(license.license_key)}
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>{license.tier_name}</TableCell>
+                            <TableCell>{getStatusBadge(license.status)}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center">
+                                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                                {format(parseISO(license.expiry_date), 'MMM dd, yyyy')}
+                              </div>
+                            </TableCell>
+                            <TableCell>{license.seats}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center">
+                                {renderFeatureIcons(license)}
+                                {renderAddonIcons(license)}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Help Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Need Help?</CardTitle>
+            <CardDescription>
+              Contact our support team for license issues or additional seats.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button variant="outline" asChild>
+              <a href="mailto:licensing@tophatsecurity.com">Contact Support</a>
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     </UserLayout>
   );
