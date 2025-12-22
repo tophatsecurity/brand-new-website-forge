@@ -14,6 +14,9 @@ export type CreditPackage = {
   price: number;
 };
 
+export type RoadmapStatus = 'active' | 'maintenance' | 'sunset' | 'archived';
+export type DevelopmentStatus = 'planning' | 'active' | 'stable' | 'maintenance' | 'deprecated';
+
 export type CatalogItem = {
   id: string;
   product_name: string;
@@ -41,6 +44,18 @@ export type CatalogItem = {
   sku: string | null;
   created_at: string;
   updated_at: string;
+  // Product Management fields
+  roadmap_status: RoadmapStatus | null;
+  next_release_version: string | null;
+  next_release_date: string | null;
+  end_of_life_date: string | null;
+  end_of_support_date: string | null;
+  product_owner: string | null;
+  development_status: DevelopmentStatus | null;
+  feature_highlights: string[] | null;
+  target_market: string | null;
+  documentation_url: string | null;
+  repository_url: string | null;
 };
 
 export type CatalogFormData = {
@@ -64,6 +79,18 @@ export type CatalogFormData = {
   base_price: number;
   price_per_credit: number;
   credit_packages: CreditPackage[];
+  // Product Management fields
+  roadmap_status: RoadmapStatus | null;
+  next_release_version: string | null;
+  next_release_date: string | null;
+  end_of_life_date: string | null;
+  end_of_support_date: string | null;
+  product_owner: string | null;
+  development_status: DevelopmentStatus | null;
+  feature_highlights: string[] | null;
+  target_market: string | null;
+  documentation_url: string | null;
+  repository_url: string | null;
 };
 
 export const useCatalog = () => {

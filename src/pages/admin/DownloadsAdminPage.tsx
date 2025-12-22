@@ -35,7 +35,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO } from 'date-fns';
-import { Trash, PencilIcon, Plus, Package, TrendingUp, BarChart3, Users, Upload, FileCheck, Loader2 } from 'lucide-react';
+import { Trash, PencilIcon, Plus, Package, TrendingUp, BarChart3, Users, Upload, FileCheck, Loader2, Calendar, Clock, Eye, EyeOff, Rocket } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DownloadTrendsChart } from '@/components/admin/downloads/DownloadTrendsChart';
@@ -45,6 +45,9 @@ type CatalogItem = {
   id: string;
   product_name: string;
 };
+
+export type DownloadStatus = 'released' | 'upcoming' | 'beta' | 'deprecated' | 'archived';
+export type DownloadVisibility = 'public' | 'internal' | 'preview';
 
 type Download = {
   id: string;
@@ -62,6 +65,12 @@ type Download = {
   sha256_hash?: string | null;
   file_size?: number | null;
   release_notes?: string | null;
+  // Upcoming releases fields
+  status: DownloadStatus;
+  expected_release_date: string | null;
+  announcement_date: string | null;
+  pre_order_available: boolean;
+  visibility: DownloadVisibility;
 };
 
 type DownloadStats = {
@@ -94,7 +103,13 @@ const DownloadsAdminPage = () => {
     catalog_id: '' as string | null,
     sha256_hash: '' as string | null,
     file_size: null as number | null,
-    release_notes: '' as string | null
+    release_notes: '' as string | null,
+    // Upcoming releases fields
+    status: 'released' as DownloadStatus,
+    expected_release_date: '' as string | null,
+    announcement_date: '' as string | null,
+    pre_order_available: false,
+    visibility: 'public' as DownloadVisibility
   });
   
   if (!user || user.user_metadata?.role !== 'admin') {
@@ -281,12 +296,17 @@ const DownloadsAdminPage = () => {
         version: formData.version,
         release_date: formData.release_date,
         description: formData.description,
-        file_url: formData.file_url,
+        file_url: formData.file_url || '',
         is_latest: formData.is_latest,
         catalog_id: formData.catalog_id || null,
         sha256_hash: formData.sha256_hash || null,
         file_size: formData.file_size || null,
-        release_notes: formData.release_notes || null
+        release_notes: formData.release_notes || null,
+        status: formData.status,
+        expected_release_date: formData.expected_release_date || null,
+        announcement_date: formData.announcement_date || null,
+        pre_order_available: formData.pre_order_available,
+        visibility: formData.visibility
       };
 
       if (editingDownload) {
@@ -326,7 +346,12 @@ const DownloadsAdminPage = () => {
         catalog_id: null,
         sha256_hash: null,
         file_size: null,
-        release_notes: null
+        release_notes: null,
+        status: 'released',
+        expected_release_date: null,
+        announcement_date: null,
+        pre_order_available: false,
+        visibility: 'public'
       });
       setEditingDownload(null);
       setIsDialogOpen(false);
@@ -384,7 +409,12 @@ const DownloadsAdminPage = () => {
       catalog_id: download.catalog_id,
       sha256_hash: download.sha256_hash || null,
       file_size: download.file_size || null,
-      release_notes: download.release_notes || null
+      release_notes: download.release_notes || null,
+      status: download.status || 'released',
+      expected_release_date: download.expected_release_date ? new Date(download.expected_release_date).toISOString().split('T')[0] : null,
+      announcement_date: download.announcement_date ? new Date(download.announcement_date).toISOString().split('T')[0] : null,
+      pre_order_available: download.pre_order_available || false,
+      visibility: download.visibility || 'public'
     });
     setIsDialogOpen(true);
   };
@@ -403,7 +433,12 @@ const DownloadsAdminPage = () => {
       catalog_id: null,
       sha256_hash: null,
       file_size: null,
-      release_notes: null
+      release_notes: null,
+      status: 'released',
+      expected_release_date: null,
+      announcement_date: null,
+      pre_order_available: false,
+      visibility: 'public'
     });
     setIsDialogOpen(true);
   };
@@ -662,6 +697,82 @@ const DownloadsAdminPage = () => {
                 placeholder="What's new in this version..."
               />
             </div>
+
+            {/* Status and Visibility Section */}
+            <div className="border-t pt-4 mt-4">
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                <Rocket className="h-4 w-4" />
+                Release Status
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="status">Status</Label>
+                  <Select 
+                    value={formData.status} 
+                    onValueChange={(value: DownloadStatus) => setFormData({...formData, status: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="released">Released</SelectItem>
+                      <SelectItem value="upcoming">Upcoming</SelectItem>
+                      <SelectItem value="beta">Beta</SelectItem>
+                      <SelectItem value="deprecated">Deprecated</SelectItem>
+                      <SelectItem value="archived">Archived</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="visibility">Visibility</Label>
+                  <Select 
+                    value={formData.visibility} 
+                    onValueChange={(value: DownloadVisibility) => setFormData({...formData, visibility: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select visibility" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="public">Public</SelectItem>
+                      <SelectItem value="internal">Internal Only</SelectItem>
+                      <SelectItem value="preview">Preview</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {formData.status === 'upcoming' && (
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="expected_release_date">Expected Release Date</Label>
+                    <Input 
+                      id="expected_release_date"
+                      type="date"
+                      value={formData.expected_release_date || ''}
+                      onChange={(e) => setFormData({...formData, expected_release_date: e.target.value || null})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="announcement_date">Announcement Date</Label>
+                    <Input 
+                      id="announcement_date"
+                      type="date"
+                      value={formData.announcement_date || ''}
+                      onChange={(e) => setFormData({...formData, announcement_date: e.target.value || null})}
+                    />
+                  </div>
+                  <div className="col-span-2 flex items-center space-x-2">
+                    <Checkbox 
+                      id="pre_order_available"
+                      checked={formData.pre_order_available}
+                      onCheckedChange={(checked) => setFormData({...formData, pre_order_available: checked as boolean})}
+                    />
+                    <Label htmlFor="pre_order_available">Pre-order / Early Access Available</Label>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center space-x-2">
               <Checkbox 
                 id="is_latest"
@@ -772,20 +883,39 @@ const DownloadsAdminPage = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {download.is_latest ? (
-                        <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Latest</Badge>
-                      ) : (
-                        <Badge variant="outline" className="hover:bg-gray-100">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-auto p-0 text-xs"
-                            onClick={() => handleSetLatest(download.id, download.product_name, download.product_type)}
-                          >
-                            Set as latest
-                          </Button>
-                        </Badge>
-                      )}
+                      <div className="flex flex-col gap-1">
+                        {download.status === 'upcoming' ? (
+                          <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                            <Clock className="h-3 w-3 mr-1" />
+                            Upcoming
+                          </Badge>
+                        ) : download.status === 'beta' ? (
+                          <Badge className="bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400">Beta</Badge>
+                        ) : download.status === 'deprecated' ? (
+                          <Badge variant="secondary" className="bg-gray-100 text-gray-600">Deprecated</Badge>
+                        ) : download.status === 'archived' ? (
+                          <Badge variant="outline" className="text-muted-foreground">Archived</Badge>
+                        ) : download.is_latest ? (
+                          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Latest</Badge>
+                        ) : (
+                          <Badge variant="outline" className="hover:bg-gray-100">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-auto p-0 text-xs"
+                              onClick={() => handleSetLatest(download.id, download.product_name, download.product_type)}
+                            >
+                              Set as latest
+                            </Button>
+                          </Badge>
+                        )}
+                        {download.visibility !== 'public' && (
+                          <Badge variant="outline" className="text-xs">
+                            {download.visibility === 'internal' ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
+                            {download.visibility}
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
