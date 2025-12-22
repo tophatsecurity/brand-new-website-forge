@@ -187,13 +187,25 @@ const SupportTickets = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="product">Product (optional)</Label>
-                  <Input
-                    id="product"
-                    placeholder="Related product name"
+                  <Label>Related Program</Label>
+                  <Select
                     value={newTicket.product_name}
-                    onChange={(e) => setNewTicket({ ...newTicket, product_name: e.target.value })}
-                  />
+                    onValueChange={(val) => setNewTicket({ ...newTicket, product_name: val })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a program" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="SeekCap">SeekCap</SelectItem>
+                      <SelectItem value="DDX">DDX</SelectItem>
+                      <SelectItem value="ParaGuard">ParaGuard</SelectItem>
+                      <SelectItem value="SecondLook">SecondLook</SelectItem>
+                      <SelectItem value="Lightfoot">Lightfoot</SelectItem>
+                      <SelectItem value="O-Range">O-Range</SelectItem>
+                      <SelectItem value="Aurora Sense">Aurora Sense</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex justify-end gap-2 pt-4">
                   <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
