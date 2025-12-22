@@ -1459,9 +1459,19 @@ export type Database = {
           created_at: string
           custom_fields: Json | null
           description: string
+          escalated: boolean | null
+          escalated_at: string | null
+          escalated_to: string | null
+          escalation_reason: string | null
           first_response_at: string | null
+          flag_reason: string | null
+          flagged_for_review: boolean | null
           id: string
           license_id: string | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_notes: string | null
+          moderation_status: string | null
           priority: Database["public"]["Enums"]["ticket_priority"]
           product_name: string | null
           requester_email: string
@@ -1486,9 +1496,19 @@ export type Database = {
           created_at?: string
           custom_fields?: Json | null
           description: string
+          escalated?: boolean | null
+          escalated_at?: string | null
+          escalated_to?: string | null
+          escalation_reason?: string | null
           first_response_at?: string | null
+          flag_reason?: string | null
+          flagged_for_review?: boolean | null
           id?: string
           license_id?: string | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string | null
           priority?: Database["public"]["Enums"]["ticket_priority"]
           product_name?: string | null
           requester_email: string
@@ -1513,9 +1533,19 @@ export type Database = {
           created_at?: string
           custom_fields?: Json | null
           description?: string
+          escalated?: boolean | null
+          escalated_at?: string | null
+          escalated_to?: string | null
+          escalation_reason?: string | null
           first_response_at?: string | null
+          flag_reason?: string | null
+          flagged_for_review?: boolean | null
           id?: string
           license_id?: string | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string | null
           priority?: Database["public"]["Enums"]["ticket_priority"]
           product_name?: string | null
           requester_email?: string
@@ -1610,9 +1640,14 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          flag_reason: string | null
+          flagged: boolean | null
           id: string
           is_internal: boolean | null
           is_resolution: boolean | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_status: string | null
           ticket_id: string
           updated_at: string
           user_email: string | null
@@ -1621,9 +1656,14 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string
+          flag_reason?: string | null
+          flagged?: boolean | null
           id?: string
           is_internal?: boolean | null
           is_resolution?: boolean | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_status?: string | null
           ticket_id: string
           updated_at?: string
           user_email?: string | null
@@ -1632,9 +1672,14 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          flag_reason?: string | null
+          flagged?: boolean | null
           id?: string
           is_internal?: boolean | null
           is_resolution?: boolean | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_status?: string | null
           ticket_id?: string
           updated_at?: string
           user_email?: string | null

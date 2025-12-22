@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/layouts/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
-import { useSupportTickets, SupportTicket, TicketStatus, TicketPriority } from '@/hooks/useSupportTickets';
+import { useSupportTickets, SupportTicket, TicketStatus, TicketPriority, ModerationStatus } from '@/hooks/useSupportTickets';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -47,6 +47,11 @@ import {
   Eye,
   ChevronRight,
   Building2,
+  Flag,
+  ShieldAlert,
+  ArrowUpCircle,
+  XCircle,
+  ShieldCheck,
 } from 'lucide-react';
 import { format, parseISO, formatDistanceToNow } from 'date-fns';
 import TicketDetailDialog from '@/components/admin/support/TicketDetailDialog';
@@ -112,6 +117,7 @@ const SupportTicketsPage = () => {
     if (activeTab === 'waiting') matchesTab = ['waiting_customer', 'waiting_internal'].includes(ticket.status);
     if (activeTab === 'resolved') matchesTab = ['resolved', 'closed'].includes(ticket.status);
     if (activeTab === 'urgent') matchesTab = ticket.priority === 'urgent';
+    if (activeTab === 'flagged') matchesTab = ticket.flagged_for_review || ticket.escalated;
     
     return matchesSearch && matchesStatus && matchesPriority && matchesTab;
   });
@@ -122,6 +128,7 @@ const SupportTicketsPage = () => {
     inProgress: tickets.filter(t => t.status === 'in_progress').length,
     waiting: tickets.filter(t => ['waiting_customer', 'waiting_internal'].includes(t.status)).length,
     urgent: tickets.filter(t => t.priority === 'urgent' && !['resolved', 'closed'].includes(t.status)).length,
+    flagged: tickets.filter(t => t.flagged_for_review || t.escalated).length,
   };
 
   const handleCreateTicket = async () => {
@@ -141,7 +148,7 @@ const SupportTicketsPage = () => {
     <AdminLayout title="Support Tickets">
       <div className="space-y-6">
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-5">
+        <div className="grid gap-4 md:grid-cols-6">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Total Tickets</CardTitle>
@@ -180,6 +187,17 @@ const SupportTicketsPage = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">{stats.urgent}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+                <Flag className="h-4 w-4" />
+                Flagged
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">{stats.flagged}</div>
             </CardContent>
           </Card>
         </div>
@@ -245,6 +263,11 @@ const SupportTicketsPage = () => {
             <TabsTrigger value="urgent">
               Urgent
               {stats.urgent > 0 && <Badge variant="destructive" className="ml-2">{stats.urgent}</Badge>}
+            </TabsTrigger>
+            <TabsTrigger value="flagged">
+              <Flag className="h-4 w-4 mr-1" />
+              Flagged
+              {stats.flagged > 0 && <Badge variant="destructive" className="ml-2">{stats.flagged}</Badge>}
             </TabsTrigger>
           </TabsList>
 
