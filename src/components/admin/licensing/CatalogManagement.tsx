@@ -373,7 +373,7 @@ const CatalogManagement: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="demo_duration">Demo Duration (days)</Label>
+              <Label htmlFor="demo_duration">Trial Period (days)</Label>
               <Input
                 id="demo_duration"
                 type="number"
@@ -383,7 +383,7 @@ const CatalogManagement: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="demo_seats">Demo Seats</Label>
+              <Label htmlFor="demo_seats">Included Seats</Label>
               <Input
                 id="demo_seats"
                 type="number"
@@ -395,12 +395,12 @@ const CatalogManagement: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <Label>Demo Features</Label>
+            <Label>Included Features</Label>
             <MultiSelect
               options={productFeatures}
               selected={formData.demo_features}
               onChange={(features) => setFormData(prev => ({ ...prev, demo_features: features }))}
-              placeholder="Select demo features"
+              placeholder="Select included features"
             />
           </div>
         </TabsContent>
