@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSupportTickets, SupportTicket, TicketComment, TicketStatus, TicketPriority } from '@/hooks/useSupportTickets';
+import { useSupportTickets, SupportTicket, TicketComment, TicketStatus, TicketPriority, ModerationStatus, CommentModerationStatus } from '@/hooks/useSupportTickets';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -45,6 +45,12 @@ import {
   AlertCircle,
   FileText,
   History,
+  Flag,
+  ShieldAlert,
+  ShieldCheck,
+  ArrowUpCircle,
+  XCircle,
+  Shield,
 } from 'lucide-react';
 import { format, parseISO, formatDistanceToNow } from 'date-fns';
 
@@ -109,7 +115,7 @@ const TicketDetailDialog: React.FC<TicketDetailDialogProps> = ({
   onUpdate,
 }) => {
   const { user } = useAuth();
-  const { updateTicket, fetchComments, addComment } = useSupportTickets();
+  const { updateTicket, fetchComments, addComment, flagTicket, moderateTicket, escalateTicket, moderateComment } = useSupportTickets();
   const [comments, setComments] = useState<TicketComment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isInternal, setIsInternal] = useState(false);
@@ -120,6 +126,11 @@ const TicketDetailDialog: React.FC<TicketDetailDialogProps> = ({
   const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([]);
   const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
   const [loadingContact, setLoadingContact] = useState(false);
+  // Moderation state
+  const [flagReason, setFlagReason] = useState('');
+  const [moderationNotes, setModerationNotes] = useState('');
+  const [escalationReason, setEscalationReason] = useState('');
+  const [moderating, setModerating] = useState(false);
 
   useEffect(() => {
     if (open && ticket.id) {
@@ -225,7 +236,7 @@ const TicketDetailDialog: React.FC<TicketDetailDialogProps> = ({
         </SheetHeader>
 
         <Tabs defaultValue="conversation" className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="conversation">
               <MessageSquare className="h-4 w-4 mr-2" />
               Conversation
@@ -237,6 +248,13 @@ const TicketDetailDialog: React.FC<TicketDetailDialogProps> = ({
             <TabsTrigger value="contact">
               <User className="h-4 w-4 mr-2" />
               Contact
+            </TabsTrigger>
+            <TabsTrigger value="moderation">
+              <Shield className="h-4 w-4 mr-2" />
+              Moderation
+              {(ticket.flagged_for_review || ticket.escalated) && (
+                <Badge variant="destructive" className="ml-1 h-5 px-1">!</Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="history">
               <History className="h-4 w-4 mr-2" />
@@ -486,6 +504,192 @@ const TicketDetailDialog: React.FC<TicketDetailDialogProps> = ({
                   <User className="h-8 w-8 mx-auto mb-2" />
                   <p>No linked CRM contact</p>
                 </div>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Moderation Tab */}
+          <TabsContent value="moderation" className="flex-1 overflow-auto mt-4">
+            <div className="space-y-6">
+              {/* Current Status */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Shield className="h-4 w-4" />
+                    Moderation Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">Status:</span>
+                    <Badge variant={ticket.moderation_status === 'approved' ? 'default' : ticket.moderation_status === 'rejected' || ticket.moderation_status === 'spam' ? 'destructive' : 'secondary'}>
+                      {ticket.moderation_status || 'None'}
+                    </Badge>
+                  </div>
+                  {ticket.flagged_for_review && (
+                    <div className="flex items-center gap-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-md border border-yellow-200 dark:border-yellow-800">
+                      <Flag className="h-4 w-4 text-yellow-600" />
+                      <div>
+                        <p className="text-sm font-medium text-yellow-800 dark:text-yellow-400">Flagged for Review</p>
+                        {ticket.flag_reason && <p className="text-xs text-yellow-700 dark:text-yellow-500">{ticket.flag_reason}</p>}
+                      </div>
+                    </div>
+                  )}
+                  {ticket.escalated && (
+                    <div className="flex items-center gap-2 p-2 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800">
+                      <ArrowUpCircle className="h-4 w-4 text-red-600" />
+                      <div>
+                        <p className="text-sm font-medium text-red-800 dark:text-red-400">Escalated</p>
+                        {ticket.escalation_reason && <p className="text-xs text-red-700 dark:text-red-500">{ticket.escalation_reason}</p>}
+                      </div>
+                    </div>
+                  )}
+                  {ticket.moderation_notes && (
+                    <div className="p-2 bg-muted rounded-md">
+                      <p className="text-xs text-muted-foreground">Moderation Notes:</p>
+                      <p className="text-sm">{ticket.moderation_notes}</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Actions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={async () => {
+                        setModerating(true);
+                        await moderateTicket(ticket.id, 'approved');
+                        setModerating(false);
+                        onUpdate();
+                      }}
+                      disabled={moderating}
+                    >
+                      <ShieldCheck className="h-4 w-4 mr-2 text-green-600" />
+                      Approve
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={async () => {
+                        setModerating(true);
+                        await moderateTicket(ticket.id, 'rejected');
+                        setModerating(false);
+                        onUpdate();
+                      }}
+                      disabled={moderating}
+                    >
+                      <XCircle className="h-4 w-4 mr-2 text-red-600" />
+                      Reject
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={async () => {
+                        setModerating(true);
+                        await moderateTicket(ticket.id, 'spam');
+                        setModerating(false);
+                        onUpdate();
+                      }}
+                      disabled={moderating}
+                    >
+                      <ShieldAlert className="h-4 w-4 mr-2 text-orange-600" />
+                      Mark Spam
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={async () => {
+                        setModerating(true);
+                        await moderateTicket(ticket.id, 'under_review');
+                        setModerating(false);
+                        onUpdate();
+                      }}
+                      disabled={moderating}
+                    >
+                      <Clock className="h-4 w-4 mr-2 text-blue-600" />
+                      Under Review
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Flag Ticket */}
+              {!ticket.flagged_for_review && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Flag className="h-4 w-4" />
+                      Flag for Review
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Textarea
+                      placeholder="Reason for flagging..."
+                      value={flagReason}
+                      onChange={(e) => setFlagReason(e.target.value)}
+                      rows={2}
+                    />
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={async () => {
+                        if (!flagReason.trim()) return;
+                        setModerating(true);
+                        await flagTicket(ticket.id, flagReason);
+                        setFlagReason('');
+                        setModerating(false);
+                        onUpdate();
+                      }}
+                      disabled={moderating || !flagReason.trim()}
+                    >
+                      <Flag className="h-4 w-4 mr-2" />
+                      Flag Ticket
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Escalate Ticket */}
+              {!ticket.escalated && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <ArrowUpCircle className="h-4 w-4" />
+                      Escalate Ticket
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Textarea
+                      placeholder="Reason for escalation..."
+                      value={escalationReason}
+                      onChange={(e) => setEscalationReason(e.target.value)}
+                      rows={2}
+                    />
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={async () => {
+                        if (!escalationReason.trim()) return;
+                        setModerating(true);
+                        await escalateTicket(ticket.id, null, escalationReason);
+                        setEscalationReason('');
+                        setModerating(false);
+                        onUpdate();
+                      }}
+                      disabled={moderating || !escalationReason.trim()}
+                    >
+                      <ArrowUpCircle className="h-4 w-4 mr-2" />
+                      Escalate to Management
+                    </Button>
+                  </CardContent>
+                </Card>
               )}
             </div>
           </TabsContent>

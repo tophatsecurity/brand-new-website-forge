@@ -5,6 +5,8 @@ import { useToast } from '@/hooks/use-toast';
 
 export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type TicketStatus = 'open' | 'in_progress' | 'waiting_customer' | 'waiting_internal' | 'resolved' | 'closed';
+export type ModerationStatus = 'none' | 'under_review' | 'approved' | 'rejected' | 'spam';
+export type CommentModerationStatus = 'pending' | 'approved' | 'rejected' | 'spam';
 
 export interface SupportTicket {
   id: string;
@@ -32,6 +34,17 @@ export interface SupportTicket {
   custom_fields: Record<string, any>;
   created_at: string;
   updated_at: string;
+  // Moderation fields
+  moderation_status: ModerationStatus;
+  moderation_notes: string | null;
+  moderated_by: string | null;
+  moderated_at: string | null;
+  flagged_for_review: boolean;
+  flag_reason: string | null;
+  escalated: boolean;
+  escalated_to: string | null;
+  escalated_at: string | null;
+  escalation_reason: string | null;
 }
 
 export interface TicketComment {
@@ -44,6 +57,12 @@ export interface TicketComment {
   is_resolution: boolean;
   created_at: string;
   updated_at: string;
+  // Moderation fields
+  moderation_status: CommentModerationStatus;
+  flagged: boolean;
+  flag_reason: string | null;
+  moderated_by: string | null;
+  moderated_at: string | null;
 }
 
 export interface CreateTicketData {
@@ -434,6 +453,202 @@ export const useSupportTickets = () => {
     }
   };
 
+  // Moderation functions
+  const flagTicket = async (ticketId: string, reason: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('support_tickets')
+        .update({
+          flagged_for_review: true,
+          flag_reason: reason,
+        })
+        .eq('id', ticketId);
+
+      if (error) throw error;
+
+      await logAuditEvent('flag', 'support_ticket', ticketId, null, { reason });
+
+      toast({
+        title: 'Ticket flagged',
+        description: 'Ticket has been flagged for review.',
+      });
+
+      await fetchTickets();
+      return true;
+    } catch (err: any) {
+      console.error('Error flagging ticket:', err);
+      toast({
+        title: 'Error',
+        description: err.message || 'Failed to flag ticket',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
+  const moderateTicket = async (
+    ticketId: string,
+    status: ModerationStatus,
+    notes?: string
+  ): Promise<boolean> => {
+    try {
+      const { data: oldData } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .eq('id', ticketId)
+        .single();
+
+      const { error } = await supabase
+        .from('support_tickets')
+        .update({
+          moderation_status: status,
+          moderation_notes: notes || null,
+          moderated_by: user?.id,
+          moderated_at: new Date().toISOString(),
+          flagged_for_review: false,
+        })
+        .eq('id', ticketId);
+
+      if (error) throw error;
+
+      await logAuditEvent('moderate', 'support_ticket', ticketId, oldData, {
+        moderation_status: status,
+        moderation_notes: notes,
+      });
+
+      toast({
+        title: 'Ticket moderated',
+        description: `Ticket marked as ${status}.`,
+      });
+
+      await fetchTickets();
+      return true;
+    } catch (err: any) {
+      console.error('Error moderating ticket:', err);
+      toast({
+        title: 'Error',
+        description: err.message || 'Failed to moderate ticket',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
+  const escalateTicket = async (
+    ticketId: string,
+    escalateTo: string | null,
+    reason: string
+  ): Promise<boolean> => {
+    try {
+      const { data: oldData } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .eq('id', ticketId)
+        .single();
+
+      const { error } = await supabase
+        .from('support_tickets')
+        .update({
+          escalated: true,
+          escalated_to: escalateTo,
+          escalated_at: new Date().toISOString(),
+          escalation_reason: reason,
+          priority: 'urgent',
+        })
+        .eq('id', ticketId);
+
+      if (error) throw error;
+
+      await logAuditEvent('escalate', 'support_ticket', ticketId, oldData, {
+        escalated_to: escalateTo,
+        escalation_reason: reason,
+      });
+
+      toast({
+        title: 'Ticket escalated',
+        description: 'Ticket has been escalated.',
+      });
+
+      await fetchTickets();
+      return true;
+    } catch (err: any) {
+      console.error('Error escalating ticket:', err);
+      toast({
+        title: 'Error',
+        description: err.message || 'Failed to escalate ticket',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
+  const moderateComment = async (
+    commentId: string,
+    status: CommentModerationStatus
+  ): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('ticket_comments')
+        .update({
+          moderation_status: status,
+          moderated_by: user?.id,
+          moderated_at: new Date().toISOString(),
+          flagged: false,
+        })
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      await logAuditEvent('moderate', 'ticket_comment', commentId, null, { status });
+
+      toast({
+        title: 'Comment moderated',
+        description: `Comment marked as ${status}.`,
+      });
+
+      return true;
+    } catch (err: any) {
+      console.error('Error moderating comment:', err);
+      toast({
+        title: 'Error',
+        description: err.message || 'Failed to moderate comment',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
+  const flagComment = async (commentId: string, reason: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('ticket_comments')
+        .update({
+          flagged: true,
+          flag_reason: reason,
+        })
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      await logAuditEvent('flag', 'ticket_comment', commentId, null, { reason });
+
+      toast({
+        title: 'Comment flagged',
+        description: 'Comment has been flagged for review.',
+      });
+
+      return true;
+    } catch (err: any) {
+      console.error('Error flagging comment:', err);
+      toast({
+        title: 'Error',
+        description: err.message || 'Failed to flag comment',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
   useEffect(() => {
     fetchTickets();
   }, [user]);
@@ -449,5 +664,11 @@ export const useSupportTickets = () => {
     deleteTicket,
     fetchComments,
     addComment,
+    // Moderation functions
+    flagTicket,
+    moderateTicket,
+    escalateTicket,
+    moderateComment,
+    flagComment,
   };
 };
