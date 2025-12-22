@@ -1,5 +1,8 @@
 
 import { Toaster } from "@/components/ui/toaster";
+import PartnerDashboardPage from "./pages/partner/PartnerDashboardPage";
+import PartnerDealsPage from "./pages/partner/PartnerDealsPage";
+import PriceCalculatorPage from "./pages/admin/PriceCalculatorPage";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -60,7 +63,7 @@ import FeatureRequests from "./pages/FeatureRequests";
 import Onboarding from "./pages/Onboarding";
 import RolesReference from "./pages/RolesReference";
 
-// VAR Pages
+// Partner Pages (formerly VAR)
 import DealRegistrationPage from "./pages/var/DealRegistrationPage";
 
 const queryClient = new QueryClient();
@@ -129,6 +132,23 @@ const App = () => (
               <Route path="/credits" element={
                 <ProtectedRoute>
                   <Credits />
+                </ProtectedRoute>
+              } />
+              
+              {/* Partner routes */}
+              <Route path="/partner" element={
+                <ProtectedRoute>
+                  <PartnerDashboardPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/partner/deals" element={
+                <ProtectedRoute>
+                  <PartnerDealsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/partner/calculator" element={
+                <ProtectedRoute>
+                  <PriceCalculatorPage />
                 </ProtectedRoute>
               } />
               
