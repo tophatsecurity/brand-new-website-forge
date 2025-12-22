@@ -17,7 +17,7 @@ export const useSupportTeam = () => {
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('user_id, role')
-        .in('role', ['customer_rep', 'var', 'account_rep', 'admin']);
+        .in('role', ['support', 'customer_rep', 'var', 'account_rep', 'admin']);
 
       if (roleError) throw roleError;
 
@@ -54,6 +54,7 @@ export const useSupportTeam = () => {
 };
 
 export const SUPPORT_ROLES = [
+  { value: 'support', label: 'Support Engineer' },
   { value: 'customer_rep', label: 'Customer Rep' },
   { value: 'account_rep', label: 'Account Rep' },
   { value: 'var', label: 'VAR' },
