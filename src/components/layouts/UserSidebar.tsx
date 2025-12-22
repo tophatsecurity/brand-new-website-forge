@@ -123,7 +123,7 @@ export function UserSidebar() {
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
           {!collapsed && (
-            <h2 className="font-semibold text-lg text-foreground">My Portal</h2>
+            <h2 className="font-semibold text-lg text-foreground">Portal</h2>
           )}
         </div>
         <NavLink
