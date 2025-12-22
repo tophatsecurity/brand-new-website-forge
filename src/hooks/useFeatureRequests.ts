@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { generateSluggedUsername } from '@/utils/usernameGenerator';
 
 export interface FeatureRequest {
   id: string;
@@ -58,12 +59,15 @@ export const useFeatureRequests = (productFilter?: string) => {
 
   const createRequest = useMutation({
     mutationFn: async (request: { title: string; description: string; product_name: string }) => {
+      // Generate a cool anonymous username for the submission
+      const anonymousUsername = generateSluggedUsername();
+      
       const { data, error } = await supabase
         .from('feature_requests')
         .insert({
           ...request,
           submitted_by: user?.id,
-          submitted_by_email: user?.email,
+          submitted_by_email: anonymousUsername, // Use generated username instead of email
         })
         .select()
         .single();
@@ -72,7 +76,7 @@ export const useFeatureRequests = (productFilter?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-requests'] });
-      toast.success('Feature request submitted');
+      toast.success('Feature request submitted anonymously');
     },
     onError: (error: any) => {
       toast.error(`Failed to submit request: ${error.message}`);
