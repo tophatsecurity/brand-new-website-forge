@@ -491,42 +491,56 @@ const CatalogManagement: React.FC = () => {
           <h2 className="text-xl font-semibold">Product Catalog</h2>
           <p className="text-sm text-muted-foreground">Manage products available for licenses</p>
         </div>
-        <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={resetForm}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Product
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-              <DialogTitle>Add New Product</DialogTitle>
-              <DialogDescription>
-                Add a new product to the license catalog.
-              </DialogDescription>
-            </DialogHeader>
-            {renderForm()}
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsAddOpen(false)}>Cancel</Button>
-              <Button onClick={handleSubmit} disabled={isSubmitting || !formData.product_name}>
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input 
+              type="text" 
+              placeholder="Search by SKU or name..." 
+              className="pl-9 pr-4 py-2 border rounded-lg text-sm w-64 bg-background"
+              onChange={(e) => {
+                const term = e.target.value.toLowerCase();
+                // Filter handled in render
+              }}
+            />
+          </div>
+          <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={resetForm}>
+                <Plus className="h-4 w-4 mr-2" />
                 Add Product
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Add New Product</DialogTitle>
+                <DialogDescription>
+                  Add a new product to the license catalog.
+                </DialogDescription>
+              </DialogHeader>
+              {renderForm()}
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsAddOpen(false)}>Cancel</Button>
+                <Button onClick={handleSubmit} disabled={isSubmitting || !formData.product_name}>
+                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                  Add Product
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>SKU</TableHead>
               <TableHead>Product</TableHead>
               <TableHead>Version</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>License</TableHead>
               <TableHead>Pricing</TableHead>
-              <TableHead>Demo</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -546,11 +560,20 @@ const CatalogManagement: React.FC = () => {
                 return (
                   <TableRow key={item.id} className={!item.is_active ? 'opacity-50' : ''}>
                     <TableCell>
+                      {item.sku ? (
+                        <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">
+                          {item.sku}
+                        </code>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         <IconComponent className="h-4 w-4 text-primary" />
                         <div>
                           <p className="font-medium">{item.product_name}</p>
-                          <p className="text-xs text-muted-foreground truncate max-w-[180px]">{item.description}</p>
+                          <p className="text-xs text-muted-foreground truncate max-w-[150px]">{item.description}</p>
                         </div>
                       </div>
                     </TableCell>

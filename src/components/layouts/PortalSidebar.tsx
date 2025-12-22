@@ -23,7 +23,8 @@ import {
   CreditCard,
   UserCog,
   HeadphonesIcon,
-  BadgeCheck
+  BadgeCheck,
+  Handshake
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -73,6 +74,19 @@ const getNavSections = (isAdmin: boolean, userRoles: string[]): NavSection[] => 
       { title: 'Settings', url: '/settings', icon: Settings },
     ]
   });
+
+  // Partner section (formerly VAR)
+  if (userRoles.includes('var') || userRoles.includes('customer_rep') || isAdmin) {
+    sections.push({
+      title: 'Partner Portal',
+      requiredRoles: ['var', 'customer_rep'],
+      items: [
+        { title: 'Partner Dashboard', url: '/partner', icon: Handshake },
+        { title: 'Deal Registration', url: '/partner/deals', icon: Handshake },
+        { title: 'Price Calculator', url: '/partner/calculator', icon: CreditCard },
+      ]
+    });
+  }
 
   // Program Manager section
   if (userRoles.includes('program_manager') || isAdmin) {
