@@ -113,6 +113,20 @@ const CatalogManagement: React.FC = () => {
   const [editingItem, setEditingItem] = useState<CatalogItem | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<CatalogFormData>(defaultFormData);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [licenseTypeFilter, setLicenseTypeFilter] = useState<LicenseModel | 'all'>('all');
+
+  // Filter catalog based on search and license type
+  const filteredCatalog = catalog.filter((item) => {
+    const matchesSearch = searchTerm === '' || 
+      item.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesLicenseType = licenseTypeFilter === 'all' || item.license_model === licenseTypeFilter;
+    
+    return matchesSearch && matchesLicenseType;
+  });
 
   const resetForm = () => {
     setFormData(defaultFormData);
@@ -498,12 +512,26 @@ const CatalogManagement: React.FC = () => {
               type="text" 
               placeholder="Search by SKU or name..." 
               className="pl-9 pr-4 py-2 border rounded-lg text-sm w-64 bg-background"
-              onChange={(e) => {
-                const term = e.target.value.toLowerCase();
-                // Filter handled in render
-              }}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          <Select 
+            value={licenseTypeFilter} 
+            onValueChange={(value: LicenseModel | 'all') => setLicenseTypeFilter(value)}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="License Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="perpetual">Perpetual</SelectItem>
+              <SelectItem value="subscription">Subscription</SelectItem>
+              <SelectItem value="demo">Demo</SelectItem>
+              <SelectItem value="beta">Beta</SelectItem>
+              <SelectItem value="alpha">Alpha</SelectItem>
+            </SelectContent>
+          </Select>
           <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
             <DialogTrigger asChild>
               <Button onClick={resetForm}>
@@ -546,16 +574,20 @@ const CatalogManagement: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {catalog.length === 0 ? (
+            {filteredCatalog.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-12">
                   <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium">No products in catalog</h3>
-                  <p className="text-muted-foreground">Add your first product to get started.</p>
+                  <h3 className="text-lg font-medium">
+                    {catalog.length === 0 ? 'No products in catalog' : 'No matching products'}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {catalog.length === 0 ? 'Add your first product to get started.' : 'Try adjusting your search or filter.'}
+                  </p>
                 </TableCell>
               </TableRow>
             ) : (
-              catalog.map((item) => {
+              filteredCatalog.map((item) => {
                 const IconComponent = productIcons[item.product_name] || Package;
                 return (
                   <TableRow key={item.id} className={!item.is_active ? 'opacity-50' : ''}>
