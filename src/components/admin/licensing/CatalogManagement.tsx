@@ -126,7 +126,7 @@ const CatalogManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [licenseTypeFilter, setLicenseTypeFilter] = useState<LicenseModel | 'all'>('all');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const [viewMode, setViewMode] = useState<'grouped' | 'flat'>('flat');
+  const [viewMode, setViewMode] = useState<'grouped' | 'flat'>('grouped');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
