@@ -1903,6 +1903,7 @@ export type Database = {
       }
       user_settings: {
         Row: {
+          anonymous_handle: string | null
           created_at: string
           display_density: string | null
           email_notifications: boolean | null
@@ -1913,6 +1914,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          anonymous_handle?: string | null
           created_at?: string
           display_density?: string | null
           email_notifications?: boolean | null
@@ -1923,6 +1925,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          anonymous_handle?: string | null
           created_at?: string
           display_density?: string | null
           email_notifications?: boolean | null

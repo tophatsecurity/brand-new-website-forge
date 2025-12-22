@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import UserLayout from '@/components/layouts/UserLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,23 +10,34 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
-import { ThumbsUp, Plus, Lightbulb, Filter, RefreshCw, Trash2 } from 'lucide-react';
+import { ThumbsUp, Plus, Lightbulb, Filter, RefreshCw, Trash2, Pencil } from 'lucide-react';
 import { useFeatureRequests, PRODUCT_OPTIONS, STATUS_OPTIONS } from '@/hooks/useFeatureRequests';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserSettings } from '@/hooks/useUserSettings';
 import FeatureRequestScoreboard from '@/components/features/FeatureRequestScoreboard';
 import { generateSluggedUsername } from '@/utils/usernameGenerator';
 
 const FeatureRequests = () => {
   const { user } = useAuth();
+  const { settings } = useUserSettings(user?.id);
   const [productFilter, setProductFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingRequest, setEditingRequest] = useState<any>(null);
   const [newRequest, setNewRequest] = useState({ title: '', description: '', product_name: '' });
   const [anonymousUsername, setAnonymousUsername] = useState(() => generateSluggedUsername());
 
-  const { data: requests, isLoading, createRequest, retractRequest, vote, unvote } = useFeatureRequests(
+  const { data: requests, isLoading, createRequest, retractRequest, editRequest, vote, unvote } = useFeatureRequests(
     productFilter === 'all' ? undefined : productFilter
   );
+
+  // Use persistent handle from settings if available
+  useEffect(() => {
+    if (settings.anonymous_handle) {
+      setAnonymousUsername(settings.anonymous_handle);
+    }
+  }, [settings.anonymous_handle]);
 
   const filteredRequests = requests?.filter(req => 
     statusFilter === 'all' || req.status === statusFilter
@@ -42,8 +53,30 @@ const FeatureRequests = () => {
     
     await createRequest.mutateAsync({ ...newRequest, anonymousUsername });
     setNewRequest({ title: '', description: '', product_name: '' });
-    setAnonymousUsername(generateSluggedUsername()); // Generate new one for next submission
+    // Only regenerate if not using persistent handle
+    if (!settings.anonymous_handle) {
+      setAnonymousUsername(generateSluggedUsername());
+    }
     setDialogOpen(false);
+  };
+
+  const handleEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingRequest) return;
+    
+    await editRequest.mutateAsync({
+      id: editingRequest.id,
+      title: editingRequest.title,
+      description: editingRequest.description,
+      product_name: editingRequest.product_name
+    });
+    setEditingRequest(null);
+    setEditDialogOpen(false);
+  };
+
+  const openEditDialog = (request: any) => {
+    setEditingRequest({ ...request });
+    setEditDialogOpen(true);
   };
 
   const handleRetract = (requestId: string) => {
@@ -143,18 +176,23 @@ const FeatureRequests = () => {
                     <div className="flex-1 px-3 py-2 bg-muted rounded-md font-mono text-sm">
                       @{anonymousUsername}
                     </div>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="icon"
-                      onClick={regenerateUsername}
-                      title="Generate new username"
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                    </Button>
+                    {!settings.anonymous_handle && (
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="icon"
+                        onClick={regenerateUsername}
+                        title="Generate new username"
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    This anonymous handle will be shown instead of your email
+                    {settings.anonymous_handle 
+                      ? 'Using your persistent handle from settings'
+                      : 'This anonymous handle will be shown instead of your email. Set a persistent handle in Settings → Account.'
+                    }
                   </p>
                 </div>
 
@@ -170,6 +208,63 @@ const FeatureRequests = () => {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* Edit Request Dialog */}
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+          <DialogContent className="bg-background">
+            <DialogHeader>
+              <DialogTitle>Edit Feature Request</DialogTitle>
+              <DialogDescription>
+                Update your pending feature request
+              </DialogDescription>
+            </DialogHeader>
+            {editingRequest && (
+              <form onSubmit={handleEdit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Product</Label>
+                  <Select 
+                    value={editingRequest.product_name} 
+                    onValueChange={(v) => setEditingRequest((p: any) => ({ ...p, product_name: v }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select product" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover">
+                      {PRODUCT_OPTIONS.map(p => (
+                        <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input 
+                    placeholder="Brief title for your request"
+                    value={editingRequest.title}
+                    onChange={(e) => setEditingRequest((p: any) => ({ ...p, title: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea 
+                    placeholder="Describe the feature and why it would be useful..."
+                    rows={4}
+                    value={editingRequest.description}
+                    onChange={(e) => setEditingRequest((p: any) => ({ ...p, description: e.target.value }))}
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={editRequest.isPending}>
+                    {editRequest.isPending ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                </div>
+              </form>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Scoreboard */}
@@ -264,33 +359,43 @@ const FeatureRequests = () => {
                         <span>{new Date(request.created_at).toLocaleDateString()}</span>
                       </div>
                       
-                      {/* Retract button for own requests */}
+                      {/* Edit and Retract buttons for own pending requests */}
                       {isOwnRequest(request) && request.status === 'pending' && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-                              <Trash2 className="h-4 w-4 mr-1" />
-                              Retract
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-background">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Retract Feature Request?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will permanently delete your feature request. This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction 
-                                onClick={() => handleRetract(request.id)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                              >
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => openEditDialog(request)}
+                          >
+                            <Pencil className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                <Trash2 className="h-4 w-4 mr-1" />
                                 Retract
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="bg-background">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Retract Feature Request?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will permanently delete your feature request. This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={() => handleRetract(request.id)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Retract
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                       )}
                     </div>
                   </div>

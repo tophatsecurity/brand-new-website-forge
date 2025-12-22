@@ -1,24 +1,25 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export type UserSettings = {
   id?: string;
-  user_id: string; // Changed from optional to required
+  user_id: string;
   theme: string;
   display_density: string;
   notifications_enabled: boolean;
   email_notifications: boolean;
+  anonymous_handle: string | null;
 };
 
 export const useUserSettings = (userId?: string) => {
   const [settings, setSettings] = useState<UserSettings>({
-    user_id: userId || '', // Initialize with userId or empty string
+    user_id: userId || '',
     theme: 'system',
     display_density: 'comfortable',
     notifications_enabled: true,
-    email_notifications: true
+    email_notifications: true,
+    anonymous_handle: null
   });
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -50,16 +51,17 @@ export const useUserSettings = (userId?: string) => {
           theme: data.theme,
           display_density: data.display_density,
           notifications_enabled: data.notifications_enabled,
-          email_notifications: data.email_notifications
+          email_notifications: data.email_notifications,
+          anonymous_handle: data.anonymous_handle || null
         });
       } else {
-        // If no settings exist yet, create default settings
-        const defaultSettings = {
+        const defaultSettings: UserSettings = {
           user_id: uid,
           theme: 'system',
           display_density: 'comfortable',
           notifications_enabled: true,
-          email_notifications: true
+          email_notifications: true,
+          anonymous_handle: null
         };
         
         await createUserSettings(defaultSettings);
@@ -81,7 +83,14 @@ export const useUserSettings = (userId?: string) => {
     try {
       const { error } = await supabase
         .from('user_settings')
-        .insert(newSettings);
+        .insert({
+          user_id: newSettings.user_id,
+          theme: newSettings.theme,
+          display_density: newSettings.display_density,
+          notifications_enabled: newSettings.notifications_enabled,
+          email_notifications: newSettings.email_notifications,
+          anonymous_handle: newSettings.anonymous_handle
+        });
       
       if (error) throw error;
       
@@ -134,5 +143,5 @@ export const useUserSettings = (userId?: string) => {
     }
   };
 
-  return { settings, loading, updateUserSettings };
+  return { settings, loading, updateUserSettings, refetch: () => userId && fetchUserSettings(userId) };
 };

@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,9 +6,12 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useAuth } from '@/contexts/AuthContext';
+import { useUserSettings } from '@/hooks/useUserSettings';
+import { generateSluggedUsername } from '@/utils/usernameGenerator';
 
 const emailSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -25,6 +27,10 @@ const passwordSchema = z.object({
 });
 
 const AccountSettings: React.FC = () => {
+  const { user } = useAuth();
+  const { settings, loading: settingsLoading, updateUserSettings, refetch } = useUserSettings(user?.id);
+  const [anonymousHandle, setAnonymousHandle] = useState('');
+  const [isSavingHandle, setIsSavingHandle] = useState(false);
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const { toast } = useToast();
@@ -44,6 +50,48 @@ const AccountSettings: React.FC = () => {
       confirmPassword: '',
     },
   });
+
+  // Sync anonymous handle with settings
+  useEffect(() => {
+    if (settings.anonymous_handle) {
+      setAnonymousHandle(settings.anonymous_handle);
+    }
+  }, [settings.anonymous_handle]);
+
+  const handleGenerateHandle = () => {
+    setAnonymousHandle(generateSluggedUsername());
+  };
+
+  const handleSaveHandle = async () => {
+    setIsSavingHandle(true);
+    try {
+      const success = await updateUserSettings({ anonymous_handle: anonymousHandle || null });
+      if (success) {
+        toast({
+          title: 'Anonymous handle saved',
+          description: anonymousHandle 
+            ? 'Your persistent anonymous handle has been saved' 
+            : 'Your anonymous handle has been cleared',
+        });
+      }
+    } finally {
+      setIsSavingHandle(false);
+    }
+  };
+
+  const handleClearHandle = async () => {
+    setAnonymousHandle('');
+    setIsSavingHandle(true);
+    try {
+      await updateUserSettings({ anonymous_handle: null });
+      toast({
+        title: 'Anonymous handle cleared',
+        description: 'A new random handle will be generated for each submission',
+      });
+    } finally {
+      setIsSavingHandle(false);
+    }
+  };
 
   const handleUpdateEmail = async (data: z.infer<typeof emailSchema>) => {
     try {
@@ -156,6 +204,59 @@ const AccountSettings: React.FC = () => {
             </CardFooter>
           </form>
         </Form>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Anonymous Handle</CardTitle>
+          <CardDescription>Set a persistent anonymous username for feature requests</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Your Anonymous Handle</label>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
+                <Input 
+                  value={anonymousHandle}
+                  onChange={(e) => setAnonymousHandle(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ''))}
+                  placeholder="cyborg-ninja-42"
+                  className="pl-7 font-mono"
+                />
+              </div>
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="icon"
+                onClick={handleGenerateHandle}
+                title="Generate random handle"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              This handle will be used for all your feature request submissions instead of generating a new one each time.
+              Leave empty to generate a unique handle for each submission.
+            </p>
+          </div>
+        </CardContent>
+        <CardFooter className="flex gap-2">
+          <Button onClick={handleSaveHandle} disabled={isSavingHandle || settingsLoading}>
+            {isSavingHandle ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              'Save Handle'
+            )}
+          </Button>
+          {settings.anonymous_handle && (
+            <Button variant="outline" onClick={handleClearHandle} disabled={isSavingHandle}>
+              Clear Handle
+            </Button>
+          )}
+        </CardFooter>
       </Card>
 
       <Card>

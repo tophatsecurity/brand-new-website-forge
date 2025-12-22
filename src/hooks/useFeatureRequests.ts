@@ -85,6 +85,42 @@ export const useFeatureRequests = (productFilter?: string) => {
     },
   });
 
+  // Allow users to edit their own pending requests
+  const editRequest = useMutation({
+    mutationFn: async ({ id, title, description, product_name }: { id: string; title: string; description: string; product_name: string }) => {
+      if (!user) throw new Error('Must be logged in to edit');
+      
+      // Verify ownership and status
+      const { data: request } = await supabase
+        .from('feature_requests')
+        .select('submitted_by, status')
+        .eq('id', id)
+        .maybeSingle();
+      
+      if (!request) throw new Error('Request not found');
+      if (request.submitted_by !== user.id) throw new Error('You can only edit your own requests');
+      if (request.status !== 'pending') throw new Error('Can only edit pending requests');
+      
+      const { data, error } = await supabase
+        .from('feature_requests')
+        .update({ title, description, product_name })
+        .eq('id', id)
+        .eq('submitted_by', user.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feature-requests'] });
+      toast.success('Feature request updated');
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to edit: ${error.message}`);
+    },
+  });
+
   // Allow users to retract their own pending requests
   const retractRequest = useMutation({
     mutationFn: async (id: string) => {
@@ -272,6 +308,7 @@ export const useFeatureRequests = (productFilter?: string) => {
     updateRequest,
     deleteRequest,
     retractRequest,
+    editRequest,
     vote,
     unvote,
   };
