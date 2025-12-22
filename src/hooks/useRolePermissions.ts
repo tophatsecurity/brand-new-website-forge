@@ -10,6 +10,7 @@ export interface RolePermissions {
   canManageDownloads: boolean;
   canManageCatalog: boolean;
   canViewSupport: boolean;
+  canManageTickets: boolean;
   canViewDownloads: boolean;
   canViewLicensing: boolean;
   canViewCredits: boolean;
@@ -28,6 +29,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageDownloads: true,
     canManageCatalog: true,
     canViewSupport: true,
+    canManageTickets: true,
     canViewDownloads: true,
     canViewLicensing: true,
     canViewCredits: true,
@@ -44,6 +46,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageDownloads: false,
     canManageCatalog: false,
     canViewSupport: true,
+    canManageTickets: false,
     canViewDownloads: true,
     canViewLicensing: true,
     canViewCredits: true,
@@ -60,6 +63,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageDownloads: false,
     canManageCatalog: false,
     canViewSupport: true,
+    canManageTickets: false,
     canViewDownloads: true,
     canViewLicensing: true,
     canViewCredits: true,
@@ -76,6 +80,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageDownloads: false,
     canManageCatalog: false,
     canViewSupport: true,
+    canManageTickets: false,
     canViewDownloads: true,
     canViewLicensing: false,
     canViewCredits: false,
@@ -92,6 +97,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageDownloads: false,
     canManageCatalog: false,
     canViewSupport: true,
+    canManageTickets: false,
     canViewDownloads: true,
     canViewLicensing: true,
     canViewCredits: true,
@@ -108,6 +114,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageDownloads: false,
     canManageCatalog: false,
     canViewSupport: true,
+    canManageTickets: true,
     canViewDownloads: true,
     canViewLicensing: true,
     canViewCredits: true,
@@ -124,6 +131,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageDownloads: false,
     canManageCatalog: false,
     canViewSupport: true,
+    canManageTickets: false,
     canViewDownloads: true,
     canViewLicensing: true,
     canViewCredits: true,
@@ -140,6 +148,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageDownloads: false,
     canManageCatalog: false,
     canViewSupport: true,
+    canManageTickets: false,
     canViewDownloads: true,
     canViewLicensing: true,
     canViewCredits: true,
@@ -156,6 +165,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageDownloads: false,
     canManageCatalog: false,
     canViewSupport: true,
+    canManageTickets: true,
     canViewDownloads: true,
     canViewLicensing: true,
     canViewCredits: true,
@@ -172,6 +182,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageDownloads: false,
     canManageCatalog: false,
     canViewSupport: false,
+    canManageTickets: false,
     canViewDownloads: true,
     canViewLicensing: true,
     canViewCredits: false,
@@ -188,6 +199,7 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canManageDownloads: false,
     canManageCatalog: false,
     canViewSupport: true,
+    canManageTickets: true,
     canViewDownloads: true,
     canViewLicensing: true,
     canViewCredits: true,
@@ -209,6 +221,7 @@ export const useRolePermissions = (roles: AppRole[]): RolePermissions => {
       canManageDownloads: false,
       canManageCatalog: false,
       canViewSupport: false,
+      canManageTickets: false,
       canViewDownloads: false,
       canViewLicensing: false,
       canViewCredits: false,
