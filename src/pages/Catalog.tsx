@@ -203,10 +203,17 @@ const Catalog = () => {
       }
       grouped[item.product_name].push(item);
     });
-    // Sort variants: free first, then evaluation, then by price_tier
+    // Sort variants: free first, then evaluation/starter, then standard, professional, enterprise
     Object.keys(grouped).forEach(key => {
       grouped[key].sort((a, b) => {
-        const tierOrder = ['free', 'evaluation', 'standard', 'professional', 'elite', 'enterprise'];
+        // First sort by product_type (free and evaluation first)
+        const typeOrder = ['free', 'evaluation', 'software'];
+        const aTypeIndex = typeOrder.indexOf(a.product_type?.toLowerCase() || 'software');
+        const bTypeIndex = typeOrder.indexOf(b.product_type?.toLowerCase() || 'software');
+        if (aTypeIndex !== bTypeIndex) return aTypeIndex - bTypeIndex;
+        
+        // Then sort by price_tier
+        const tierOrder = ['free', 'starter', 'standard', 'professional', 'enterprise'];
         const aIndex = tierOrder.indexOf(a.price_tier?.toLowerCase() || 'standard');
         const bIndex = tierOrder.indexOf(b.price_tier?.toLowerCase() || 'standard');
         return aIndex - bIndex;
@@ -237,11 +244,15 @@ const Catalog = () => {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {/* Show SKU or tier/variant name */}
+              {/* Show SKU as primary identifier */}
               {item.sku ? (
                 <code className="text-sm font-mono bg-primary/10 text-primary px-2 py-0.5 rounded">{item.sku}</code>
               ) : (
-                <span className="capitalize">{item.price_tier || item.license_model || 'Standard'}</span>
+                <span className="capitalize">
+                  {item.price_tier === 'professional' ? 'Premium' : 
+                   item.price_tier === 'enterprise' ? 'Elite' : 
+                   item.price_tier || item.license_model || 'Standard'}
+                </span>
               )}
               {(item.product_type === 'free' || item.product_type === 'evaluation') && (
                 <Badge variant="secondary" className="text-xs capitalize">{item.product_type}</Badge>
@@ -255,7 +266,11 @@ const Catalog = () => {
             )}
           </CardTitle>
           {item.sku && item.price_tier && (
-            <p className="text-sm font-medium capitalize text-muted-foreground">{item.price_tier}</p>
+            <p className="text-sm font-medium capitalize text-muted-foreground">
+              {item.price_tier === 'professional' ? 'Premium' : 
+               item.price_tier === 'enterprise' ? 'Elite' : 
+               item.price_tier}
+            </p>
           )}
           <CardDescription>{item.description}</CardDescription>
         </CardHeader>
