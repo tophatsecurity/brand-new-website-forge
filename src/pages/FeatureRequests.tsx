@@ -8,11 +8,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
-import { ThumbsUp, Plus, Lightbulb, Filter } from 'lucide-react';
+import { ThumbsUp, Plus, Lightbulb, Filter, RefreshCw, Trash2 } from 'lucide-react';
 import { useFeatureRequests, PRODUCT_OPTIONS, STATUS_OPTIONS } from '@/hooks/useFeatureRequests';
 import { useAuth } from '@/contexts/AuthContext';
 import FeatureRequestScoreboard from '@/components/features/FeatureRequestScoreboard';
+import { generateSluggedUsername } from '@/utils/usernameGenerator';
 
 const FeatureRequests = () => {
   const { user } = useAuth();
@@ -20,8 +22,9 @@ const FeatureRequests = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newRequest, setNewRequest] = useState({ title: '', description: '', product_name: '' });
+  const [anonymousUsername, setAnonymousUsername] = useState(() => generateSluggedUsername());
 
-  const { data: requests, isLoading, createRequest, vote, unvote } = useFeatureRequests(
+  const { data: requests, isLoading, createRequest, retractRequest, vote, unvote } = useFeatureRequests(
     productFilter === 'all' ? undefined : productFilter
   );
 
@@ -29,13 +32,22 @@ const FeatureRequests = () => {
     statusFilter === 'all' || req.status === statusFilter
   );
 
+  const regenerateUsername = () => {
+    setAnonymousUsername(generateSluggedUsername());
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newRequest.title || !newRequest.description || !newRequest.product_name) return;
     
-    await createRequest.mutateAsync(newRequest);
+    await createRequest.mutateAsync({ ...newRequest, anonymousUsername });
     setNewRequest({ title: '', description: '', product_name: '' });
+    setAnonymousUsername(generateSluggedUsername()); // Generate new one for next submission
     setDialogOpen(false);
+  };
+
+  const handleRetract = (requestId: string) => {
+    retractRequest.mutate(requestId);
   };
 
   const handleVote = (request: any) => {
@@ -53,6 +65,10 @@ const FeatureRequests = () => {
         {statusOption?.label || status}
       </Badge>
     );
+  };
+
+  const isOwnRequest = (request: any) => {
+    return user && request.submitted_by === user.id;
   };
 
   return (
@@ -119,6 +135,29 @@ const FeatureRequests = () => {
                     onChange={(e) => setNewRequest(p => ({ ...p, description: e.target.value }))}
                   />
                 </div>
+                
+                {/* Anonymous Username Preview */}
+                <div className="space-y-2">
+                  <Label>Your Anonymous Handle</Label>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 px-3 py-2 bg-muted rounded-md font-mono text-sm">
+                      @{anonymousUsername}
+                    </div>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="icon"
+                      onClick={regenerateUsername}
+                      title="Generate new username"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    This anonymous handle will be shown instead of your email
+                  </p>
+                </div>
+
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                     Cancel
@@ -218,10 +257,41 @@ const FeatureRequests = () => {
                       </div>
                     </div>
                     <p className="text-muted-foreground line-clamp-2">{request.description}</p>
-                    <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                      <span>Submitted by {request.submitted_by_email || 'Anonymous'}</span>
-                      <span>•</span>
-                      <span>{new Date(request.created_at).toLocaleDateString()}</span>
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span className="font-mono">@{request.submitted_by_email || 'anonymous'}</span>
+                        <span>•</span>
+                        <span>{new Date(request.created_at).toLocaleDateString()}</span>
+                      </div>
+                      
+                      {/* Retract button for own requests */}
+                      {isOwnRequest(request) && request.status === 'pending' && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Retract
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="bg-background">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Retract Feature Request?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete your feature request. This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={() => handleRetract(request.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Retract
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      )}
                     </div>
                   </div>
                 </div>
