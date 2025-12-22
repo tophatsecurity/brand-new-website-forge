@@ -81,6 +81,13 @@ export const useFeatureRequests = (productFilter?: string) => {
 
   const updateRequest = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<FeatureRequest> & { id: string }) => {
+      // Get old request for comparison
+      const { data: oldRequest } = await supabase
+        .from('feature_requests')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       const { data, error } = await supabase
         .from('feature_requests')
         .update(updates)
@@ -88,6 +95,39 @@ export const useFeatureRequests = (productFilter?: string) => {
         .select()
         .single();
       if (error) throw error;
+
+      // Send email notification if status changed
+      if (oldRequest && updates.status && oldRequest.status !== updates.status && oldRequest.submitted_by_email) {
+        const statusColors: Record<string, string> = {
+          pending: '#64748b',
+          under_review: '#3b82f6',
+          planned: '#8b5cf6',
+          in_progress: '#eab308',
+          completed: '#22c55e',
+          declined: '#ef4444',
+        };
+
+        try {
+          await supabase.functions.invoke('send-email-postmark', {
+            body: {
+              to: oldRequest.submitted_by_email,
+              subject: `Feature Request Update: ${oldRequest.title}`,
+              template: 'feature_request_status',
+              data: {
+                userName: oldRequest.submitted_by_email.split('@')[0],
+                title: oldRequest.title,
+                status: updates.status?.replace('_', ' '),
+                statusColor: statusColors[updates.status] || '#3b82f6',
+                productName: oldRequest.product_name,
+                requestUrl: `${window.location.origin}/feature-requests`,
+              },
+            },
+          });
+        } catch (emailError) {
+          console.error('Failed to send feature request update email:', emailError);
+        }
+      }
+
       return data;
     },
     onSuccess: () => {

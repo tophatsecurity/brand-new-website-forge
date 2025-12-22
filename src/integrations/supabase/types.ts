@@ -1804,6 +1804,7 @@ export type Database = {
         | "marketing"
         | "free"
         | "program_manager"
+        | "support"
       onboarding_status: "not_started" | "in_progress" | "completed" | "on_hold"
       permission_type: "downloads" | "support" | "admin"
       ticket_priority: "low" | "medium" | "high" | "urgent"
@@ -1952,6 +1953,7 @@ export const Constants = {
         "marketing",
         "free",
         "program_manager",
+        "support",
       ],
       onboarding_status: ["not_started", "in_progress", "completed", "on_hold"],
       permission_type: ["downloads", "support", "admin"],

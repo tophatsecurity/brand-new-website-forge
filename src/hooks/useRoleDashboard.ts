@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
 
-type AppRole = 'admin' | 'user' | 'moderator' | 'var' | 'customer_rep' | 'customer' | 'account_rep' | 'marketing' | 'free' | 'program_manager';
+type AppRole = 'admin' | 'user' | 'moderator' | 'var' | 'customer_rep' | 'customer' | 'account_rep' | 'marketing' | 'free' | 'program_manager' | 'support';
 
 type DashboardStats = {
   totalUsers: number;
@@ -88,6 +88,17 @@ const getRolePermissions = (role: AppRole | null): RolePermissions => {
         canManageUsers: false,
         dashboardTitle: 'VAR Partner Dashboard',
         dashboardDescription: 'Manage your customer accounts and licenses.'
+      };
+    case 'support':
+      return {
+        canViewAllUsers: false,
+        canViewAllLicenses: false,
+        canViewAllAccounts: true,
+        canViewCRM: true,
+        canViewMarketing: false,
+        canManageUsers: false,
+        dashboardTitle: 'Support Dashboard',
+        dashboardDescription: 'Manage support tickets and customer inquiries.'
       };
     default:
       return {

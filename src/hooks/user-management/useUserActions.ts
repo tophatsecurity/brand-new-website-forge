@@ -76,12 +76,31 @@ export const useUserActions = (fetchUsers: () => Promise<void>) => {
     }
   };
 
-  const handleApproveUser = async (userId: string) => {
+  const handleApproveUser = async (userId: string, userEmail?: string) => {
     try {
       await callAdminAction('update', {
         userId,
         metadata: { approved: true }
       });
+
+      // Send approval email notification
+      if (userEmail) {
+        try {
+          await supabase.functions.invoke('send-email-postmark', {
+            body: {
+              to: userEmail,
+              subject: 'Your Account Has Been Approved!',
+              template: 'user_approved',
+              data: {
+                userName: userEmail.split('@')[0],
+                loginUrl: `${window.location.origin}/login`,
+              },
+            },
+          });
+        } catch (emailError) {
+          console.error('Failed to send approval email:', emailError);
+        }
+      }
 
       toast({
         title: 'User approved',

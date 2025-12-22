@@ -372,6 +372,174 @@ const getEmailTemplate = (template: string, data: Record<string, any> = {}): str
         </p>
       </div>
     `,
+    license_created: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #16a34a;">🔑 License Issued</h1>
+        <p>Hello ${data.customerName || 'there'},</p>
+        <p>Your license has been successfully issued!</p>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #666; width: 140px;"><strong>Product:</strong></td>
+              <td style="padding: 8px 0; font-weight: bold;">${data.productName || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>License Key:</strong></td>
+              <td style="padding: 8px 0;"><code style="background: #e5e7eb; padding: 4px 8px; border-radius: 4px;">${data.licenseKey || 'N/A'}</code></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Tier:</strong></td>
+              <td style="padding: 8px 0;">${data.tier || 'Standard'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Seats:</strong></td>
+              <td style="padding: 8px 0;">${data.seats || 1}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Expiry Date:</strong></td>
+              <td style="padding: 8px 0;">${data.expiryDate || 'N/A'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <p>You can view and manage your licenses in your account dashboard.</p>
+        
+        <p style="margin-top: 20px;">
+          <a href="${data.dashboardUrl || 'https://tophatsecurity.com/licensing'}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View My Licenses</a>
+        </p>
+
+        <p>Best regards,<br>Top Hat Security Team</p>
+      </div>
+    `,
+    user_approved: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #16a34a;">✅ Account Approved!</h1>
+        <p>Hello ${data.userName || 'there'},</p>
+        <p>Great news! Your account has been approved and you now have full access to the Top Hat Security platform.</p>
+        
+        <div style="background-color: #dcfce7; border: 1px solid #16a34a; padding: 16px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0; color: #166534;"><strong>What's next?</strong></p>
+          <ul style="color: #166534; margin: 10px 0 0 0; padding-left: 20px;">
+            <li>Explore available products in the catalog</li>
+            <li>Download evaluation versions</li>
+            <li>Access support resources</li>
+            <li>Submit feature requests</li>
+          </ul>
+        </div>
+
+        <p style="margin-top: 20px;">
+          <a href="${data.loginUrl || 'https://tophatsecurity.com/login'}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Login Now</a>
+        </p>
+
+        <p>Best regards,<br>Top Hat Security Team</p>
+      </div>
+    `,
+    feature_request_status: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #2563eb;">📋 Feature Request Update</h1>
+        <p>Hello ${data.userName || 'there'},</p>
+        <p>Your feature request has been updated.</p>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">${data.title || 'Feature Request'}</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #666; width: 100px;"><strong>Status:</strong></td>
+              <td style="padding: 8px 0;">
+                <span style="background-color: ${data.statusColor || '#3b82f6'}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">
+                  ${data.status || 'Updated'}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Product:</strong></td>
+              <td style="padding: 8px 0;">${data.productName || 'N/A'}</td>
+            </tr>
+          </table>
+        </div>
+
+        ${data.comment ? `
+        <div style="background-color: #fff; border-left: 4px solid #2563eb; padding: 16px; margin: 20px 0;">
+          <p style="margin: 0; color: #666; white-space: pre-wrap;">${data.comment}</p>
+        </div>
+        ` : ''}
+
+        <p style="margin-top: 20px;">
+          <a href="${data.requestUrl || 'https://tophatsecurity.com/feature-requests'}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Request</a>
+        </p>
+
+        <p>Best regards,<br>Top Hat Security Team</p>
+      </div>
+    `,
+    credit_purchase_approved: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #16a34a;">💰 Credit Purchase Approved</h1>
+        <p>Hello ${data.userName || 'there'},</p>
+        <p>Your credit purchase has been approved and credits have been added to your account!</p>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #666; width: 140px;"><strong>Package:</strong></td>
+              <td style="padding: 8px 0; font-weight: bold;">${data.packageName || 'Credits'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Credits Added:</strong></td>
+              <td style="padding: 8px 0; font-weight: bold; color: #16a34a;">+${data.creditsAdded || 0}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>New Balance:</strong></td>
+              <td style="padding: 8px 0;">${data.newBalance || 0} credits</td>
+            </tr>
+          </table>
+        </div>
+
+        <p style="margin-top: 20px;">
+          <a href="${data.creditsUrl || 'https://tophatsecurity.com/credits'}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Credits</a>
+        </p>
+
+        <p>Best regards,<br>Top Hat Security Team</p>
+      </div>
+    `,
+    onboarding_status_update: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #2563eb;">🚀 Onboarding Update</h1>
+        <p>Hello ${data.contactName || 'there'},</p>
+        <p>Your onboarding progress has been updated.</p>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #666; width: 140px;"><strong>Company:</strong></td>
+              <td style="padding: 8px 0; font-weight: bold;">${data.companyName || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Status:</strong></td>
+              <td style="padding: 8px 0;">
+                <span style="background-color: ${data.statusColor || '#3b82f6'}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">
+                  ${data.status || 'In Progress'}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Current Step:</strong></td>
+              <td style="padding: 8px 0;">${data.currentStep || 1} of ${data.totalSteps || 5}</td>
+            </tr>
+          </table>
+        </div>
+
+        ${data.nextStepDescription ? `
+        <div style="border-left: 4px solid #2563eb; padding-left: 16px; margin: 20px 0;">
+          <p style="margin: 0; color: #333;"><strong>Next Step:</strong></p>
+          <p style="margin: 8px 0 0 0; color: #666;">${data.nextStepDescription}</p>
+        </div>
+        ` : ''}
+
+        <p>Best regards,<br>Top Hat Security Team</p>
+      </div>
+    `,
+  };
   
   return templates[template] || templates.welcome;
 };

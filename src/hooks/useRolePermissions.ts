@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-export type AppRole = 'admin' | 'user' | 'moderator' | 'var' | 'customer_rep' | 'customer' | 'account_rep' | 'marketing' | 'free' | 'program_manager';
+export type AppRole = 'admin' | 'user' | 'moderator' | 'var' | 'customer_rep' | 'customer' | 'account_rep' | 'marketing' | 'free' | 'program_manager' | 'support';
 
 export interface RolePermissions {
   canAccessAdmin: boolean;
@@ -180,6 +180,22 @@ const rolePermissionsMap: Record<AppRole, RolePermissions> = {
     canViewMarketing: false,
     canManageFeatureRequests: false,
   },
+  support: {
+    canAccessAdmin: true,
+    canManageUsers: false,
+    canManageLicenses: false,
+    canManageCredits: false,
+    canManageDownloads: false,
+    canManageCatalog: false,
+    canViewSupport: true,
+    canViewDownloads: true,
+    canViewLicensing: true,
+    canViewCredits: true,
+    canManageCustomers: true,
+    canViewReports: false,
+    canViewMarketing: false,
+    canManageFeatureRequests: false,
+  },
 };
 
 export const useRolePermissions = (roles: AppRole[]): RolePermissions => {
@@ -222,6 +238,7 @@ export const getRoleLabel = (role: AppRole): string => {
   const labels: Record<AppRole, string> = {
     admin: 'Admin',
     program_manager: 'Program Manager',
+    support: 'Support',
     account_rep: 'Account Rep',
     marketing: 'Marketing',
     var: 'VAR',
@@ -235,5 +252,5 @@ export const getRoleLabel = (role: AppRole): string => {
 };
 
 export const getAllRoles = (): AppRole[] => {
-  return ['admin', 'program_manager', 'account_rep', 'marketing', 'var', 'customer_rep', 'customer', 'user', 'moderator', 'free'];
+  return ['admin', 'program_manager', 'support', 'account_rep', 'marketing', 'var', 'customer_rep', 'customer', 'user', 'moderator', 'free'];
 };
