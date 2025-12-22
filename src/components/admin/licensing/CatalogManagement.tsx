@@ -76,7 +76,7 @@ import {
   ChevronsRight
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useCatalog, type CatalogItem, type CatalogFormData, type ProductType, type LicenseModel, type SupportLevel, type VersionStage, type PriceTier } from "@/hooks/useCatalog";
+import { useCatalog, type CatalogItem, type CatalogFormData, type ProductType, type LicenseModel, type SupportLevel, type VersionStage, type PriceTier, type RoadmapStatus, type DevelopmentStatus } from "@/hooks/useCatalog";
 import { productFeatures } from "./license-data/productOptions";
 
 const productIcons: Record<string, React.ElementType> = {
@@ -114,7 +114,19 @@ const defaultFormData: CatalogFormData = {
   price_tier: 'standard',
   base_price: 0,
   price_per_credit: 0,
-  credit_packages: []
+  credit_packages: [],
+  // Product Management defaults
+  roadmap_status: 'active',
+  next_release_version: null,
+  next_release_date: null,
+  end_of_life_date: null,
+  end_of_support_date: null,
+  product_owner: null,
+  development_status: 'stable',
+  feature_highlights: null,
+  target_market: null,
+  documentation_url: null,
+  repository_url: null
 };
 
 const CatalogManagement: React.FC = () => {
@@ -241,7 +253,19 @@ const CatalogManagement: React.FC = () => {
       price_tier: item.price_tier || 'standard',
       base_price: item.base_price || 0,
       price_per_credit: item.price_per_credit || 0,
-      credit_packages: item.credit_packages || []
+      credit_packages: item.credit_packages || [],
+      // Product Management fields
+      roadmap_status: item.roadmap_status || 'active',
+      next_release_version: item.next_release_version || null,
+      next_release_date: item.next_release_date || null,
+      end_of_life_date: item.end_of_life_date || null,
+      end_of_support_date: item.end_of_support_date || null,
+      product_owner: item.product_owner || null,
+      development_status: item.development_status || 'stable',
+      feature_highlights: item.feature_highlights || null,
+      target_market: item.target_market || null,
+      documentation_url: item.documentation_url || null,
+      repository_url: item.repository_url || null
     });
   };
 
@@ -320,11 +344,12 @@ const CatalogManagement: React.FC = () => {
 
   const renderForm = () => (
     <Tabs defaultValue="general" className="w-full">
-      <TabsList className="grid w-full grid-cols-4">
+      <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="general">General</TabsTrigger>
         <TabsTrigger value="licensing">Licensing</TabsTrigger>
         <TabsTrigger value="pricing">Pricing</TabsTrigger>
         <TabsTrigger value="version">Version</TabsTrigger>
+        <TabsTrigger value="roadmap">Roadmap</TabsTrigger>
       </TabsList>
       
       <div className="max-h-[50vh] overflow-y-auto pr-2 mt-4">
@@ -576,6 +601,130 @@ const CatalogManagement: React.FC = () => {
               placeholder="What's new in this version..."
               rows={4}
             />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="roadmap" className="space-y-4 mt-0">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="roadmap_status">Roadmap Status</Label>
+              <Select 
+                value={formData.roadmap_status || 'active'} 
+                onValueChange={(value: RoadmapStatus) => setFormData(prev => ({ ...prev, roadmap_status: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active Development</SelectItem>
+                  <SelectItem value="maintenance">Maintenance Mode</SelectItem>
+                  <SelectItem value="sunset">Sunset / EOL Planned</SelectItem>
+                  <SelectItem value="archived">Archived</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="development_status">Development Status</Label>
+              <Select 
+                value={formData.development_status || 'stable'} 
+                onValueChange={(value: DevelopmentStatus) => setFormData(prev => ({ ...prev, development_status: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="planning">Planning</SelectItem>
+                  <SelectItem value="active">Active Development</SelectItem>
+                  <SelectItem value="stable">Stable</SelectItem>
+                  <SelectItem value="maintenance">Maintenance</SelectItem>
+                  <SelectItem value="deprecated">Deprecated</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="next_release_version">Next Release Version</Label>
+              <Input
+                id="next_release_version"
+                value={formData.next_release_version || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, next_release_version: e.target.value || null }))}
+                placeholder="e.g., 2.0.0"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="next_release_date">Next Release Date</Label>
+              <Input
+                id="next_release_date"
+                type="date"
+                value={formData.next_release_date ? formData.next_release_date.split('T')[0] : ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, next_release_date: e.target.value || null }))}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="end_of_life_date">End of Life Date</Label>
+              <Input
+                id="end_of_life_date"
+                type="date"
+                value={formData.end_of_life_date ? formData.end_of_life_date.split('T')[0] : ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, end_of_life_date: e.target.value || null }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="end_of_support_date">End of Support Date</Label>
+              <Input
+                id="end_of_support_date"
+                type="date"
+                value={formData.end_of_support_date ? formData.end_of_support_date.split('T')[0] : ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, end_of_support_date: e.target.value || null }))}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="product_owner">Product Owner</Label>
+              <Input
+                id="product_owner"
+                value={formData.product_owner || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, product_owner: e.target.value || null }))}
+                placeholder="e.g., John Smith"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="target_market">Target Market</Label>
+              <Input
+                id="target_market"
+                value={formData.target_market || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, target_market: e.target.value || null }))}
+                placeholder="e.g., Enterprise, SMB"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="documentation_url">Documentation URL</Label>
+              <Input
+                id="documentation_url"
+                value={formData.documentation_url || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, documentation_url: e.target.value || null }))}
+                placeholder="https://docs.example.com/product"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="repository_url">Repository URL</Label>
+              <Input
+                id="repository_url"
+                value={formData.repository_url || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, repository_url: e.target.value || null }))}
+                placeholder="https://github.com/org/repo"
+              />
+            </div>
           </div>
         </TabsContent>
       </div>

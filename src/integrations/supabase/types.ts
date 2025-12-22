@@ -797,20 +797,31 @@ export type Database = {
           demo_features: string[] | null
           demo_seats: number
           description: string
+          development_status: string | null
+          documentation_url: string | null
+          end_of_life_date: string | null
+          end_of_support_date: string | null
+          feature_highlights: string[] | null
           id: string
           is_active: boolean
           latest_stable_version: string | null
           license_model: string
           maintenance_included: boolean | null
           min_version: string | null
+          next_release_date: string | null
+          next_release_version: string | null
           price_per_credit: number | null
           price_tier: string | null
           product_name: string
+          product_owner: string | null
           product_type: string
           release_date: string | null
+          repository_url: string | null
+          roadmap_status: string | null
           sku: string | null
           subscription_period_months: number | null
           support_level: string | null
+          target_market: string | null
           updated_at: string
           version: string | null
           version_stage: string | null
@@ -825,20 +836,31 @@ export type Database = {
           demo_features?: string[] | null
           demo_seats?: number
           description: string
+          development_status?: string | null
+          documentation_url?: string | null
+          end_of_life_date?: string | null
+          end_of_support_date?: string | null
+          feature_highlights?: string[] | null
           id?: string
           is_active?: boolean
           latest_stable_version?: string | null
           license_model?: string
           maintenance_included?: boolean | null
           min_version?: string | null
+          next_release_date?: string | null
+          next_release_version?: string | null
           price_per_credit?: number | null
           price_tier?: string | null
           product_name: string
+          product_owner?: string | null
           product_type?: string
           release_date?: string | null
+          repository_url?: string | null
+          roadmap_status?: string | null
           sku?: string | null
           subscription_period_months?: number | null
           support_level?: string | null
+          target_market?: string | null
           updated_at?: string
           version?: string | null
           version_stage?: string | null
@@ -853,20 +875,31 @@ export type Database = {
           demo_features?: string[] | null
           demo_seats?: number
           description?: string
+          development_status?: string | null
+          documentation_url?: string | null
+          end_of_life_date?: string | null
+          end_of_support_date?: string | null
+          feature_highlights?: string[] | null
           id?: string
           is_active?: boolean
           latest_stable_version?: string | null
           license_model?: string
           maintenance_included?: boolean | null
           min_version?: string | null
+          next_release_date?: string | null
+          next_release_version?: string | null
           price_per_credit?: number | null
           price_tier?: string | null
           product_name?: string
+          product_owner?: string | null
           product_type?: string
           release_date?: string | null
+          repository_url?: string | null
+          roadmap_status?: string | null
           sku?: string | null
           subscription_period_months?: number | null
           support_level?: string | null
+          target_market?: string | null
           updated_at?: string
           version?: string | null
           version_stage?: string | null
@@ -1152,49 +1185,64 @@ export type Database = {
       }
       product_downloads: {
         Row: {
+          announcement_date: string | null
           catalog_id: string | null
           description: string | null
+          expected_release_date: string | null
           file_size: number | null
           file_url: string
           id: string
           is_latest: boolean
           package_format: string | null
+          pre_order_available: boolean | null
           product_name: string
           product_type: string
           release_date: string
           release_notes: string | null
           sha256_hash: string | null
+          status: string
           version: string
+          visibility: string
         }
         Insert: {
+          announcement_date?: string | null
           catalog_id?: string | null
           description?: string | null
+          expected_release_date?: string | null
           file_size?: number | null
           file_url: string
           id?: string
           is_latest?: boolean
           package_format?: string | null
+          pre_order_available?: boolean | null
           product_name: string
           product_type: string
           release_date?: string
           release_notes?: string | null
           sha256_hash?: string | null
+          status?: string
           version: string
+          visibility?: string
         }
         Update: {
+          announcement_date?: string | null
           catalog_id?: string | null
           description?: string | null
+          expected_release_date?: string | null
           file_size?: number | null
           file_url?: string
           id?: string
           is_latest?: boolean
           package_format?: string | null
+          pre_order_available?: boolean | null
           product_name?: string
           product_type?: string
           release_date?: string
           release_notes?: string | null
           sha256_hash?: string | null
+          status?: string
           version?: string
+          visibility?: string
         }
         Relationships: [
           {
