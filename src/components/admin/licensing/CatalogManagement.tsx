@@ -64,8 +64,13 @@ import {
   GitBranch,
   FileText,
   DollarSign,
-  Coins
+  Coins,
+  ChevronDown,
+  ChevronRight,
+  Headphones,
+  Settings2
 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useCatalog, type CatalogItem, type CatalogFormData, type ProductType, type LicenseModel, type SupportLevel, type VersionStage, type PriceTier } from "@/hooks/useCatalog";
 import { productFeatures } from "./license-data/productOptions";
 
@@ -115,6 +120,7 @@ const CatalogManagement: React.FC = () => {
   const [formData, setFormData] = useState<CatalogFormData>(defaultFormData);
   const [searchTerm, setSearchTerm] = useState('');
   const [licenseTypeFilter, setLicenseTypeFilter] = useState<LicenseModel | 'all'>('all');
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   // Filter catalog based on search and license type
   const filteredCatalog = catalog.filter((item) => {
@@ -127,6 +133,67 @@ const CatalogManagement: React.FC = () => {
     
     return matchesSearch && matchesLicenseType;
   });
+
+  // Group products by base name (e.g., SEEKCAP, DDX, etc.)
+  const groupedProducts = filteredCatalog.reduce((acc, item) => {
+    const baseName = item.product_name.toUpperCase();
+    if (!acc[baseName]) {
+      acc[baseName] = [];
+    }
+    acc[baseName].push(item);
+    return acc;
+  }, {} as Record<string, CatalogItem[]>);
+
+  // Sort groups alphabetically
+  const sortedGroupNames = Object.keys(groupedProducts).sort();
+
+  const toggleGroup = (groupName: string) => {
+    setExpandedGroups(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(groupName)) {
+        newSet.delete(groupName);
+      } else {
+        newSet.add(groupName);
+      }
+      return newSet;
+    });
+  };
+
+  const expandAllGroups = () => {
+    setExpandedGroups(new Set(sortedGroupNames));
+  };
+
+  const collapseAllGroups = () => {
+    setExpandedGroups(new Set());
+  };
+
+  // Quick add maintenance/support for a product
+  const handleQuickAddMaintenance = (productName: string) => {
+    setFormData({
+      ...defaultFormData,
+      product_name: productName,
+      description: `${productName} Annual Maintenance & Support`,
+      product_type: 'maintenance',
+      license_model: 'subscription',
+      subscription_period_months: 12,
+      maintenance_included: true,
+      support_level: 'standard',
+    });
+    setIsAddOpen(true);
+  };
+
+  const handleQuickAddSupport = (productName: string) => {
+    setFormData({
+      ...defaultFormData,
+      product_name: productName,
+      description: `${productName} Premium Support Package`,
+      product_type: 'service',
+      license_model: 'subscription',
+      subscription_period_months: 12,
+      support_level: 'premium',
+    });
+    setIsAddOpen(true);
+  };
 
   const resetForm = () => {
     setFormData(defaultFormData);
@@ -559,149 +626,210 @@ const CatalogManagement: React.FC = () => {
         </div>
       </div>
 
-      <div className="border rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>SKU</TableHead>
-              <TableHead>Product</TableHead>
-              <TableHead>Version</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>License</TableHead>
-              <TableHead>Pricing</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredCatalog.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} className="text-center py-12">
-                  <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium">
-                    {catalog.length === 0 ? 'No products in catalog' : 'No matching products'}
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {catalog.length === 0 ? 'Add your first product to get started.' : 'Try adjusting your search or filter.'}
-                  </p>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredCatalog.map((item) => {
-                const IconComponent = productIcons[item.product_name] || Package;
-                return (
-                  <TableRow key={item.id} className={!item.is_active ? 'opacity-50' : ''}>
-                    <TableCell>
-                      {item.sku ? (
-                        <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">
-                          {item.sku}
-                        </code>
-                      ) : (
-                        <span className="text-muted-foreground text-xs">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
+      {/* Expand/Collapse All */}
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" onClick={expandAllGroups}>
+          Expand All
+        </Button>
+        <Button variant="outline" size="sm" onClick={collapseAllGroups}>
+          Collapse All
+        </Button>
+        <span className="text-sm text-muted-foreground ml-2">
+          {sortedGroupNames.length} product groups • {filteredCatalog.length} items
+        </span>
+      </div>
+
+      {/* Grouped Products */}
+      {filteredCatalog.length === 0 ? (
+        <div className="border rounded-lg p-12 text-center">
+          <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium">
+            {catalog.length === 0 ? 'No products in catalog' : 'No matching products'}
+          </h3>
+          <p className="text-muted-foreground">
+            {catalog.length === 0 ? 'Add your first product to get started.' : 'Try adjusting your search or filter.'}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {sortedGroupNames.map((groupName) => {
+            const items = groupedProducts[groupName];
+            const IconComponent = productIcons[groupName] || Package;
+            const isExpanded = expandedGroups.has(groupName);
+            const hasDemo = items.some(i => i.license_model === 'demo');
+            const hasSubscription = items.some(i => i.license_model === 'subscription');
+            const hasPerpetual = items.some(i => i.license_model === 'perpetual');
+            const hasMaintenance = items.some(i => i.product_type === 'maintenance');
+            const hasService = items.some(i => i.product_type === 'service');
+
+            return (
+              <Collapsible key={groupName} open={isExpanded} onOpenChange={() => toggleGroup(groupName)}>
+                <div className="border rounded-lg bg-card">
+                  <CollapsibleTrigger className="w-full">
+                    <div className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        {isExpanded ? (
+                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                        ) : (
+                          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                        )}
+                        <IconComponent className="h-5 w-5 text-primary" />
+                        <div className="text-left">
+                          <h3 className="font-semibold">{groupName}</h3>
+                          <p className="text-xs text-muted-foreground">{items.length} variant{items.length !== 1 ? 's' : ''}</p>
+                        </div>
+                      </div>
                       <div className="flex items-center gap-2">
-                        <IconComponent className="h-4 w-4 text-primary" />
-                        <div>
-                          <p className="font-medium">{item.product_name}</p>
-                          <p className="text-xs text-muted-foreground truncate max-w-[150px]">{item.description}</p>
-                        </div>
+                        {hasDemo && <Badge variant="outline" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Demo</Badge>}
+                        {hasSubscription && <Badge variant="outline" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">Subscription</Badge>}
+                        {hasPerpetual && <Badge variant="outline" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">Perpetual</Badge>}
+                        {hasMaintenance && <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Maintenance</Badge>}
+                        {hasService && <Badge variant="outline" className="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">Service</Badge>}
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-1">
-                          <Tag className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-sm font-mono">{item.version}</span>
-                        </div>
-                        {getVersionStageBadge(item.version_stage)}
-                      </div>
-                    </TableCell>
-                    <TableCell>{getProductTypeBadge(item.product_type)}</TableCell>
-                    <TableCell>{getLicenseModelBadge(item.license_model)}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-1 text-sm">
-                          <DollarSign className="h-3 w-3" />
-                          {item.base_price > 0 ? `$${item.base_price}` : 'Free'}
-                        </div>
-                        {item.credits_included > 0 && (
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Coins className="h-3 w-3" />
-                            {item.credits_included} credits
-                          </div>
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="border-t">
+                      {/* Quick Actions */}
+                      <div className="flex items-center gap-2 p-3 bg-muted/30 border-b">
+                        <span className="text-xs font-medium text-muted-foreground mr-2">Quick Add:</span>
+                        {!hasMaintenance && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-7 text-xs"
+                            onClick={(e) => { e.stopPropagation(); handleQuickAddMaintenance(groupName); }}
+                          >
+                            <Settings2 className="h-3 w-3 mr-1" />
+                            Maintenance
+                          </Button>
+                        )}
+                        {!hasService && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-7 text-xs"
+                            onClick={(e) => { e.stopPropagation(); handleQuickAddSupport(groupName); }}
+                          >
+                            <Headphones className="h-3 w-3 mr-1" />
+                            Support Package
+                          </Button>
                         )}
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
-                        {item.demo_duration_days}d
-                        <Users className="h-3 w-3 ml-1" />
-                        {item.demo_seats}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Switch
-                        checked={item.is_active}
-                        onCheckedChange={() => handleToggleActive(item.id, item.is_active)}
-                      />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Dialog open={editingItem?.id === item.id} onOpenChange={(open) => !open && setEditingItem(null)}>
-                          <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon" onClick={() => handleEdit(item)}>
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[600px]">
-                            <DialogHeader>
-                              <DialogTitle>Edit Product</DialogTitle>
-                              <DialogDescription>Update product details.</DialogDescription>
-                            </DialogHeader>
-                            {renderForm()}
-                            <DialogFooter>
-                              <Button variant="outline" onClick={() => setEditingItem(null)}>Cancel</Button>
-                              <Button onClick={handleSubmit} disabled={isSubmitting || !formData.product_name}>
-                                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                                Save Changes
-                              </Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
+                      {/* Items Table */}
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[140px]">SKU</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Version</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>License</TableHead>
+                            <TableHead>Pricing</TableHead>
+                            <TableHead>Active</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {items.map((item) => (
+                            <TableRow key={item.id} className={!item.is_active ? 'opacity-50' : ''}>
+                              <TableCell>
+                                {item.sku ? (
+                                  <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">
+                                    {item.sku}
+                                  </code>
+                                ) : (
+                                  <span className="text-muted-foreground text-xs">-</span>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <p className="text-sm truncate max-w-[200px]">{item.description}</p>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex flex-col gap-1">
+                                  <span className="text-sm font-mono">{item.version}</span>
+                                  {getVersionStageBadge(item.version_stage)}
+                                </div>
+                              </TableCell>
+                              <TableCell>{getProductTypeBadge(item.product_type)}</TableCell>
+                              <TableCell>{getLicenseModelBadge(item.license_model)}</TableCell>
+                              <TableCell>
+                                <div className="flex flex-col gap-1">
+                                  <span className="text-sm">
+                                    {item.base_price > 0 ? `$${item.base_price}` : 'Free'}
+                                  </span>
+                                  {item.credits_included > 0 && (
+                                    <span className="text-xs text-muted-foreground">
+                                      {item.credits_included} credits
+                                    </span>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Switch
+                                  checked={item.is_active}
+                                  onCheckedChange={() => handleToggleActive(item.id, item.is_active)}
+                                />
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-1">
+                                  <Dialog open={editingItem?.id === item.id} onOpenChange={(open) => !open && setEditingItem(null)}>
+                                    <DialogTrigger asChild>
+                                      <Button variant="ghost" size="icon" onClick={() => handleEdit(item)}>
+                                        <Pencil className="h-4 w-4" />
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[600px]">
+                                      <DialogHeader>
+                                        <DialogTitle>Edit Product</DialogTitle>
+                                        <DialogDescription>Update product details.</DialogDescription>
+                                      </DialogHeader>
+                                      {renderForm()}
+                                      <DialogFooter>
+                                        <Button variant="outline" onClick={() => setEditingItem(null)}>Cancel</Button>
+                                        <Button onClick={handleSubmit} disabled={isSubmitting || !formData.product_name}>
+                                          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                                          Save Changes
+                                        </Button>
+                                      </DialogFooter>
+                                    </DialogContent>
+                                  </Dialog>
 
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete {item.product_name}?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will permanently remove this product from the catalog.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>Delete {item.product_name}?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          This will permanently remove this product from the catalog.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDelete(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                          Delete
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CollapsibleContent>
+                </div>
+              </Collapsible>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
