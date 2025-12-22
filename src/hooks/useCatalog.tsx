@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-export type ProductType = 'software' | 'maintenance' | 'service' | 'bundle';
-export type LicenseModel = 'perpetual' | 'subscription' | 'demo' | 'beta' | 'alpha';
+export type ProductType = 'software' | 'maintenance' | 'service' | 'bundle' | 'demo';
+export type LicenseModel = 'perpetual' | 'subscription' | 'evaluation' | 'beta' | 'alpha';
 export type SupportLevel = 'standard' | 'premium' | 'enterprise';
 export type VersionStage = 'alpha' | 'beta' | 'rc' | 'stable' | 'deprecated';
 export type PriceTier = 'free' | 'starter' | 'standard' | 'professional' | 'enterprise';

@@ -54,12 +54,20 @@ interface NavSection {
 const getNavSections = (isAdmin: boolean, userRoles: string[]): NavSection[] => {
   const sections: NavSection[] = [];
 
+  // Customer section - available to all authenticated users
+  sections.push({
+    title: 'Customer',
+    items: [
+      { title: 'Entitlements', url: '/entitlements', icon: Key },
+      { title: 'Catalog', url: '/catalog', icon: Package },
+      { title: 'Credits', url: '/credits', icon: Coins },
+    ]
+  });
+
   // My Portal - available to all authenticated users
   sections.push({
-    title: 'My Portal',
+    title: 'Resources',
     items: [
-      { title: 'Licensing', url: '/licensing', icon: FileText },
-      { title: 'Credits', url: '/credits', icon: Coins },
       { title: 'Support', url: '/support', icon: BadgeHelp },
       { title: 'Downloads', url: '/downloads', icon: Download },
       { title: 'Feature Requests', url: '/feature-requests', icon: ClipboardList },

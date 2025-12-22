@@ -36,6 +36,8 @@ import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import SecurityPerpetual from "./pages/SecurityPerpetual";
 import Licensing from "./pages/Licensing";
+import Entitlements from "./pages/Entitlements";
+import Catalog from "./pages/Catalog";
 import Downloads from "./pages/Downloads";
 import Support from "./pages/Support";
 import Credits from "./pages/Credits";
@@ -117,6 +119,16 @@ const App = () => (
               <Route path="/licensing" element={
                 <ProtectedRoute>
                   <Licensing />
+                </ProtectedRoute>
+              } />
+              <Route path="/entitlements" element={
+                <ProtectedRoute>
+                  <Entitlements />
+                </ProtectedRoute>
+              } />
+              <Route path="/catalog" element={
+                <ProtectedRoute>
+                  <Catalog />
                 </ProtectedRoute>
               } />
               <Route path="/downloads" element={
