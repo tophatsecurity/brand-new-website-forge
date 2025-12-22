@@ -1425,6 +1425,51 @@ export type Database = {
         }
         Relationships: []
       }
+      sla_configurations: {
+        Row: {
+          business_hours_only: boolean
+          created_at: string
+          escalation_contact: string | null
+          escalation_hours: number | null
+          first_response_hours: number
+          id: string
+          is_active: boolean
+          priority: string
+          product_name: string
+          resolution_hours: number
+          sku: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_hours_only?: boolean
+          created_at?: string
+          escalation_contact?: string | null
+          escalation_hours?: number | null
+          first_response_hours?: number
+          id?: string
+          is_active?: boolean
+          priority?: string
+          product_name: string
+          resolution_hours?: number
+          sku?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_hours_only?: boolean
+          created_at?: string
+          escalation_contact?: string | null
+          escalation_hours?: number | null
+          first_response_hours?: number
+          id?: string
+          is_active?: boolean
+          priority?: string
+          product_name?: string
+          resolution_hours?: number
+          sku?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_documents: {
         Row: {
           category: string
@@ -1486,7 +1531,14 @@ export type Database = {
           resolution: string | null
           resolved_at: string | null
           resolved_by: string | null
+          sla_config_id: string | null
           sla_due_at: string | null
+          sla_first_response_breached: boolean | null
+          sla_first_response_due: string | null
+          sla_paused_at: string | null
+          sla_paused_duration_minutes: number | null
+          sla_resolution_breached: boolean | null
+          sla_resolution_due: string | null
           status: Database["public"]["Enums"]["ticket_status"]
           subject: string
           tags: string[] | null
@@ -1523,7 +1575,14 @@ export type Database = {
           resolution?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
+          sla_config_id?: string | null
           sla_due_at?: string | null
+          sla_first_response_breached?: boolean | null
+          sla_first_response_due?: string | null
+          sla_paused_at?: string | null
+          sla_paused_duration_minutes?: number | null
+          sla_resolution_breached?: boolean | null
+          sla_resolution_due?: string | null
           status?: Database["public"]["Enums"]["ticket_status"]
           subject: string
           tags?: string[] | null
@@ -1560,7 +1619,14 @@ export type Database = {
           resolution?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
+          sla_config_id?: string | null
           sla_due_at?: string | null
+          sla_first_response_breached?: boolean | null
+          sla_first_response_due?: string | null
+          sla_paused_at?: string | null
+          sla_paused_duration_minutes?: number | null
+          sla_resolution_breached?: boolean | null
+          sla_resolution_due?: string | null
           status?: Database["public"]["Enums"]["ticket_status"]
           subject?: string
           tags?: string[] | null
@@ -1587,6 +1653,13 @@ export type Database = {
             columns: ["license_id"]
             isOneToOne: false
             referencedRelation: "product_licenses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_tickets_sla_config_id_fkey"
+            columns: ["sla_config_id"]
+            isOneToOne: false
+            referencedRelation: "sla_configurations"
             referencedColumns: ["id"]
           },
         ]

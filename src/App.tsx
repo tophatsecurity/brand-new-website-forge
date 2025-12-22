@@ -62,6 +62,8 @@ import RoleAssignmentPage from "./pages/admin/RoleAssignmentPage";
 import PaymentApprovalsPage from "./pages/admin/PaymentApprovalsPage";
 import FeatureRequestsAdminPage from "./pages/admin/FeatureRequestsAdminPage";
 import SupportAdminPage from "./pages/admin/SupportAdminPage";
+import SupportTicketsPage from "./pages/admin/SupportTicketsPage";
+import SLAAdminPage from "./pages/admin/SLAAdminPage";
 import FeatureRequests from "./pages/FeatureRequests";
 import Onboarding from "./pages/Onboarding";
 import RolesReference from "./pages/RolesReference";
@@ -234,6 +236,16 @@ const App = () => (
               <Route path="/admin/support" element={
                 <AdminRoute>
                   <SupportAdminPage />
+                </AdminRoute>
+              } />
+              <Route path="/admin/support-tickets" element={
+                <AdminRoute>
+                  <SupportTicketsPage />
+                </AdminRoute>
+              } />
+              <Route path="/admin/sla" element={
+                <AdminRoute>
+                  <SLAAdminPage />
                 </AdminRoute>
               } />
               <Route path="/admin/payment-approvals" element={
