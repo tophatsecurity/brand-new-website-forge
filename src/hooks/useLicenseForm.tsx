@@ -24,6 +24,7 @@ export type FormValues = {
   allowedNetworks: string;
   usageHoursLimit: number | null;
   concurrentSessions: number;
+  catalogSku: string;
 };
 
 export type AvailableProduct = {
@@ -74,6 +75,7 @@ export const useLicenseForm = ({
       allowedNetworks: "",
       usageHoursLimit: null,
       concurrentSessions: 1,
+      catalogSku: "",
     },
   });
 

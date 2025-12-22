@@ -11,6 +11,8 @@ import SeatsExpiryFormFields from "./form-fields/SeatsExpiryFormFields";
 import FeatureAddonsFormFields from "./form-fields/FeatureAddonsFormFields";
 import EmailAssignmentField from "./form-fields/EmailAssignmentField";
 import HostNetworkFormFields from "./form-fields/HostNetworkFormFields";
+import SKUSelectField from "./form-fields/SKUSelectField";
+import { useCatalog } from "@/hooks/useCatalog";
 
 type LicenseFormProps = {
   tiers: LicenseTier[];
@@ -19,6 +21,7 @@ type LicenseFormProps = {
 };
 
 const LicenseForm: React.FC<LicenseFormProps> = ({ tiers, onLicenseCreated, onClose }) => {
+  const { catalog } = useCatalog();
   const { form, onSubmit, isSubmitting } = useLicenseForm({
     tiers,
     products: productOptions,
@@ -28,9 +31,18 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ tiers, onLicenseCreated, onCl
     onClose
   });
 
+  const catalogItems = catalog.map(item => ({
+    id: item.id,
+    product_name: item.product_name,
+    sku: item.sku,
+    product_type: item.product_type,
+    base_price: item.base_price
+  }));
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+        <SKUSelectField form={form} catalogItems={catalogItems} />
         <ProductTierFormFields form={form} tiers={tiers} />
         <SeatsExpiryFormFields form={form} />
         <FeatureAddonsFormFields 
