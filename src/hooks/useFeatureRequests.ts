@@ -58,16 +58,18 @@ export const useFeatureRequests = (productFilter?: string) => {
   });
 
   const createRequest = useMutation({
-    mutationFn: async (request: { title: string; description: string; product_name: string }) => {
-      // Generate a cool anonymous username for the submission
-      const anonymousUsername = generateSluggedUsername();
+    mutationFn: async (request: { title: string; description: string; product_name: string; anonymousUsername?: string }) => {
+      // Use provided anonymous username or generate one
+      const displayName = request.anonymousUsername || generateSluggedUsername();
       
       const { data, error } = await supabase
         .from('feature_requests')
         .insert({
-          ...request,
+          title: request.title,
+          description: request.description,
+          product_name: request.product_name,
           submitted_by: user?.id,
-          submitted_by_email: anonymousUsername, // Use generated username instead of email
+          submitted_by_email: displayName,
         })
         .select()
         .single();
@@ -80,6 +82,39 @@ export const useFeatureRequests = (productFilter?: string) => {
     },
     onError: (error: any) => {
       toast.error(`Failed to submit request: ${error.message}`);
+    },
+  });
+
+  // Allow users to retract their own pending requests
+  const retractRequest = useMutation({
+    mutationFn: async (id: string) => {
+      if (!user) throw new Error('Must be logged in to retract');
+      
+      // Verify ownership and status
+      const { data: request } = await supabase
+        .from('feature_requests')
+        .select('submitted_by, status')
+        .eq('id', id)
+        .maybeSingle();
+      
+      if (!request) throw new Error('Request not found');
+      if (request.submitted_by !== user.id) throw new Error('You can only retract your own requests');
+      if (request.status !== 'pending') throw new Error('Can only retract pending requests');
+      
+      const { error } = await supabase
+        .from('feature_requests')
+        .delete()
+        .eq('id', id)
+        .eq('submitted_by', user.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feature-requests'] });
+      toast.success('Feature request retracted');
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to retract: ${error.message}`);
     },
   });
 
@@ -236,6 +271,7 @@ export const useFeatureRequests = (productFilter?: string) => {
     createRequestOnBehalf,
     updateRequest,
     deleteRequest,
+    retractRequest,
     vote,
     unvote,
   };
