@@ -142,6 +142,50 @@ export const useSupportTickets = () => {
       // Log to audit
       await logAuditEvent('create', 'support_ticket', data.id, null, data);
 
+      // Send email notifications
+      try {
+        // Send confirmation email to requester
+        await supabase.functions.invoke('send-email-postmark', {
+          body: {
+            to: user.email,
+            subject: `Ticket Created: ${data.ticket_number} - ${ticketData.subject}`,
+            template: 'ticket_created',
+            data: {
+              requesterName: user.user_metadata?.full_name || user.email?.split('@')[0],
+              ticketNumber: data.ticket_number,
+              subject: ticketData.subject,
+              description: ticketData.description,
+              priority: ticketData.priority || 'medium',
+              category: ticketData.category || 'general',
+              ticketUrl: `${window.location.origin}/support/tickets`,
+            },
+          },
+        });
+
+        // Send admin notification
+        await supabase.functions.invoke('send-email-postmark', {
+          body: {
+            to: 'support@tophatsecurity.com',
+            subject: `[${(ticketData.priority || 'medium').toUpperCase()}] New Ticket: ${data.ticket_number}`,
+            template: 'ticket_admin_notification',
+            data: {
+              ticketNumber: data.ticket_number,
+              subject: ticketData.subject,
+              description: ticketData.description,
+              requesterName: user.user_metadata?.full_name || user.email,
+              requesterEmail: user.email,
+              priority: ticketData.priority || 'medium',
+              priorityColor: getPriorityColor(ticketData.priority || 'medium'),
+              category: ticketData.category || 'general',
+              productName: ticketData.product_name,
+            },
+          },
+        });
+      } catch (emailError) {
+        console.error('Failed to send ticket notification emails:', emailError);
+        // Don't fail the ticket creation if emails fail
+      }
+
       toast({
         title: 'Ticket created',
         description: `Ticket ${data.ticket_number} has been created.`,
@@ -158,6 +202,28 @@ export const useSupportTickets = () => {
       });
       return null;
     }
+  };
+
+  const getPriorityColor = (priority: string): string => {
+    const colors: Record<string, string> = {
+      low: '#64748b',
+      medium: '#3b82f6',
+      high: '#f97316',
+      urgent: '#dc2626',
+    };
+    return colors[priority] || '#3b82f6';
+  };
+
+  const getStatusInfo = (status: string): { label: string; color: string } => {
+    const statusMap: Record<string, { label: string; color: string }> = {
+      open: { label: 'Open', color: '#eab308' },
+      in_progress: { label: 'In Progress', color: '#3b82f6' },
+      waiting_customer: { label: 'Waiting on Customer', color: '#8b5cf6' },
+      waiting_internal: { label: 'Under Review', color: '#64748b' },
+      resolved: { label: 'Resolved', color: '#22c55e' },
+      closed: { label: 'Closed', color: '#6b7280' },
+    };
+    return statusMap[status] || { label: status, color: '#3b82f6' };
   };
 
   const updateTicket = async (ticketId: string, updates: UpdateTicketData): Promise<boolean> => {
@@ -283,13 +349,14 @@ export const useSupportTickets = () => {
 
       if (error) throw error;
 
-      // Update first_response_at if this is the first staff response
+      // Get ticket info for notification
       const { data: ticket } = await supabase
         .from('support_tickets')
-        .select('first_response_at, requester_id')
+        .select('ticket_number, subject, requester_id, requester_email, requester_name, first_response_at, status')
         .eq('id', ticketId)
         .single();
 
+      // Update first_response_at if this is the first staff response
       if (ticket && !ticket.first_response_at && ticket.requester_id !== user.id) {
         await supabase
           .from('support_tickets')
@@ -298,6 +365,34 @@ export const useSupportTickets = () => {
       }
 
       await logAuditEvent('create', 'ticket_comment', data.id, null, { ...data, ticket_id: ticketId });
+
+      // Send email notification to requester if this is a non-internal comment from staff
+      if (ticket && !isInternal && ticket.requester_id !== user.id && ticket.requester_email) {
+        try {
+          const statusInfo = getStatusInfo(ticket.status);
+          await supabase.functions.invoke('send-email-postmark', {
+            body: {
+              to: ticket.requester_email,
+              subject: `Update on Ticket ${ticket.ticket_number}: ${ticket.subject}`,
+              template: 'ticket_updated',
+              data: {
+                requesterName: ticket.requester_name || ticket.requester_email?.split('@')[0],
+                ticketNumber: ticket.ticket_number,
+                subject: ticket.subject,
+                status: ticket.status,
+                statusLabel: statusInfo.label,
+                statusColor: statusInfo.color,
+                updateType: 'New reply from support team',
+                newComment: content,
+                resolution: isResolution ? content : null,
+                ticketUrl: `${window.location.origin}/support/tickets`,
+              },
+            },
+          });
+        } catch (emailError) {
+          console.error('Failed to send ticket update notification:', emailError);
+        }
+      }
 
       toast({
         title: isInternal ? 'Note added' : 'Reply sent',

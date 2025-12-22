@@ -211,7 +211,167 @@ const getEmailTemplate = (template: string, data: Record<string, any> = {}): str
         </p>
       </div>
     `,
-  };
+    ticket_created: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #2563eb;">🎫 Support Ticket Created</h1>
+        <p>Hello ${data.requesterName || 'there'},</p>
+        <p>Your support ticket has been successfully created. Our team will review it and get back to you as soon as possible.</p>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #666; width: 140px;"><strong>Ticket Number:</strong></td>
+              <td style="padding: 8px 0; font-weight: bold; color: #2563eb;">${data.ticketNumber || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Subject:</strong></td>
+              <td style="padding: 8px 0;">${data.subject || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Priority:</strong></td>
+              <td style="padding: 8px 0; text-transform: capitalize;">${data.priority || 'Medium'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Category:</strong></td>
+              <td style="padding: 8px 0; text-transform: capitalize;">${data.category || 'General'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background-color: #fff; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Description</h3>
+          <p style="color: #666; white-space: pre-wrap;">${data.description || 'No description provided'}</p>
+        </div>
+
+        <p>You can track your ticket status by logging into your account and visiting the Support Tickets section.</p>
+        
+        <p style="margin-top: 20px;">
+          <a href="${data.ticketUrl || 'https://tophatsecurity.com/support/tickets'}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Ticket</a>
+        </p>
+
+        <p>Best regards,<br>Top Hat Security Support Team</p>
+        
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+        <p style="color: #666; font-size: 12px;">
+          Reference: ${data.ticketNumber || 'N/A'} | support@tophatsecurity.com
+        </p>
+      </div>
+    `,
+    ticket_updated: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #2563eb;">🔔 Ticket Updated</h1>
+        <p>Hello ${data.requesterName || 'there'},</p>
+        <p>Your support ticket has been updated.</p>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #666; width: 140px;"><strong>Ticket Number:</strong></td>
+              <td style="padding: 8px 0; font-weight: bold; color: #2563eb;">${data.ticketNumber || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Subject:</strong></td>
+              <td style="padding: 8px 0;">${data.subject || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Status:</strong></td>
+              <td style="padding: 8px 0;">
+                <span style="background-color: ${data.statusColor || '#3b82f6'}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; text-transform: capitalize;">
+                  ${data.statusLabel || data.status || 'Updated'}
+                </span>
+              </td>
+            </tr>
+            ${data.updateType ? `
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Update:</strong></td>
+              <td style="padding: 8px 0;">${data.updateType}</td>
+            </tr>
+            ` : ''}
+          </table>
+        </div>
+
+        ${data.newComment ? `
+        <div style="background-color: #fff; border-left: 4px solid #2563eb; padding: 16px; margin: 20px 0;">
+          <h4 style="margin: 0 0 8px 0; color: #333;">New Reply from Support:</h4>
+          <p style="color: #666; margin: 0; white-space: pre-wrap;">${data.newComment}</p>
+        </div>
+        ` : ''}
+
+        ${data.resolution ? `
+        <div style="background-color: #dcfce7; border: 1px solid #16a34a; padding: 16px; border-radius: 8px; margin: 20px 0;">
+          <h4 style="margin: 0 0 8px 0; color: #16a34a;">✓ Resolution:</h4>
+          <p style="color: #166534; margin: 0; white-space: pre-wrap;">${data.resolution}</p>
+        </div>
+        ` : ''}
+
+        <p style="margin-top: 20px;">
+          <a href="${data.ticketUrl || 'https://tophatsecurity.com/support/tickets'}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Ticket</a>
+        </p>
+
+        <p>Best regards,<br>Top Hat Security Support Team</p>
+        
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+        <p style="color: #666; font-size: 12px;">
+          Reference: ${data.ticketNumber || 'N/A'} | support@tophatsecurity.com
+        </p>
+      </div>
+    `,
+    ticket_admin_notification: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #dc2626;">🎫 New Support Ticket</h1>
+        <p>A new support ticket has been submitted and requires attention.</p>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Ticket Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #666; width: 140px;"><strong>Ticket Number:</strong></td>
+              <td style="padding: 8px 0; font-weight: bold; color: #2563eb;">${data.ticketNumber || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Subject:</strong></td>
+              <td style="padding: 8px 0;">${data.subject || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Requester:</strong></td>
+              <td style="padding: 8px 0;">${data.requesterName || 'N/A'} (${data.requesterEmail || 'N/A'})</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Priority:</strong></td>
+              <td style="padding: 8px 0;">
+                <span style="background-color: ${data.priorityColor || '#3b82f6'}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; text-transform: capitalize;">
+                  ${data.priority || 'Medium'}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Category:</strong></td>
+              <td style="padding: 8px 0; text-transform: capitalize;">${data.category || 'General'}</td>
+            </tr>
+            ${data.productName ? `
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>Product:</strong></td>
+              <td style="padding: 8px 0;">${data.productName}</td>
+            </tr>
+            ` : ''}
+          </table>
+        </div>
+
+        <div style="background-color: #fff; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #333;">Description</h3>
+          <p style="color: #666; white-space: pre-wrap;">${data.description || 'No description provided'}</p>
+        </div>
+
+        <p style="margin-top: 20px;">
+          <a href="https://tophatsecurity.com/admin/support-tickets" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View in Admin</a>
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+        <p style="color: #666; font-size: 12px;">
+          This is an automated notification from the Top Hat Security support system.
+        </p>
+      </div>
+    `,
   
   return templates[template] || templates.welcome;
 };
