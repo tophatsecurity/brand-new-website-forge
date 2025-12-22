@@ -277,8 +277,8 @@ const CatalogManagement: React.FC = () => {
         return <Badge variant="outline" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"><Infinity className="h-3 w-3 mr-1" />Perpetual</Badge>;
       case 'subscription':
         return <Badge variant="outline" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400"><RefreshCw className="h-3 w-3 mr-1" />Subscription</Badge>;
-      case 'demo':
-        return <Badge variant="outline" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Demo</Badge>;
+      case 'evaluation':
+        return <Badge variant="outline" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Evaluation</Badge>;
       case 'beta':
         return <Badge variant="outline" className="bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400">Beta</Badge>;
       case 'alpha':
@@ -311,6 +311,8 @@ const CatalogManagement: React.FC = () => {
         return <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">Service</Badge>;
       case 'bundle':
         return <Badge variant="secondary" className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400">Bundle</Badge>;
+      case 'demo':
+        return <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Demo</Badge>;
     }
   };
 
@@ -346,6 +348,7 @@ const CatalogManagement: React.FC = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="software">Software</SelectItem>
+                  <SelectItem value="demo">Demo</SelectItem>
                   <SelectItem value="maintenance">Maintenance</SelectItem>
                   <SelectItem value="service">Service</SelectItem>
                   <SelectItem value="bundle">Bundle</SelectItem>
@@ -413,7 +416,7 @@ const CatalogManagement: React.FC = () => {
                 <SelectContent>
                   <SelectItem value="perpetual">Perpetual</SelectItem>
                   <SelectItem value="subscription">Subscription</SelectItem>
-                  <SelectItem value="demo">Demo Only</SelectItem>
+                  <SelectItem value="evaluation">Evaluation</SelectItem>
                   <SelectItem value="beta">Beta</SelectItem>
                   <SelectItem value="alpha">Alpha</SelectItem>
                 </SelectContent>
@@ -613,7 +616,7 @@ const CatalogManagement: React.FC = () => {
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="perpetual">Perpetual</SelectItem>
               <SelectItem value="subscription">Subscription</SelectItem>
-              <SelectItem value="demo">Demo</SelectItem>
+              <SelectItem value="evaluation">Evaluation</SelectItem>
               <SelectItem value="beta">Beta</SelectItem>
               <SelectItem value="alpha">Alpha</SelectItem>
             </SelectContent>
@@ -887,11 +890,12 @@ const CatalogManagement: React.FC = () => {
             const items = groupedProducts[groupName];
             const IconComponent = productIcons[groupName] || Package;
             const isExpanded = expandedGroups.has(groupName);
-            const hasDemo = items.some(i => i.license_model === 'demo');
+            const hasEvaluation = items.some(i => i.license_model === 'evaluation');
             const hasSubscription = items.some(i => i.license_model === 'subscription');
             const hasPerpetual = items.some(i => i.license_model === 'perpetual');
             const hasMaintenance = items.some(i => i.product_type === 'maintenance');
             const hasService = items.some(i => i.product_type === 'service');
+            const hasDemo = items.some(i => i.product_type === 'demo');
 
             return (
               <Collapsible key={groupName} open={isExpanded} onOpenChange={() => toggleGroup(groupName)}>
