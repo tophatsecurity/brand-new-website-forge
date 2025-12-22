@@ -808,6 +808,7 @@ export type Database = {
           product_name: string
           product_type: string
           release_date: string | null
+          sku: string | null
           subscription_period_months: number | null
           support_level: string | null
           updated_at: string
@@ -835,6 +836,7 @@ export type Database = {
           product_name: string
           product_type?: string
           release_date?: string | null
+          sku?: string | null
           subscription_period_months?: number | null
           support_level?: string | null
           updated_at?: string
@@ -862,6 +864,7 @@ export type Database = {
           product_name?: string
           product_type?: string
           release_date?: string | null
+          sku?: string | null
           subscription_period_months?: number | null
           support_level?: string | null
           updated_at?: string

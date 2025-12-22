@@ -38,6 +38,7 @@ export type CatalogItem = {
   base_price: number;
   price_per_credit: number;
   credit_packages: CreditPackage[];
+  sku: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -84,10 +85,10 @@ export const useCatalog = () => {
       // Parse credit_packages from JSON
       const processedData = (data || []).map(item => ({
         ...item,
-        credit_packages: item.credit_packages || []
+        credit_packages: Array.isArray(item.credit_packages) ? item.credit_packages : []
       }));
       
-      setCatalog(processedData as CatalogItem[]);
+      setCatalog(processedData as unknown as CatalogItem[]);
     } catch (err: any) {
       console.error('Error fetching catalog:', err);
       toast({
@@ -117,7 +118,8 @@ export const useCatalog = () => {
 
       if (error) throw error;
       
-      setCatalog(prev => [...prev, { ...data, credit_packages: data.credit_packages || [] } as CatalogItem]);
+      const processedItem = { ...data, credit_packages: Array.isArray(data.credit_packages) ? data.credit_packages : [] };
+      setCatalog(prev => [...prev, processedItem as unknown as CatalogItem]);
       toast({
         title: "Product added",
         description: `${item.product_name} has been added to the catalog.`
@@ -145,7 +147,8 @@ export const useCatalog = () => {
 
       if (error) throw error;
       
-      setCatalog(prev => prev.map(c => c.id === id ? { ...data, credit_packages: data.credit_packages || [] } as CatalogItem : c));
+      const processedItem = { ...data, credit_packages: Array.isArray(data.credit_packages) ? data.credit_packages : [] };
+      setCatalog(prev => prev.map(c => c.id === id ? processedItem as unknown as CatalogItem : c));
       toast({
         title: "Product updated",
         description: "Catalog item has been updated."
