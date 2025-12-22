@@ -122,23 +122,26 @@ const Catalog = () => {
     fetchData();
   }, [user]);
 
-  const generateDemoLicense = async (catalogItem: CatalogItem) => {
+  const generateLicense = async (catalogItem: CatalogItem) => {
     if (!user?.email) {
       toast({
         title: "Authentication required",
-        description: "Please log in to request a demo license.",
+        description: "Please log in to activate this license.",
         variant: "destructive"
       });
       return;
     }
 
     setGeneratingDemo(catalogItem.id);
+    const isFree = catalogItem.product_type === 'free';
+    const isEvaluation = catalogItem.product_type === 'evaluation';
+    const tierName = isFree ? 'Free' : isEvaluation ? 'Evaluation' : 'Standard';
 
     try {
       const { data: tiers } = await supabase
         .from('license_tiers')
         .select('id')
-        .eq('name', 'Demo')
+        .eq('name', tierName)
         .single();
 
       let tierId = tiers?.id;
@@ -156,7 +159,8 @@ const Catalog = () => {
         throw new Error('No license tier available');
       }
 
-      const licenseKey = `DEMO-${catalogItem.product_name.toUpperCase().substring(0, 4)}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      const prefix = isFree ? 'FREE' : isEvaluation ? 'EVAL' : 'LIC';
+      const licenseKey = `${prefix}-${catalogItem.product_name.toUpperCase().substring(0, 4)}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
       const expiryDate = addDays(new Date(), catalogItem.demo_duration_days);
 
       const { error } = await supabase
@@ -177,16 +181,19 @@ const Catalog = () => {
 
       setLicenses(prev => [...prev, { id: crypto.randomUUID(), product_name: catalogItem.product_name }]);
 
+      const licenseType = isFree ? 'Free' : isEvaluation ? 'Evaluation' : '';
       toast({
-        title: "Demo license generated!",
-        description: `Your ${catalogItem.demo_duration_days}-day demo license for ${catalogItem.product_name} is now active.`
+        title: `${licenseType} license activated!`,
+        description: isFree 
+          ? `Your free license for ${catalogItem.product_name} is now active.`
+          : `Your ${catalogItem.demo_duration_days}-day ${licenseType.toLowerCase()} license for ${catalogItem.product_name} is now active.`
       });
 
     } catch (err: any) {
-      console.error('Error generating demo license:', err);
+      console.error('Error generating license:', err);
       toast({
-        title: "Failed to generate demo",
-        description: err.message || "An error occurred while generating your demo license.",
+        title: "Failed to activate license",
+        description: err.message || "An error occurred while activating your license.",
         variant: "destructive"
       });
     } finally {
@@ -350,7 +357,7 @@ const Catalog = () => {
             // Free tier - no purchase needed, just get started
             <Button 
               className="w-full" 
-              onClick={() => generateDemoLicense(item)}
+              onClick={() => generateLicense(item)}
               disabled={generatingDemo === item.id || hasLicense}
             >
               {generatingDemo === item.id ? (
@@ -375,7 +382,7 @@ const Catalog = () => {
               <Button 
                 className="flex-1" 
                 variant="outline"
-                onClick={() => generateDemoLicense(item)}
+                onClick={() => generateLicense(item)}
                 disabled={generatingDemo === item.id || hasLicense}
               >
                 {generatingDemo === item.id ? (
