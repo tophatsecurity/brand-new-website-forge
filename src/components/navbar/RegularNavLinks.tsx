@@ -1,7 +1,6 @@
-
 import React from 'react';
 import NavLinkGroup, { NavLink } from './NavLinkGroup';
-import { FileText, BadgeHelp, Download, Coins } from 'lucide-react';
+import { FileText, BookOpen, Download, Coins, HeadphonesIcon } from 'lucide-react';
 
 interface RegularNavLinksProps {
   className?: string;
@@ -12,7 +11,8 @@ const RegularNavLinks: React.FC<RegularNavLinksProps> = ({ className }) => {
   const regularLinks: NavLink[] = [
     { name: "Licensing", href: "/licensing", icon: FileText },
     { name: "Credits", href: "/credits", icon: Coins },
-    { name: "Support", href: "/support", icon: BadgeHelp },
+    { name: "Knowledge Base", href: "/support", icon: BookOpen },
+    { name: "Support", href: "/support/tickets", icon: HeadphonesIcon },
     { name: "Downloads", href: "/downloads", icon: Download },
   ];
 

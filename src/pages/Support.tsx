@@ -58,7 +58,7 @@ const Support = () => {
   };
 
   return (
-    <UserLayout title="Support Center">
+    <UserLayout title="Knowledge Base">
       <div className="flex justify-between items-center mb-6">
         <p className="text-muted-foreground">Search help articles and documentation</p>
         {user?.user_metadata?.approved && (

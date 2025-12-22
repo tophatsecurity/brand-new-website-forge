@@ -61,14 +61,15 @@ const getNavSections = (isAdmin: boolean, userRoles: string[]): NavSection[] => 
       { title: 'Entitlements', url: '/entitlements', icon: Key },
       { title: 'Catalog', url: '/catalog', icon: Package },
       { title: 'Credits', url: '/credits', icon: Coins },
+      { title: 'Support', url: '/support/tickets', icon: HeadphonesIcon },
     ]
   });
 
-  // My Portal - available to all authenticated users
+  // Resources - available to all authenticated users
   sections.push({
     title: 'Resources',
     items: [
-      { title: 'Support', url: '/support', icon: BadgeHelp },
+      { title: 'Knowledge Base', url: '/support', icon: BadgeHelp },
       { title: 'Downloads', url: '/downloads', icon: Download },
       { title: 'Feature Requests', url: '/feature-requests', icon: ClipboardList },
     ]
@@ -107,6 +108,18 @@ const getNavSections = (isAdmin: boolean, userRoles: string[]): NavSection[] => 
     });
   }
 
+  // Support role section
+  if (userRoles.includes('support') || isAdmin) {
+    sections.push({
+      title: 'Support Team',
+      requiredRoles: ['support'],
+      items: [
+        { title: 'Ticket Queue', url: '/admin/support-tickets', icon: HeadphonesIcon },
+        { title: 'Knowledge Base Admin', url: '/admin/support', icon: BadgeHelp },
+      ]
+    });
+  }
+
   // Customer Rep / Account Rep section
   if (userRoles.includes('customer_rep') || userRoles.includes('account_rep') || isAdmin) {
     sections.push({
@@ -126,7 +139,7 @@ const getNavSections = (isAdmin: boolean, userRoles: string[]): NavSection[] => 
       title: 'Moderation',
       requiredRoles: ['moderator'],
       items: [
-        { title: 'Support Team', url: '/admin/support-team', icon: HeadphonesIcon },
+        { title: 'Support Team Mgmt', url: '/admin/support-team', icon: HeadphonesIcon },
       ]
     });
   }
@@ -155,7 +168,7 @@ const getNavSections = (isAdmin: boolean, userRoles: string[]): NavSection[] => 
       title: 'Product Management',
       adminOnly: true,
       items: [
-        { title: 'License Management', url: '/admin/licensing', icon: Key },
+        { title: 'Entitlements', url: '/admin/licensing', icon: Key },
         { title: 'Catalog', url: '/admin/catalog', icon: Package },
         { title: 'Credits Admin', url: '/admin/credits', icon: CreditCard },
         { title: 'Downloads Admin', url: '/admin/downloads', icon: Download },
