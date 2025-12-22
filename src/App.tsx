@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import AdminRoute from "@/components/auth/AdminRoute";
+import ProgramManagerRoute from "@/components/auth/ProgramManagerRoute";
 
 import Index from "./pages/Index";
 import Products from "./pages/Products";
@@ -193,9 +194,9 @@ const App = () => (
                 </AdminRoute>
               } />
               <Route path="/admin/feature-requests" element={
-                <AdminRoute>
+                <ProgramManagerRoute>
                   <FeatureRequestsAdminPage />
-                </AdminRoute>
+                </ProgramManagerRoute>
               } />
               
               {/* User feature requests route */}

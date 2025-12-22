@@ -970,6 +970,135 @@ export type Database = {
         }
         Relationships: []
       }
+      product_comments: {
+        Row: {
+          catalog_id: string | null
+          content: string
+          created_at: string
+          download_id: string | null
+          id: string
+          is_internal: boolean | null
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          catalog_id?: string | null
+          content: string
+          created_at?: string
+          download_id?: string | null
+          id?: string
+          is_internal?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          catalog_id?: string | null
+          content?: string
+          created_at?: string
+          download_id?: string | null
+          id?: string
+          is_internal?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_comments_catalog_id_fkey"
+            columns: ["catalog_id"]
+            isOneToOne: false
+            referencedRelation: "license_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_comments_download_id_fkey"
+            columns: ["download_id"]
+            isOneToOne: false
+            referencedRelation: "download_counts"
+            referencedColumns: ["download_id"]
+          },
+          {
+            foreignKeyName: "product_comments_download_id_fkey"
+            columns: ["download_id"]
+            isOneToOne: false
+            referencedRelation: "product_downloads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "product_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_documents: {
+        Row: {
+          catalog_id: string | null
+          content: string | null
+          created_at: string
+          created_by: string | null
+          document_type: string
+          download_id: string | null
+          file_url: string | null
+          id: string
+          title: string
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          catalog_id?: string | null
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          document_type?: string
+          download_id?: string | null
+          file_url?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          catalog_id?: string | null
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          document_type?: string
+          download_id?: string | null
+          file_url?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_documents_catalog_id_fkey"
+            columns: ["catalog_id"]
+            isOneToOne: false
+            referencedRelation: "license_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_documents_download_id_fkey"
+            columns: ["download_id"]
+            isOneToOne: false
+            referencedRelation: "download_counts"
+            referencedColumns: ["download_id"]
+          },
+          {
+            foreignKeyName: "product_documents_download_id_fkey"
+            columns: ["download_id"]
+            isOneToOne: false
+            referencedRelation: "product_downloads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_downloads: {
         Row: {
           catalog_id: string | null
@@ -982,6 +1111,7 @@ export type Database = {
           product_name: string
           product_type: string
           release_date: string
+          release_notes: string | null
           sha256_hash: string | null
           version: string
         }
@@ -996,6 +1126,7 @@ export type Database = {
           product_name: string
           product_type: string
           release_date?: string
+          release_notes?: string | null
           sha256_hash?: string | null
           version: string
         }
@@ -1010,6 +1141,7 @@ export type Database = {
           product_name?: string
           product_type?: string
           release_date?: string
+          release_notes?: string | null
           sha256_hash?: string | null
           version?: string
         }
