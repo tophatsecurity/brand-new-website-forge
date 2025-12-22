@@ -7,6 +7,7 @@ export type LicenseModel = 'perpetual' | 'subscription' | 'evaluation' | 'beta' 
 export type SupportLevel = 'standard' | 'premium' | 'enterprise';
 export type VersionStage = 'alpha' | 'beta' | 'rc' | 'stable' | 'deprecated';
 export type PriceTier = 'free' | 'starter' | 'standard' | 'professional' | 'enterprise';
+export type BillingPeriod = 'one-time' | 'monthly' | 'annual' | 'multi-year';
 
 export type CreditPackage = {
   name: string;
@@ -56,6 +57,9 @@ export type CatalogItem = {
   target_market: string | null;
   documentation_url: string | null;
   repository_url: string | null;
+  // Pricing fields
+  monthly_price: number | null;
+  billing_period: BillingPeriod;
 };
 
 export type CatalogFormData = {
@@ -91,6 +95,9 @@ export type CatalogFormData = {
   target_market: string | null;
   documentation_url: string | null;
   repository_url: string | null;
+  // Pricing fields
+  monthly_price: number | null;
+  billing_period: BillingPeriod;
 };
 
 export const useCatalog = () => {

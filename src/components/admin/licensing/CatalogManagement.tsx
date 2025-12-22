@@ -126,7 +126,10 @@ const defaultFormData: CatalogFormData = {
   feature_highlights: null,
   target_market: null,
   documentation_url: null,
-  repository_url: null
+  repository_url: null,
+  // Pricing fields
+  monthly_price: null,
+  billing_period: 'one-time'
 };
 
 const CatalogManagement: React.FC = () => {
@@ -265,7 +268,10 @@ const CatalogManagement: React.FC = () => {
       feature_highlights: item.feature_highlights || null,
       target_market: item.target_market || null,
       documentation_url: item.documentation_url || null,
-      repository_url: item.repository_url || null
+      repository_url: item.repository_url || null,
+      // Pricing fields
+      monthly_price: item.monthly_price || null,
+      billing_period: item.billing_period || 'one-time'
     });
   };
 
