@@ -1,5 +1,7 @@
 import React, { ReactNode, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import UserSidebar from './UserSidebar';
 import Footer from '@/components/Footer';
 
@@ -29,7 +31,7 @@ const UserLayout: React.FC<UserLayoutProps> = ({
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Top Header */}
-      <header className="h-16 border-b bg-card flex items-center px-6 shrink-0">
+      <header className="h-16 border-b bg-card flex items-center px-6 shrink-0 justify-between">
         <Link to="/" className="flex items-center">
           <img
             src="/lovable-uploads/82d57873-f9d6-47b1-b1d4-cec2b173bb92.png"
@@ -41,6 +43,12 @@ const UserLayout: React.FC<UserLayoutProps> = ({
             <span className="text-[#cc0c1a]">|SECURITY</span>
           </span>
         </Link>
+        <Button variant="outline" size="sm" asChild>
+          <Link to="/">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Website
+          </Link>
+        </Button>
       </header>
 
       {/* Main Content Area */}

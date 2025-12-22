@@ -58,6 +58,7 @@ import PaymentApprovalsPage from "./pages/admin/PaymentApprovalsPage";
 import FeatureRequestsAdminPage from "./pages/admin/FeatureRequestsAdminPage";
 import FeatureRequests from "./pages/FeatureRequests";
 import Onboarding from "./pages/Onboarding";
+import RolesReference from "./pages/RolesReference";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -204,6 +205,13 @@ const App = () => (
                 <ProtectedRoute>
                   <FeatureRequests />
                 </ProtectedRoute>
+              } />
+              
+              {/* Roles Reference Page */}
+              <Route path="/roles-reference" element={
+                <AdminRoute>
+                  <RolesReference />
+                </AdminRoute>
               } />
               
               {/* Public onboarding route - accessible without login */}
