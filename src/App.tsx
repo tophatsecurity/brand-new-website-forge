@@ -40,6 +40,7 @@ import Entitlements from "./pages/Entitlements";
 import Catalog from "./pages/Catalog";
 import Downloads from "./pages/Downloads";
 import Support from "./pages/Support";
+import SupportTickets from "./pages/SupportTickets";
 import Credits from "./pages/Credits";
 import Settings from "./pages/Settings";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -140,6 +141,11 @@ const App = () => (
               <Route path="/support" element={
                 <ProtectedRoute>
                   <Support />
+                </ProtectedRoute>
+              } />
+              <Route path="/support/tickets" element={
+                <ProtectedRoute>
+                  <SupportTickets />
                 </ProtectedRoute>
               } />
               <Route path="/credits" element={

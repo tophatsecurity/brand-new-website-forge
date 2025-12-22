@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, Plus, ChevronDown, ChevronUp, Ticket } from "lucide-react";
+import { Link } from "react-router-dom";
 import AddArticleForm from "@/components/support/AddArticleForm";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -135,11 +136,19 @@ const Support = () => {
       <div className="mt-12 rounded-lg bg-card p-7 shadow border max-w-2xl mx-auto flex flex-col items-center">
         <div className="mb-2 font-bold text-lg">Need deeper help?</div>
         <div className="text-sm text-muted-foreground mb-4 text-center">
-          Live chat is coming soon. For now, contact our support or open a ticket via email.
+          Submit a support ticket and our team will get back to you promptly.
         </div>
-        <Button variant="outline" asChild>
-          <a href="mailto:support@tophatsecurity.com">Contact Support</a>
-        </Button>
+        <div className="flex gap-3">
+          <Button asChild>
+            <Link to="/support/tickets">
+              <Ticket className="h-4 w-4 mr-2" />
+              View My Tickets
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <a href="mailto:support@tophatsecurity.com">Email Support</a>
+          </Button>
+        </div>
       </div>
     </UserLayout>
   );
