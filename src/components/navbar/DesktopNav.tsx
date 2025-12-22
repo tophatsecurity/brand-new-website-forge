@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { LayoutDashboard } from 'lucide-react';
 import { NavLink, getPrimaryNavLinks, NavigationLinkType } from './NavLinks';
 import ThemeToggle from '@/components/ThemeToggle';
 import UserNavMenu from '@/components/UserNavMenu';
@@ -29,6 +29,9 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
   
   // Show role switcher for admins (can view as any role) or users with multiple roles
   const showRoleSwitcher = isAdmin || userRoles.length > 1;
+
+  // Check if user is approved
+  const isApproved = user?.user_metadata?.approved;
   
   return (
     <div className="hidden md:flex items-center space-x-4">
@@ -62,6 +65,18 @@ const DesktopNav: React.FC<DesktopNavProps> = ({
 
       {/* User menu and theme toggle */}
       <div className="flex items-center space-x-3">
+        {user && isApproved && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate('/licensing')}
+            className="gap-2"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Customer Portal
+          </Button>
+        )}
+        
         {user && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground hidden lg:inline max-w-[200px] truncate">

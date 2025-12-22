@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LayoutDashboard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import MobileMenuContent from './mobile/MobileMenuContent';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -20,11 +20,26 @@ const MobileNav: React.FC<MobileNavProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const handleClose = () => setIsOpen(false);
+
+  // Check if user is approved
+  const isApproved = user?.user_metadata?.approved;
   
   return (
     <div className="md:hidden flex items-center space-x-2">
+      {user && isApproved && (
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => navigate('/licensing')}
+          className="gap-1 text-xs px-2"
+        >
+          <LayoutDashboard className="h-3 w-3" />
+          Portal
+        </Button>
+      )}
       <ThemeToggle />
       <Button
         variant="ghost"

@@ -95,15 +95,6 @@ const Navbar = () => {
           )}
         </div>
       </nav>
-
-      {/* User Features Navigation - show for approved users on non-admin pages */}
-      {user && user.user_metadata?.approved && !isAdminPage && (
-        <SecondaryNav 
-          user={user} 
-          className="z-40" 
-          isAdmin={isAdmin}
-        />
-      )}
     </header>
   );
 };
