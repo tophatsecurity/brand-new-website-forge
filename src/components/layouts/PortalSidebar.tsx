@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -37,6 +37,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Badge } from '@/components/ui/badge';
+
+const SIDEBAR_STATE_KEY = 'portal-sidebar-sections';
 
 interface NavItem {
   title: string;
@@ -190,12 +192,25 @@ const getNavSections = (isAdmin: boolean, userRoles: string[]): NavSection[] => 
 
 export function PortalSidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [openSections, setOpenSections] = useState<string[]>([
-    'Portal', 'Account', 'Program Manager', 'Sales & CRM', 'Moderation',
-    'Admin Overview', 'User Management', 'Product Management', 'System'
-  ]);
+  const [openSections, setOpenSections] = useState<string[]>(() => {
+    // Load from localStorage or default to only 'Customer' expanded
+    const saved = localStorage.getItem(SIDEBAR_STATE_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return ['Customer'];
+      }
+    }
+    return ['Customer'];
+  });
   const location = useLocation();
   const { user, signOut, isAdmin, userRoles } = useAuth();
+
+  // Persist openSections to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_STATE_KEY, JSON.stringify(openSections));
+  }, [openSections]);
 
   const userEmail = user?.email || '';
   const userInitials = userEmail
