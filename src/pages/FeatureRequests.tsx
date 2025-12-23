@@ -10,11 +10,12 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
-import { ThumbsUp, Plus, Lightbulb, Filter, RefreshCw, Trash2, Pencil } from 'lucide-react';
+import { ThumbsUp, Plus, Lightbulb, Filter, RefreshCw, Trash2, Pencil, History } from 'lucide-react';
 import { useFeatureRequests, PRODUCT_OPTIONS, STATUS_OPTIONS } from '@/hooks/useFeatureRequests';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserSettings } from '@/hooks/useUserSettings';
 import FeatureRequestScoreboard from '@/components/features/FeatureRequestScoreboard';
+import FeatureRequestHistoryDialog from '@/components/features/FeatureRequestHistoryDialog';
 import { generateSluggedUsername } from '@/utils/usernameGenerator';
 
 const FeatureRequests = () => {
@@ -25,6 +26,8 @@ const FeatureRequests = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingRequest, setEditingRequest] = useState<any>(null);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [selectedRequestForHistory, setSelectedRequestForHistory] = useState<any>(null);
   const [newRequest, setNewRequest] = useState({ title: '', description: '', product_name: '' });
   const [anonymousUsername, setAnonymousUsername] = useState(() => generateSluggedUsername());
 
@@ -81,6 +84,11 @@ const FeatureRequests = () => {
 
   const handleRetract = (requestId: string) => {
     retractRequest.mutate(requestId);
+  };
+
+  const openHistoryDialog = (request: any) => {
+    setSelectedRequestForHistory(request);
+    setHistoryDialogOpen(true);
   };
 
   const handleVote = (request: any) => {
@@ -359,44 +367,58 @@ const FeatureRequests = () => {
                         <span>{new Date(request.created_at).toLocaleDateString()}</span>
                       </div>
                       
-                      {/* Edit and Retract buttons for own pending requests */}
-                      {isOwnRequest(request) && request.status === 'pending' && (
-                        <div className="flex gap-2">
+                      <div className="flex gap-2">
+                        {/* History button - visible for own requests */}
+                        {isOwnRequest(request) && (
                           <Button 
                             variant="ghost" 
-                            size="sm" 
-                            onClick={() => openEditDialog(request)}
+                            size="sm"
+                            onClick={() => openHistoryDialog(request)}
                           >
-                            <Pencil className="h-4 w-4 mr-1" />
-                            Edit
+                            <History className="h-4 w-4 mr-1" />
+                            History
                           </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-                                <Trash2 className="h-4 w-4 mr-1" />
-                                Retract
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="bg-background">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Retract Feature Request?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This will permanently delete your feature request. This action cannot be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction 
-                                  onClick={() => handleRetract(request.id)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
+                        )}
+                        
+                        {/* Edit and Retract buttons for own pending requests */}
+                        {isOwnRequest(request) && request.status === 'pending' && (
+                          <>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => openEditDialog(request)}
+                            >
+                              <Pencil className="h-4 w-4 mr-1" />
+                              Edit
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                  <Trash2 className="h-4 w-4 mr-1" />
                                   Retract
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      )}
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="bg-background">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Retract Feature Request?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This will permanently delete your feature request. This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction 
+                                    onClick={() => handleRetract(request.id)}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    Retract
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -412,6 +434,16 @@ const FeatureRequests = () => {
             <a href="/login" className="text-primary hover:underline">Sign in</a> to submit requests and vote on features
           </p>
         </div>
+      )}
+
+      {/* History Dialog */}
+      {selectedRequestForHistory && (
+        <FeatureRequestHistoryDialog
+          open={historyDialogOpen}
+          onOpenChange={setHistoryDialogOpen}
+          featureId={selectedRequestForHistory.id}
+          featureTitle={selectedRequestForHistory.title}
+        />
       )}
     </UserLayout>
   );
